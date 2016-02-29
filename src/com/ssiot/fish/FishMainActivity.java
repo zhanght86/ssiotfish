@@ -1,28 +1,42 @@
 package com.ssiot.fish;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.GridView;
 import android.widget.AdapterView;
 
+import com.ssiot.fish.facility.FishpondMainActivity;
 import com.ssiot.fish.question.QuestionListActivity;
 import com.ssiot.remote.BrowserActivity;
+import com.ssiot.remote.LoginActivity;
+import com.ssiot.remote.MainActivity;
+import com.ssiot.remote.SsiotService;
+import com.ssiot.remote.Utils;
+import com.ssiot.remote.data.business.IOTCompany;
+import com.ssiot.remote.expert.DiagnoseFishSelectActivity;
 
 import java.util.ArrayList;
 
 public class FishMainActivity extends HeadActivity {
     private GridView gridView1;
     ArrayList<CellModel> cells;
+    private SharedPreferences mPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setContentView(R.layout.activity_main_fish);
+        mPref = PreferenceManager.getDefaultSharedPreferences(this);
         gridView1 = (GridView) findViewById(R.id.gridView1);
         initGridView();
     }
@@ -67,24 +81,56 @@ public class FishMainActivity extends HeadActivity {
                 if ("互动交流".equals(model.itemText)){
                     Intent intent = new Intent(FishMainActivity.this, QuestionListActivity.class);
                     startActivity(intent);
+                } else if ("鱼病诊断".equals(model.itemText)){
+                    Intent intent = new Intent(FishMainActivity.this, DiagnoseFishSelectActivity.class);
+                    startActivity(intent);
+                } else if ("渔场管理".equals(model.itemText)){
+                    Intent intent = new Intent(FishMainActivity.this, FishpondMainActivity.class);
+                    startActivity(intent);
+                } else if ("专家在线".equals(model.itemText)){
+                    
+                } else if ("生产管理".equals(model.itemText)){
+                    
+                } else if ("企业汇总".equals(model.itemText)){
+                    Intent intent = new Intent(FishMainActivity.this, CompanyListActivity.class);
+                    startActivity(intent);
+                } else if ("市场动态".equals(model.itemText)){
+                    
                 }
             }
         }
-        
     };
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-//        getMenuInflater().inflate(R.menu.fish_main, menu);
+        getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-//        int id = item.getItemId();
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
+        switch (item.getItemId()) {
+            case R.id.action_logout:
+                Intent loginIntent = new Intent(FishMainActivity.this, LoginActivity.class);
+                startActivity(loginIntent);
+//                SsiotService.cancel = true;
+//                stopService(new Intent(this, SsiotService.class));
+                finish();
+                Editor e = mPref.edit();
+                e.putString(Utils.PREF_PWD, "");
+                e.commit();
+                return true;
+            case android.R.id.home:
+                View v = getWindow().peekDecorView();
+                if (v != null){
+                    InputMethodManager inputmanger = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    inputmanger.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                }
+                super.onBackPressed();
+                break;
+            default:
+                break;
+        }
         return super.onOptionsItemSelected(item);
     }
 }

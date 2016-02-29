@@ -170,6 +170,13 @@
         <item name="android:textColor">@color/white</item>
     </style>
     
+    <style name="MsgNew" parent="@android:style/Widget.TextView">
+        <item name="android:textSize">@dimen/itemContent</item>
+        <item name="android:textColor">@color/aa</item>
+        <item name="android:paddingLeft">@dimen/Margin</item>
+        <item name="android:paddingRight">@dimen/Margin</item>
+    </style>
+    
     
     
     

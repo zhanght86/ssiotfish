@@ -217,7 +217,7 @@ public class MainActivity extends ActionBarActivity implements FMainBtnClickList
                 stopService(new Intent(this, SsiotService.class));
                 finish();
                 Editor e = mPref.edit();
-                e.putString("password", "");
+                e.putString(Utils.PREF_PWD, "");
                 e.commit();
                 return true;
             case android.R.id.home:
@@ -314,7 +314,7 @@ public class MainActivity extends ActionBarActivity implements FMainBtnClickList
             mTransaction.addToBackStack(null);
             mTransaction.commit();
         } else if (itmTxt.equals(getResources().getString(R.string.iconstr_info))){
-            if ("gn".equalsIgnoreCase(mPref.getString("username", ""))){
+            if ("gn".equalsIgnoreCase(mPref.getString(Utils.PREF_USERNAME, ""))){
                 Intent intent = new Intent(MainActivity.this, BrowserActivity.class);
                 intent.putExtra("url", "http://gn.ssiot.com/mobile");
                 startActivity(intent);

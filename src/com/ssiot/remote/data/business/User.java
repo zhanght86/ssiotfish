@@ -62,8 +62,14 @@ public class User{
         UserModel uModel = new UserModel();
         try {
             uModel._userid = c.getInt("UserID");
+            uModel._account = c.getString("Account");
+            uModel._userpassword = c.getString("UserPassword");
             uModel._uniqueid = c.getString("UniqueID");
             uModel._areaid = c.getInt("AreaID");
+            uModel._userpassword = c.getString("UserPassword");
+            uModel._username = c.getString("UserName");
+            uModel._address = c.getString("Address");
+            uModel._avatar = c.getString("Avatar");
             //TODO
             return uModel;
         } catch (SQLException e) {

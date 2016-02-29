@@ -113,7 +113,7 @@ public class MainFragment extends Fragment{
             }
         });
         SharedPreferences mPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        if ("gn".equalsIgnoreCase(mPref.getString("username", ""))) {
+        if ("gn".equalsIgnoreCase(mPref.getString(Utils.PREF_USERNAME, ""))) {
             mInfo.setImageResource(R.drawable.icon_business);
             mInfo.setText("电商平台");
         }

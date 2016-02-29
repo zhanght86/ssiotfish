@@ -15,13 +15,12 @@ public class Question{
     public int Add(QuestionModel model){
         StringBuilder strSql = new StringBuilder();
         strSql.append("insert into Question(");
-        strSql.append("ID,UserID,Title,ContentText,CreateTime,PicUrls,Addr,LongiTude,Latitude,ReplyCount)");
+        strSql.append("UserID,Title,ContentText,CreateTime,PicUrls,Addr,LongiTude,Latitude,ReplyCount)");
         strSql.append(" values (");
-        strSql.append("?,?,?,?,?,?,?,?,?,?) ");
+        strSql.append("?,?,?,?,?,?,?,?,?) ");
         strSql.append(";select @@IDENTITY");
         
         ArrayList<Object> parameters = new ArrayList<Object>();
-        parameters.add(model._id);
         parameters.add(model._userId);
         parameters.add(model._title);
         parameters.add(model._contentText);
@@ -32,6 +31,13 @@ public class Question{
         parameters.add(model._latitude);
         parameters.add(model._replyCount);
         return DbHelperSQL.getInstance().Update_object(strSql.toString(), parameters);
+    }
+    
+    public int UpdateReplyCount(int questionid, int replaycount){
+        StringBuilder strSql = new StringBuilder();
+        strSql.append("update Question set ReplyCount=" + replaycount + " where ID=" + questionid);
+        
+        return DbHelperSQL.getInstance().Update(strSql.toString());
     }
     
     public List<QuestionModel> GetPageList(int pageIndex){
@@ -93,7 +99,7 @@ public class Question{
             m._title = c.getString("Title");
             m._contentText = c.getString("ContentText");
             m._createTime = c.getTimestamp("CreateTime");
-            m._picUrls = c.getString("PicUrils");
+            m._picUrls = c.getString("PicUrls");
             m._addr = c.getString("Addr");
             m._longitude = c.getFloat("LongiTude");
             m._latitude = c.getFloat("LatiTude");

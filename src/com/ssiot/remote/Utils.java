@@ -39,6 +39,15 @@ import com.ssiot.fish.R;
 
 public class Utils {
     private static final String tag = "Utils";
+    public static final String PREF_USERID = "userid";
+    public static final String PREF_USERNAME = "username";
+    public static final String PREF_PWD = "password";
+    public static final String PREF_USERKEY = "userkey";
+    public static final String PREF_USERNAMETEXT = "usernametext";
+    public static final String PREF_AREAID = "areaid";
+    public static final String PREF_ADDR = "address";
+    public static final String PREF_AVATAR = "avatar";
+    
     public static final String PREF_AUTOUPDATE = "autoupdate";
     
     public static final String BUN_DEVICE_NAMES = "devicenames";

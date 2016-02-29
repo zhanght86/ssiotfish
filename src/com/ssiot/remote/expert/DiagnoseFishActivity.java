@@ -5,6 +5,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,7 +23,7 @@ import com.ssiot.remote.Utils;
 
 public class DiagnoseFishActivity extends ActionBarActivity{
     private static final String tag  = "DiagnoseFishActivity";
-    private static final String urlString = "http://www.adds.org.cn/SelfDiagnosis";
+    private String urlString = "http://www.adds.org.cn/SelfDiagnosis";
     WebView webView;
     MenuItem refreshItem;
     
@@ -30,7 +31,9 @@ public class DiagnoseFishActivity extends ActionBarActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web_browser);
-        
+        String extra = getIntent().getStringExtra("dieaseextra");
+        urlString += extra;
+        Log.v(tag, ""+ urlString);
         webView = (WebView) findViewById(R.id.webview);
         webView.getSettings().setBuiltInZoomControls(true);
         webView.getSettings().setUseWideViewPort(true);

@@ -138,7 +138,7 @@ public class SsiotService extends Service{
     }
 
     private void getWitchToCompare(String account){//TODO account
-        account = mPref.getString("username", "");
+        account = mPref.getString(Utils.PREF_USERNAME, "");
         if (TextUtils.isEmpty(account)){
             Log.e(tag, "------account = null");
             return;
@@ -347,7 +347,7 @@ public class SsiotService extends Service{
         if (mPref == null){
             return false;
         }
-        String pwd = mPref.getString("password", "");
+        String pwd = mPref.getString(Utils.PREF_PWD, "");
         return !TextUtils.isEmpty(pwd);
     }
     

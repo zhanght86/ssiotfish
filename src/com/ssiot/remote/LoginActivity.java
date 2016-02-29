@@ -16,6 +16,7 @@
 
 package com.ssiot.remote;
 
+import java.util.List;
 import java.util.Properties;
 
 import android.app.AlertDialog;
@@ -29,6 +30,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -41,9 +43,13 @@ import android.view.animation.AnimationUtils;
 import android.widget.*;
 import android.support.v7.app.ActionBarActivity;
 
+import com.ssiot.fish.FishMainActivity;
 import com.ssiot.fish.R;
+import com.ssiot.remote.data.business.User;
+import com.ssiot.remote.data.model.UserModel;
 
 public class LoginActivity extends ActionBarActivity {
+    private static final String tag = "LoginActivity";
     private EditText logEditText;
     private EditText pwdEditText;
     private CheckBox checkbox;
@@ -52,6 +58,7 @@ public class LoginActivity extends ActionBarActivity {
     private String password = "";
     private String uniqueID = "";
     private Dialog mWaitDialog;
+    SharedPreferences mPref;
 
     private final int MSG_LOGIN_RETURN = 1;
     private final int MSG_LOGIN_TIMEOUT = 2;
@@ -69,12 +76,12 @@ public class LoginActivity extends ActionBarActivity {
                                 .getDefaultSharedPreferences(LoginActivity.this);
                         if (mPref != null) {
                             Editor editor = mPref.edit();
-                            editor.putString("username", userName);
-                            editor.putString("password", password);
+                            editor.putString(Utils.PREF_USERNAME, userName);
+                            editor.putString(Utils.PREF_PWD, password);
                             editor.putString("rememberPWD", checkbox.isChecked() ? "yes" : "no");
                             editor.commit();
                         }
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        Intent intent = new Intent(LoginActivity.this, FishMainActivity.class);
                         intent.putExtra("userkey", uniqueID);
                         startActivity(intent);
                         
@@ -115,10 +122,10 @@ public class LoginActivity extends ActionBarActivity {
         pwdEditText = (EditText) findViewById(R.id.pwdEditText);
         checkbox = (CheckBox) findViewById(R.id.checkBox1);
         logButton = (Button) findViewById(R.id.logButton);
-        SharedPreferences mPref = PreferenceManager.getDefaultSharedPreferences(this);
+        mPref = PreferenceManager.getDefaultSharedPreferences(this);
         if (mPref != null) {
-            String pro_username = mPref.getString("username", "");
-            String pro_password = mPref.getString("password", "");
+            String pro_username = mPref.getString(Utils.PREF_USERNAME, "");
+            String pro_password = mPref.getString(Utils.PREF_PWD, "");
             String pro_isRemember = mPref.getString("rememberPWD", "");
             if (!TextUtils.isEmpty(pro_username)) {
                 loadUserInfo(pro_username, pro_password, pro_isRemember);
@@ -176,20 +183,42 @@ public class LoginActivity extends ActionBarActivity {
         @Override
         public void run() {
             try {
-//                SoapRequestDataFromWebService hasUserInfoSoap = new SoapRequestDataFromWebService();
-//                uniqueID = hasUserInfoSoap.HasAccountByNameAndPasswordFromWebService(userName,
-//                        password);
-                ConSQL sql = new ConSQL();
-                if (sql.ConnectSQl()){
-                    uniqueID = sql.getUniqueIDFromDB(userName, password);
-                    mHandler.sendEmptyMessage(MSG_LOGIN_RETURN);
+                if (Utils.isNetworkConnected(LoginActivity.this)){
+                    List<UserModel> users =  new User().GetModelList(" Account='" + userName + "'");
+                    if (null != users && users.size() > 0){
+                        UserModel model = users.get(0);
+                        if (null != password && null != model._userpassword && password.equals(model._userpassword.trim())){
+                            uniqueID = model._uniqueid;
+                            MainActivity.AreaID = model._areaid;
+                            savePrefs(model);
+                            mHandler.sendEmptyMessage(MSG_LOGIN_RETURN);
+                            return;
+                        } else {
+                            Log.e(tag, "-----logint-----" + password + model._userpassword);
+                        }
+                    }
                 } else {
-                    mHandler.sendEmptyMessage(MSG_LOGIN_CON_FAIL);
+//                    mHandler.sendEmptyMessage(MSG_LOGIN_CON_FAIL);
                 }
+                
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            mHandler.sendEmptyMessage(MSG_LOGIN_CON_FAIL);
         }
+    }
+    
+    private void savePrefs(UserModel model){
+        Editor e = mPref.edit();
+        e.putInt(Utils.PREF_USERID, model._userid);
+        e.putString(Utils.PREF_USERNAME, model._account);
+        e.putString(Utils.PREF_PWD, model._userpassword);
+        e.putString(Utils.PREF_USERKEY, model._uniqueid);
+        e.putString(Utils.PREF_USERNAMETEXT, model._username);
+        e.putInt(Utils.PREF_AREAID, model._areaid);
+        e.putString(Utils.PREF_ADDR, model._address);
+        e.putString(Utils.PREF_AVATAR, model._avatar);
+        e.commit();
     }
     
     public Dialog createLoadingDialog(Context context, String msg) {  

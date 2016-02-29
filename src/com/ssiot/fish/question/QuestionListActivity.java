@@ -43,6 +43,7 @@ public class QuestionListActivity extends HeadActivity{
         setContentView(R.layout.activity_question_user_list);
         btnNew = (ImageButton) findViewById(R.id.question_new);
         questionLayout = (VerticalSwipeRefreshLayout) findViewById(R.id.ask_listview);
+        questionLayout.setAdapter(new QuestionCardAdapter(questions));
         questionLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {

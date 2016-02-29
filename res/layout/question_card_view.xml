@@ -141,7 +141,7 @@
                 android:drawablePadding="6.0dip"
                 android:ellipsize="end"
                 android:singleLine="true"
-                android:text="北京"
+                android:text="无地址信息"
                 android:textColor="@color/master_text_color_blue"
                 android:textSize="@dimen/textsize_h4" />
         </RelativeLayout>
@@ -190,7 +190,8 @@
                 android:layout_centerVertical="true"
                 android:layout_marginRight="10.0dip"
                 android:layout_toRightOf="@id/ask_card_replycount_label"
-                android:src="@drawable/icon_question_guanfang_true" />
+                android:src="@drawable/icon_question_guanfang_true"
+                android:visibility="gone" />
 
             <ImageView
                 android:id="@+id/ask_card_caina"
@@ -199,7 +200,8 @@
                 android:layout_centerVertical="true"
                 android:layout_marginRight="10.0dip"
                 android:layout_toRightOf="@id/ask_card_guanfang"
-                android:src="@drawable/icon_question_caina_true" />
+                android:src="@drawable/icon_question_caina_true"
+                android:visibility="gone" />
 
             <ImageView
                 android:id="@+id/ask_card_tuijian"
@@ -208,7 +210,8 @@
                 android:layout_centerVertical="true"
                 android:layout_marginRight="10.0dip"
                 android:layout_toRightOf="@id/ask_card_caina"
-                android:src="@drawable/icon_question_tuijian_true" />
+                android:src="@drawable/icon_question_tuijian_true"
+                android:visibility="gone" />
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -227,6 +230,7 @@
         android:layout_marginLeft="@dimen/card_margin"
         android:layout_marginRight="@dimen/card_margin"
         android:background="@drawable/master_card_green_bg"
+        android:visibility="gone"
         android:orientation="vertical" >
 
         <RelativeLayout

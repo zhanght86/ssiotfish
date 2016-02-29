@@ -3,6 +3,7 @@ package com.ssiot.fish.question.widget;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -14,7 +15,10 @@ import android.widget.Toast;
 import com.ssiot.fish.R;
 import com.ssiot.fish.question.AlbumActivity;
 import com.ssiot.fish.question.QuestionDetailListActivity;
-import com.ssiot.fish.question.QuestionBean;
+import com.ssiot.remote.GetImageThread;
+import com.ssiot.remote.GetImageThread.ThumnailHolder;
+import com.ssiot.remote.data.model.QuestionModel;
+import com.ssiot.remote.monitor.MoniNodeListFrag;
 
 import java.util.ArrayList;
 
@@ -23,7 +27,7 @@ public class QuestionCardView extends BaseCardView
     private static final String tag = "QuestionCardView";
     private View cView;// 关注作物
     private View dView;
-    private QuestionBean eQuestionBean;// i类
+    private QuestionModel eQuestionModel;// i类
     private View fCardView;// f
     private View gMarginView;
     private TextView hAskTitleTextView;// h
@@ -46,6 +50,21 @@ public class QuestionCardView extends BaseCardView
     private View yCardRefresh;
 
     // private b z;
+    
+    private static final int MSG_GETIMG_END = MoniNodeListFrag.MSG_GET_ONEIMAGE_END;
+    private Handler mHandler = new Handler(){
+        public void handleMessage(android.os.Message msg) {
+            switch (msg.what) {
+                case MSG_GETIMG_END:
+                    ThumnailHolder thumb = (ThumnailHolder) msg.obj;
+                    thumb.imageView.setImageBitmap(thumb.bitmap);
+                    break;
+
+                default:
+                    break;
+            }
+        };
+    };
 
     public QuestionCardView(Context paramContext, AttributeSet paramAttributeSet) {
         super(paramContext, paramAttributeSet);
@@ -87,6 +106,7 @@ public class QuestionCardView extends BaseCardView
         xEvCarPicMore = finda(R.id.event_card_pic_more);
         yCardRefresh = finda(R.id.card_refresh);
         yCardRefresh.setOnClickListener(this);
+        fCardView.setOnClickListener(this);
     }
 
     @Override
@@ -94,14 +114,35 @@ public class QuestionCardView extends BaseCardView
         return R.layout.question_card_view;
     }
 
-    public QuestionBean getQuestionBean() {
-        return eQuestionBean;
+    public QuestionModel getQuestionModel() {
+        return eQuestionModel;
     }
     
-    public void fillData(QuestionBean modelData){
-        eQuestionBean = modelData;
-        hAskTitleTextView.setText(modelData.uContent.toString());
-        iContentTextView.setText(modelData.extra);
+    public void fillData(QuestionModel modelData){
+        eQuestionModel = modelData;
+        hAskTitleTextView.setText(modelData._title.toString());
+        iContentTextView.setText(modelData._contentText);
+        mCountTextView.setText(""+modelData._replyCount);
+        if (!TextUtils.isEmpty(modelData._addr)){
+            nAddrView.setText(modelData._addr);
+        }
+        if (TextUtils.isEmpty(modelData._picUrls)){
+            kPicRootView.setVisibility(View.GONE);
+        } else {
+            kPicRootView.setVisibility(View.VISIBLE);
+            String[] pics = modelData._picUrls.split(",");
+            if (null != pics && pics.length > 0){
+                new GetImageThread(jPicImageView, "http://cloud.ssiot.com/"+pics[0], mHandler).start();
+            }
+        }
+//        setOnClickListener(new OnClickListener() {
+//            
+//            @Override
+//            public void onClick(View v) {
+//                // TODO Auto-generated method stub
+//                
+//            }
+//        });
     }
 
     @Override
@@ -119,14 +160,16 @@ public class QuestionCardView extends BaseCardView
                 Intent localIntent4 = new Intent();
                 localIntent4.setClass(getContext(), AlbumActivity.class);
                 // localIntent4.putExtra("BUNDLE_PICS", this.e.f());
+                
                 localIntent4.putExtra("BUNDLE_POSITION", 0);
                 getContext().startActivity(localIntent4);
                 break;
             case R.id.question_card_view:
-                Intent localIntent1 = new Intent();
-                // localIntent1.putExtra("qid", this.e.d);
-                localIntent1.setClass(getContext(), QuestionDetailListActivity.class);
-                getContext().startActivity(localIntent1);
+                Intent detailIntent = new Intent();
+                // detailIntent.putExtra("qid", this.e.d);
+                detailIntent.putExtra("questionmodel", eQuestionModel);
+                detailIntent.setClass(getContext(), QuestionDetailListActivity.class);
+                getContext().startActivity(detailIntent);
                 break;
             case R.id.event_card_view:
                 Intent localIntent3 = new Intent();

@@ -9,15 +9,16 @@ import android.widget.TextView;
 
 import com.ssiot.fish.R;
 import com.ssiot.fish.question.widget.QuestionCardView;
+import com.ssiot.remote.data.model.QuestionModel;
 
 import java.util.List;
 
 public class QuestionCardAdapter extends RecyclerView.Adapter {
     private static final String TAG = "QuestionCardAdapter";
-    private List<QuestionBean> list;
+    private List<QuestionModel> list;
     private OnRecyclerViewListener onRecyclerViewListener;
 
-    public QuestionCardAdapter(List<QuestionBean> lis) {
+    public QuestionCardAdapter(List<QuestionModel> lis) {
         list = lis;
     }
     
@@ -27,7 +28,8 @@ public class QuestionCardAdapter extends RecyclerView.Adapter {
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int type) {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.question_card_view, null);
+//        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.question_card_view, null);
+        View view = new QuestionCardView(viewGroup.getContext(), null);
 //        不知道为什么在xml设置的“android:layout_width="match_parent"”无效了，需要在这里重新设置
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         view.setLayoutParams(lp);
@@ -37,7 +39,7 @@ public class QuestionCardAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
         QuestionBeanViewHolder holder = (QuestionBeanViewHolder) viewHolder;
-        QuestionBean questionModel = list.get(i);
+        QuestionModel questionModel = list.get(i);
 //        holder.nameTv.setText(QuestionBean.getName());
 //        holder.ageTv.setText(QuestionBean.getAge() + "岁");
         holder.fillData(questionModel);
@@ -65,7 +67,7 @@ public class QuestionCardAdapter extends RecyclerView.Adapter {
 //            rootView.setOnLongClickListener(this);
         }
         
-        public void fillData(QuestionBean model){
+        public void fillData(QuestionModel model){
             mView.fillData(model);
         }
 

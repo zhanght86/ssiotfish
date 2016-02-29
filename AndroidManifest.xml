@@ -19,6 +19,7 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <uses-sdk
         android:minSdkVersion="11"
@@ -31,45 +32,44 @@
         android:name="com.ssiot.remote.ContextUtilApp"
         android:theme="@style/AppTheme" >
         
+        <meta-data
+            android:name="com.baidu.lbsapi.API_KEY"
+            android:value="GZuY9lvKWfdh9NtoctRiZLUy" />
+        
         <activity
             android:name=".FishMainActivity"
             android:label="@string/app_name" >
+<!--             <intent-filter> -->
+<!--                 <action android:name="android.intent.action.MAIN" /> -->
+<!--                 <category android:name="android.intent.category.LAUNCHER" /> -->
+<!--             </intent-filter> -->
+        </activity>
+        
+        <activity
+            android:name="com.ssiot.remote.FirstStartActivity"
+            android:icon="@drawable/ic_launcher"
+            android:theme="@android:style/Theme.NoTitleBar" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         
-<!--         <activity -->
-<!--             android:name=".FirstStartActivity" -->
-<!--             android:icon="@drawable/ic_launcher" -->
-<!--             android:theme="@android:style/Theme.NoTitleBar" > -->
-<!--             <intent-filter> -->
-<!--                 <action android:name="android.intent.action.MAIN" /> -->
-<!--                 <category android:name="android.intent.category.LAUNCHER" /> -->
-<!--             </intent-filter> -->
-<!--         </activity> -->
-        
         <activity
-            android:name=".LoginActivity"
+            android:name="com.ssiot.remote.LoginActivity"
             android:label="@string/app_name" >
         </activity>
         
-        <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan" >
-<!--             <intent-filter> -->
-<!--                 <action android:name="android.intent.action.MAIN" /> -->
-<!--                 <category android:name="android.intent.category.LAUNCHER" /> -->
-<!--             </intent-filter> -->
-        </activity>
+<!--         <activity -->
+<!--             android:name=".MainActivity" -->
+<!--             android:label="@string/app_name" -->
+<!--             android:theme="@style/AppTheme" -->
+<!--             android:screenOrientation="portrait" -->
+<!--             android:windowSoftInputMode="adjustPan" > -->
+<!--         </activity> -->
         
         <activity
-            android:name=".myzxing.MipcaActivityCapture"
+            android:name="com.ssiot.remote.myzxing.MipcaActivityCapture"
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden" >
@@ -82,10 +82,6 @@
             android:name=".dahuavideo.LoginModeActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait" >
-<!--             <intent-filter> -->
-<!--                 <action android:name="android.intent.action.MAIN" /> -->
-<!--                 <category android:name="android.intent.category.LAUNCHER" /> -->
-<!--             </intent-filter> -->
         </activity>
         
         <activity
@@ -124,12 +120,12 @@
             android:screenOrientation="portrait" />
 	    
 	    <activity
-            android:name=".expert.DiagnoseFishActivity"
+            android:name="com.ssiot.remote.expert.DiagnoseFishActivity"
             android:label="@string/activity_diagnosefish"
             android:screenOrientation="portrait" />
         
         <activity
-            android:name=".expert.DiagnoseFishSelectActivity"
+            android:name="com.ssiot.remote.expert.DiagnoseFishSelectActivity"
             android:label="@string/activity_selectfish"
             android:screenOrientation="portrait" />
         
@@ -180,6 +176,36 @@
         
         <activity
             android:name=".question.QuestionNewActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+        
+        <activity
+            android:name=".facility.FishpondMainActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+        
+        <activity
+            android:name=".facility.FishpondListActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+        
+        <activity
+            android:name=".facility.FishpondNewActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+        
+        <activity
+            android:name=".facility.MapActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+        
+        <activity
+            android:name=".facility.GetLocationActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+        
+        <activity
+            android:name=".CompanyListActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait" />
 

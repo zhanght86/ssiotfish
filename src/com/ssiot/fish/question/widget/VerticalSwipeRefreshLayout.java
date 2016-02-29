@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import com.ssiot.fish.R;
 import com.ssiot.fish.question.QuestionCardAdapter;
 import com.ssiot.fish.question.QuestionBean;
+import com.ssiot.remote.data.model.QuestionModel;
 
 import java.util.ArrayList;
 
@@ -22,7 +23,7 @@ public class VerticalSwipeRefreshLayout extends SwipeRefreshLayout{
     private static final String tag = "VerticalSwipeRefreshLayout";
   private RecyclerView aRecyclerView;
   private LinearLayoutManager bLinearLayoutManager;
-  QuestionCardAdapter cAdapter;
+  RecyclerView.Adapter cAdapter;
 //  private final RecyclerView.OnScrollListener iOnScrollListen;
 
   private static final int MSG_REFRESH_END = 1;
@@ -60,35 +61,14 @@ public class VerticalSwipeRefreshLayout extends SwipeRefreshLayout{
     bLinearLayoutManager = new LinearLayoutManager(paramContext);
     bLinearLayoutManager.setOrientation(1);
     aRecyclerView.setLayoutManager(bLinearLayoutManager);
-    ArrayList<QuestionBean> datas = new ArrayList<QuestionBean>();
-    cAdapter = new QuestionCardAdapter(datas);
-    aRecyclerView.setAdapter(cAdapter);//没adapter就没circleview在转动
+//    ArrayList<QuestionModel> datas = new ArrayList<QuestionModel>();
+//    cAdapter = new QuestionCardAdapter(datas);
+//    aRecyclerView.setAdapter(cAdapter);//没adapter就没circleview在转动
 //    aRecyclerView.addOnScrollListener(iOnScrollListen);
 //    aRecyclerView.setOnTouchListener(new ax(this));
 //    setOnRefreshListener(new ay(this));
 //    aRecyclerView.getItemAnimator().setSupportsChangeAnimations(false);
     setSize(SwipeRefreshLayout.LARGE);
-    setOnRefreshListener(new OnRefreshListener() {
-        @Override
-        public void onRefresh() {
-            // TODO Auto-generated method stub
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-//                    data.clear();
-//                    for(int i=0;i<20;i++){
-//                        data.add("SwipeRefreshLayout下拉刷新"+i);
-//                    }
-                    try {
-                        Thread.sleep(2000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    mHandler.sendEmptyMessage(MSG_REFRESH_END);
-                }
-            }).start();
-        }
-    });
   }
 
     public final void a(int paramInt) {
@@ -103,9 +83,9 @@ public class VerticalSwipeRefreshLayout extends SwipeRefreshLayout{
         return bLinearLayoutManager;
     }
 
-    public final void setAdapter(QuestionCardAdapter parama) {
-        cAdapter = parama;
-        aRecyclerView.setAdapter(parama);
+    public final void setAdapter(RecyclerView.Adapter adapter) {
+        cAdapter = adapter;
+        aRecyclerView.setAdapter(adapter);
     }
 
     public final void setItemAnimator(RecyclerView.ItemAnimator paramItemAnimator) {
@@ -117,7 +97,7 @@ public class VerticalSwipeRefreshLayout extends SwipeRefreshLayout{
         if (null != cAdapter){
             cAdapter.notifyDataSetChanged();
         } else {
-            Log.e(tag, "-------questioncardadapter == null!!!");
+            Log.e(tag, "-------RecyclerView.Adapter == null!!!");
         }
         
     }

@@ -22,11 +22,14 @@ public class DiagnoseFishSelectActivity extends ActionBarActivity{
     Spinner mFishSelectSpin;
     TextView mFishSelectText;
     String[] mItems;
+    int[] mIntItems;
+    int selectedPosition = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fish_select);
         mItems = getResources().getStringArray(R.array.fishes);
+        mIntItems = getResources().getIntArray(R.array.fishes_int);
         mFishSelectSpin = (Spinner) findViewById(R.id.fish_select);
         
         mFishSelectText = (TextView) findViewById(R.id.fish_select_text);
@@ -40,16 +43,23 @@ public class DiagnoseFishSelectActivity extends ActionBarActivity{
             }
         });
         initSpinner();
-//        registerForContextMenu(mFishSelectSpin);
         
         TextView btn = (TextView) findViewById(R.id.btn_ok);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(DiagnoseFishSelectActivity.this, DiagnoseFishActivity.class);
+                Log.v(tag, "-----position:" + selectedPosition + " " + mIntItems[selectedPosition]);
+                i.putExtra("dieaseextra", "/GetContent/"+ mIntItems[selectedPosition]);
                 startActivity(i);
             }
         });
+    }
+    
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mFishSelectText.setText(mItems[selectedPosition]);
     }
     
     private void initSpinner(){
@@ -59,8 +69,8 @@ public class DiagnoseFishSelectActivity extends ActionBarActivity{
         mFishSelectSpin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                // TODO Auto-generated method stub
-                
+                Log.v(tag, "-----onItemSelected---position:" + selectedPosition);
+                selectedPosition = position;
             }
 
             @Override
@@ -81,6 +91,7 @@ public class DiagnoseFishSelectActivity extends ActionBarActivity{
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         mFishSelectText.setText(item.getTitle());
+        selectedPosition = item.getItemId() - 1;
         return super.onContextItemSelected(item);
     }
     

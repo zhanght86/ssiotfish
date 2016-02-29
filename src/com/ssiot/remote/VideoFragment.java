@@ -93,7 +93,7 @@ public class VideoFragment extends Fragment{
       //TODO in a better way
         final String uniqueIdString = ((MainActivity) getActivity()).getUnique();
         SharedPreferences mPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String userName = mPref.getString("username", "");
+        String userName = mPref.getString(Utils.PREF_USERNAME, "");
         
         if (Utils.isNetworkConnected(getActivity())){
             final Dialog d = Utils.createLoadingDialog(getActivity(), "正在查询");

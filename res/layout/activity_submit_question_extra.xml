@@ -99,6 +99,17 @@
 <!--                 f:itemWidth="75.0dip" -->
 <!--                 f:verticalSpacing="8.0dip" /> -->
 
+			<GridView
+			    android:id="@+id/submit_question_camera"
+			    android:layout_width="match_parent"
+			    android:layout_height="wrap_content"
+			    android:background="@color/master_white_color" 
+			    android:padding="@dimen/card_padding_medium"
+			    android:horizontalSpacing="8.0dp"
+			    android:numColumns="4"
+			    android:verticalSpacing="8.0dp"
+			    ></GridView>
+			
             <View
                 android:layout_width="fill_parent"
                 android:layout_height="1.0px"

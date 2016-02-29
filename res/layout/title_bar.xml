@@ -46,7 +46,7 @@
         android:layout_marginRight="9.0dip"
         android:background="@android:color/transparent"
         android:gravity="center"
-        android:text=""
+        android:text="确定"
         android:textColor="@color/master_white_color"
         android:textSize="@dimen/textsize_h1" />
 
