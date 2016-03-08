@@ -1,4 +1,4 @@
-package com.ssiot.remote;
+package com.ssiot.fish;
 
 import android.app.Application;
 import android.util.Log;
@@ -16,7 +16,7 @@ public class ContextUtilApp extends Application {
 
     @Override
     public void onCreate() {
-        Log.v(tag, "----app create----");
+        Log.v(tag, "----fish app create----");
         super.onCreate();
         instance = this;
     }

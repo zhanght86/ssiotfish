@@ -71,6 +71,8 @@ public class User{
             uModel._address = c.getString("Address");
             uModel._avatar = c.getString("Avatar");
             //TODO
+            uModel._parentid = c.getInt("ParentId");
+            uModel._usergroupid = c.getInt("UserGroupID");
             return uModel;
         } catch (SQLException e) {
             e.printStackTrace();

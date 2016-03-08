@@ -16,6 +16,7 @@ import android.widget.AdapterView;
 
 import com.ssiot.fish.facility.FishpondMainActivity;
 import com.ssiot.fish.question.QuestionListActivity;
+import com.ssiot.fish.task.TaskActivity;
 import com.ssiot.remote.BrowserActivity;
 import com.ssiot.remote.LoginActivity;
 import com.ssiot.remote.MainActivity;
@@ -39,6 +40,13 @@ public class FishMainActivity extends HeadActivity {
         mPref = PreferenceManager.getDefaultSharedPreferences(this);
         gridView1 = (GridView) findViewById(R.id.gridView1);
         initGridView();
+        
+//        int[] iii = {R.drawable.cell_cekong,R.drawable.cell_data,R.drawable.cell_hudongjiaoliu,R.drawable.cell_qiyehuizong,R.drawable.cell_renwuzhongxin,
+//                R.drawable.cell_shenchanguanli,R.drawable.cell_shichangdongtai,R.drawable.cell_video,R.drawable.cell_wuzijiaoyi,R.drawable.cell_yubingzhengduan
+//                ,R.drawable.cell_yuchangguanli,R.drawable.cell_zhengwuguanli,R.drawable.cell_zhuanjiazaixian};
+//        for (int i = 0; i < iii.length; i ++){
+//            Utils.changePic2(this,iii[i]);
+//        }
     }
     
     private void initGridView(){
@@ -90,12 +98,21 @@ public class FishMainActivity extends HeadActivity {
                 } else if ("专家在线".equals(model.itemText)){
                     
                 } else if ("生产管理".equals(model.itemText)){
-                    
+                    Intent intent = new Intent(FishMainActivity.this, ProductManageActivity.class);
+                    startActivity(intent);
+                } else if ("任务中心".equals(model.itemText)){
+                    Intent intent = new Intent(FishMainActivity.this, TaskActivity.class);
+                    startActivity(intent);
+                } else if ("物资交易".equals(model.itemText)){
+                    Intent intent = new Intent(FishMainActivity.this, BrowserActivity.class);
+                    intent.putExtra("url", "http://www.taobao.com");
+                    startActivity(intent);
                 } else if ("企业汇总".equals(model.itemText)){
                     Intent intent = new Intent(FishMainActivity.this, CompanyListActivity.class);
                     startActivity(intent);
                 } else if ("市场动态".equals(model.itemText)){
-                    
+                    Intent intent = new Intent(FishMainActivity.this, MarketNewsActivity.class);
+                    startActivity(intent);
                 }
             }
         }

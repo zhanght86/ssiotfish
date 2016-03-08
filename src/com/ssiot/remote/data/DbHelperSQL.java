@@ -5,7 +5,8 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Log;
 
-import com.ssiot.remote.ContextUtilApp;
+import com.ssiot.fish.ContextUtilApp;
+import com.ssiot.remote.Utils;
 import com.ssiot.remote.receiver.SsiotReceiver;
 
 import java.sql.Connection;
@@ -20,7 +21,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class DbHelperSQL{
-    private static final String tag = "DbHelperSQL";
+    private static final String tag = "DbHelperSQL_SSIOTFISH";
     private static DbHelperSQL mDbHelperSQL;
     private SqlConnection connection;
     private Object objlock = new Object();
@@ -368,7 +369,9 @@ public class DbHelperSQL{
                 Log.v(tag, "连接ssiot数据库成功");
             } catch (Exception e) {
                 e.printStackTrace();
-                toastmsg(MSGOPENFAIL);
+                if (!Utils.isBackground(ContextUtilApp.getInstance())){
+                    toastmsg(MSGOPENFAIL);//若后台运行失败，会一直弹出 TODO
+                }
                 return false;
             }
             return true;

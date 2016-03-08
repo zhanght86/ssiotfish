@@ -218,6 +218,8 @@ public class LoginActivity extends ActionBarActivity {
         e.putInt(Utils.PREF_AREAID, model._areaid);
         e.putString(Utils.PREF_ADDR, model._address);
         e.putString(Utils.PREF_AVATAR, model._avatar);
+        e.putInt(Utils.PREF_PARENTID, model._parentid);
+        e.putInt(Utils.PREF_GROUPID, model._usergroupid);
         e.commit();
     }
     

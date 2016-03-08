@@ -52,15 +52,11 @@ public class FishpondListActivity extends HeadActivity{
         
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipelist_layout);
         mRecyclerView = ((RecyclerView)LayoutInflater.from(this).inflate(R.layout.vertical_recycler_view, null));
-        Log.v(tag, "----------------------");
         swipeRefreshLayout.addView(mRecyclerView);
-        Log.v(tag, "------------------1");
         mRecyclerView.setHasFixedSize(true);
-        Log.v(tag, "------------------2");
         LinearLayoutManager bLinearLayoutManager = new LinearLayoutManager(this);
         bLinearLayoutManager.setOrientation(1);
         mRecyclerView.setLayoutManager(bLinearLayoutManager);
-        
         swipeRefreshLayout.setSize(SwipeRefreshLayout.DEFAULT);
         
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {

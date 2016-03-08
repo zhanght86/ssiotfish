@@ -130,17 +130,28 @@ public class DataAPI {
         if (objModel == null) {
             AreaModel area_mdl = new AreaModel();
             List<AreaModel> area_list = new ArrayList<AreaModel>();
-            area_mdl = bllarea.GetModel(areaid);
-            if (area_mdl != null) {
-                area_list = bllarea.GetSelfAndChildrenAreaByAreaCode(area_mdl._areacode);
+            if (areaid == 0){//管理员
+                area_list = bllarea.GetModelList(" 1=1");
+                if (area_list.size() > 0) {
+                    for (AreaModel a : area_list) {
+                        areaidsStr += a._areaid + ",";
+                    }
+                }
             } else {
-                areaidsStr = "" + areaid;
-            }
-            if (area_list.size() > 0) {
-                for (AreaModel a : area_list) {
-                    areaidsStr += a._areaid + ",";
+                area_mdl = bllarea.GetModel(areaid);
+                if (area_mdl != null) {
+                    area_list = bllarea.GetSelfAndChildrenAreaByAreaCode(area_mdl._areacode);
+                    if (area_list.size() > 0) {
+                        for (AreaModel a : area_list) {
+                            areaidsStr += a._areaid + ",";
+                        }
+                    }
+                } else {
+                    areaidsStr = "" + areaid;
                 }
             }
+            
+            
             if (!TextUtils.isEmpty(areaidsStr) && areaidsStr.contains(",")) {
                 areaidsStr = areaidsStr.trim();// trim(',')
             }

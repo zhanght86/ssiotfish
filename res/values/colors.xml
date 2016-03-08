@@ -61,6 +61,12 @@
 	<color name="otherSubTextColor">#ff777777</color>
 	<color name="DarkGreen">#ff2d8931</color>
 	<color name="aa">#ffaaaaaa</color>
+	<color name="c999999">#ff999999</color>
+	<color name="c777777">#ff777777</color>
+	<color name="bgColor">#fff0f0f0</color>
+	<color name="transparent">#00000000</color>
+	<color name="c333333">#ff333333</color>
+	<color name="itemPressColor">#ffc7d9bc</color>
 
 	
 <!-- 	copy 渔业通 还是农医生？？-->

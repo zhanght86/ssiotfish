@@ -1,12 +1,16 @@
 package com.ssiot.remote;
 
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,6 +29,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -47,6 +52,8 @@ public class Utils {
     public static final String PREF_AREAID = "areaid";
     public static final String PREF_ADDR = "address";
     public static final String PREF_AVATAR = "avatar";
+    public static final String PREF_PARENTID = "parentid";//ParentId
+    public static final String PREF_GROUPID = "groupid";
     
     public static final String PREF_AUTOUPDATE = "autoupdate";
     
@@ -154,6 +161,16 @@ public class Utils {
         return false;
     }
     
+    public static String getStrPref(String key, Context context){
+        SharedPreferences mPref = PreferenceManager.getDefaultSharedPreferences(context);
+        return mPref.getString(key, "");
+    }
+    
+    public static int getIntPref(String key, Context context){
+        SharedPreferences mPref = PreferenceManager.getDefaultSharedPreferences(context);
+        return mPref.getInt(key, -1);
+    }
+    
     public static void changePicture(Context c){
         BitmapDrawable b = (BitmapDrawable) c.getResources().getDrawable(R.drawable.video_rtsp_6);
         Bitmap img = b.getBitmap();
@@ -204,8 +221,9 @@ public class Utils {
         }
     }
     
-    public static void changePic2(Context c){
-        BitmapDrawable b = (BitmapDrawable) c.getResources().getDrawable(R.drawable.connect_fail_2);
+    public static void changePic2(Context c, int resID){
+//        BitmapDrawable b = (BitmapDrawable) c.getResources().getDrawableForDensity(resID,240);
+        BitmapDrawable b = (BitmapDrawable) c.getResources().getDrawable(resID);
         Bitmap img = b.getBitmap();
         int width = img.getWidth();         //获取位图的宽    
         int height = img.getHeight();       //获取位图的高    
@@ -228,14 +246,14 @@ public class Utils {
                 int a = ((grey  & 0xff000000 ) >> 24);  
                 
                 grey = a | (150 << 16 )| (150 <<8) | 150;
-                grey = (a<<24) | 0x999999;
+                grey = (a<<24) | 0xffffff;
                 pixels[width * i + j] = grey;
             }    
         }    
         Bitmap result = Bitmap.createBitmap(width, height, Config.ARGB_8888);
         result.setPixels(pixels, 0, width, 0, 0, width, height);
         
-        File f = new File("/sdcard/mmm3.png");
+        File f = new File("/sdcard/mmm"+resID+".png");
         try {
             FileOutputStream out = new FileOutputStream(f);
             result.compress(Bitmap.CompressFormat.PNG, 90, out);
@@ -310,5 +328,21 @@ public class Utils {
         return ret;
     }
     
+    public static boolean isBackground(Context context) {
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
+        for (RunningAppProcessInfo appProcess : appProcesses) {
+             if (appProcess.processName.equals(context.getPackageName())) {
+                    if (appProcess.importance == RunningAppProcessInfo.IMPORTANCE_BACKGROUND) {
+                              Log.i("后台", appProcess.processName);
+                              return true;
+                    }else{
+                              Log.i("前台", appProcess.processName);
+                              return false;
+                    }
+               }
+        }
+        return false;
+    }
     
 }

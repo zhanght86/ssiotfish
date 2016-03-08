@@ -29,7 +29,7 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:name="com.ssiot.remote.ContextUtilApp"
+        android:name="com.ssiot.fish.ContextUtilApp"
         android:theme="@style/AppTheme" >
         
         <meta-data
@@ -208,9 +208,53 @@
             android:name=".CompanyListActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait" />
+        
+        <activity
+            android:name=".MarketNewsActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+        
+        <activity
+            android:name=".ProductManageActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+        
+        <activity
+            android:name=".product.ProductEditActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".product.ProductListActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+        
+        <activity
+            android:name=".product.FishEditActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+        
+        <activity
+            android:name=".task.TaskActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".task.TaskNewActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".task.TaskReceiverAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".task.TaskGetDetailAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".task.TaskReportNewAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
 
     </application>
-    
     
 
 </manifest>

@@ -11,9 +11,13 @@
 <!--     //copy慧云 -->
 <dimen name="MarginMini">5.0dip</dimen>
      <dimen name="subMenuHeight">42.0dip</dimen>
+     <dimen name="mainMargin">8.0dip</dimen>
      <dimen name="Margin">16.0dip</dimen>
+     <dimen name="Margin8">8.0dip</dimen>
      <dimen name="Margin10">10.0dip</dimen>
      <dimen name="Margin12">12.0dip</dimen>
+     <dimen name="Margin20">20.0dip</dimen>
+     <dimen name="Margin16">16.0dip</dimen>
      <dimen name="Margin18">18.0dip</dimen>
      <dimen name="itemTitle">16.0dip</dimen>
      <dimen name="itemContent">14.0dip</dimen>
@@ -22,6 +26,17 @@
      <dimen name="msg_content">17.0dip</dimen>
 <!--      需要不同的值 -->
      <dimen name="titleHeight">48.0dip</dimen>
+     
+     <dimen name="MarginSmall">10.0dip</dimen>
+     <dimen name="msgHight">42.0dip</dimen>
+     <dimen name="MarginTop">12.0dip</dimen>
+     <dimen name="contentHeigh">150.0dip</dimen>
+     <dimen name="contentPadding">5.0dip</dimen>
+     <dimen name="divider">1.0px</dimen>
+     <dimen name="hintSize">14.0dip</dimen>
+     <dimen name="statistics_text_size">16.0dip</dimen>
+     <dimen name="mainImgMargin">16.0dip</dimen>
+     <dimen name="titleSize">19.0dip</dimen>
 
      
      
