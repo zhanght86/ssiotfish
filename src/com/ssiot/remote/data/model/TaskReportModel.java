@@ -14,6 +14,8 @@ public class TaskReportModel{
     public String _contenttext;
     public boolean _isfinish;
     public String _replytext;
-    
     public int _userid;
+    
+    public String _username;
+    
 }

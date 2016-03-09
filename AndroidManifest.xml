@@ -146,7 +146,7 @@
         <receiver
             android:name="com.ssiot.remote.receiver.SsiotReceiver" >
             <intent-filter>
-                <action android:name="com.ssiot.remote.SHOWMSG" />
+                <action android:name="com.ssiot.fish.SHOWMSG" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

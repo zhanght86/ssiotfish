@@ -39,7 +39,7 @@ import java.util.List;
 import com.ssiot.fish.R;
 
 public class SsiotService extends Service{
-    private static final String tag = "SsiotService";
+    private static final String tag = "SsiotServiceFish";
     private static int NOTIFICATION_ID = 101;
     private ControlActionInfo controlActionInfoBll = new ControlActionInfo();
     private LiveData liveDataBll = new LiveData();
@@ -79,7 +79,7 @@ public class SsiotService extends Service{
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.v(tag, "-------------onStartCommand---------------");
         cancel = false;
-        if (!mWorker.isAlive() && isLogedIn()){
+        if (!mWorker.isAlive() && isLogedIn() && Utils.getBooleabPref(Utils.PREF_ALARM, this)){
             mWorker.start();//TODO
         }
         return super.onStartCommand(intent, flags, startId);

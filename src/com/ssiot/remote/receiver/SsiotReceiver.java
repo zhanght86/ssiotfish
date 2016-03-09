@@ -7,10 +7,11 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.ssiot.remote.SsiotService;
+import com.ssiot.remote.Utils;
 
 public class SsiotReceiver extends BroadcastReceiver{
-    private static final String tag = "SsiotReceiver";
-    public static final String ACTION_SSIOT_MSG = "com.ssiot.remote.SHOWMSG";
+    private static final String tag = "SsiotReceiverFish";
+    public static final String ACTION_SSIOT_MSG = "com.ssiot.fish.SHOWMSG";
     static final String BOOTACTION = "android.intent.action.BOOT_COMPLETED";
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -23,8 +24,10 @@ public class SsiotReceiver extends BroadcastReceiver{
             Log.v(tag, "----onReceive----" +extraString);
             Toast.makeText(context, extraString + "，请检查网络后重试。", Toast.LENGTH_SHORT).show();
         } else if (BOOTACTION.equals(action)){
-            Intent myintent = new Intent(context, SsiotService.class);
-            context.startService(myintent);
+            if (Utils.getBooleabPref(Utils.PREF_ALARM, context)){
+                Intent myintent = new Intent(context, SsiotService.class);
+                context.startService(myintent);
+            }
         }
     }
 }

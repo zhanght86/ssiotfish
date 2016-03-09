@@ -56,6 +56,7 @@ public class Utils {
     public static final String PREF_GROUPID = "groupid";
     
     public static final String PREF_AUTOUPDATE = "autoupdate";
+    public static final String PREF_ALARM = "alarm";
     
     public static final String BUN_DEVICE_NAMES = "devicenames";
     public static final String BUN_DEVICE_NOS = "devicenos";
@@ -126,6 +127,12 @@ public class Utils {
         return formatter.format(d);
     }
     
+    public static String formatTime(Timestamp ts){
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Date d = new Date(ts.getTime());
+        return formatter.format(d);
+    }
+    
     public static Dialog createLoadingDialog(Context context, String msg) {  
         LayoutInflater inflater = LayoutInflater.from(context);  
         View v = inflater.inflate(R.layout.dialog_loading, null);// 得到加载view  
@@ -169,6 +176,15 @@ public class Utils {
     public static int getIntPref(String key, Context context){
         SharedPreferences mPref = PreferenceManager.getDefaultSharedPreferences(context);
         return mPref.getInt(key, -1);
+    }
+    
+    public static boolean getBooleabPref(String key, Context context){
+        SharedPreferences mPref = PreferenceManager.getDefaultSharedPreferences(context);
+        boolean defal = false;
+        if (PREF_ALARM.equals(key)){
+            defal = true;
+        }
+        return mPref.getBoolean(key, defal);
     }
     
     public static void changePicture(Context c){

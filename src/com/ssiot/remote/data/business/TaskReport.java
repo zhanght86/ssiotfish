@@ -38,8 +38,24 @@ public class TaskReport{
         strSql.append("select * ");
         strSql.append(" FROM cms2016.dbo.TaskReport ");
         if (strWhere.trim() != "") {
-            strSql.append(" where " + strWhere);
+            strSql.append(" where " + strWhere + " order by CreateTime desc");
         }
+        SsiotResult sResult = DbHelperSQL.getInstance().Query(strSql.toString());
+        List<TaskReportModel> list = null;
+        if (null != sResult && sResult.mRs != null){
+            list = DataTableToList(sResult.mRs);
+        }
+        if (null != sResult){
+            sResult.close();
+        }
+        return list;
+    }
+    
+    public List<TaskReportModel> GetModelViewList(String wherestr) {//把用户名从USer表里查出来了
+        StringBuilder strSql = new StringBuilder();
+        strSql.append("select iot_user.UserName,t.* from " +
+                "(select * from cms2016.dbo.TaskReport where "+ wherestr+") as t inner join iot2014.dbo.iot_user on t.UserID=iot_User.UserID " +
+                		"order by CreateTime desc");
         SsiotResult sResult = DbHelperSQL.getInstance().Query(strSql.toString());
         List<TaskReportModel> list = null;
         if (null != sResult && sResult.mRs != null){
@@ -83,6 +99,11 @@ public class TaskReport{
             m._isfinish = c.getBoolean("Finish");
             m._replytext = c.getString("ReplyText");
             m._userid = c.getInt("UserID");
+            try {
+                m._username = c.getString("UserName");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             return m;
         } catch (SQLException e) {
             e.printStackTrace();

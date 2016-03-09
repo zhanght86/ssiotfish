@@ -137,7 +137,8 @@
                 <TableRow
                     style="@style/setItemTopBg"
                     android:layout_width="fill_parent"
-                    android:layout_height="wrap_content" >
+                    android:layout_height="wrap_content"
+                    android:visibility="gone" >
 
                     <TextView
                         style="@style/ItemTitleText"
@@ -315,13 +316,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/setMaginLeft"
-                android:text="附件上传" />
+                android:text="附件上传"
+                android:visibility="gone" />
 
             <include
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/Margin12"
-                layout="@layout/appendix_more1" />
+                layout="@layout/appendix_more1"
+                android:visibility="gone" />
         </LinearLayout>
     </ScrollView>
 

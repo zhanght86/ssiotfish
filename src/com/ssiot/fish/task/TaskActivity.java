@@ -201,12 +201,12 @@ public class TaskActivity extends HeadActivity{
         @Override
         public void run() {
             String mUserID = "" + Utils.getIntPref(Utils.PREF_USERID, TaskActivity.this);
-            List<TaskCenterModel> list = new TaskCenter().GetModelList(" UserID=" + mUserID);
+            List<TaskCenterModel> list = new TaskCenter().GetModelViewList(" UserID=" + mUserID);//我下发的任务
             if (null != list && list.size() > 0){
                 mSendTasks.clear();
                 mSendTasks.addAll(list);
             }
-            List<TaskCenterModel> list2 = new TaskCenter().GetModelList(" ToUsersID like '%:" + mUserID + "}%'");//[{"to",129}]
+            List<TaskCenterModel> list2 = new TaskCenter().GetModelViewList(" ToUsersID like '%:" + mUserID + "}%'");//[{"to",129}]
             if (null != list2 && list2.size() > 0){
                 mGetTasks.clear();
                 mGetTasks.addAll(list2);
@@ -255,7 +255,7 @@ public class TaskActivity extends HeadActivity{
 
         public void fillData(TaskCenterModel model){
             mod = model;
-            mTitleView.setText("来自:"+model._userid);
+            mTitleView.setText("来自:"+model._username);
             mContentView.setText(model._contenttext);
         }
 

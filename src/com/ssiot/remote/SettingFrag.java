@@ -156,7 +156,7 @@ public class SettingFrag extends Fragment{
             }
         });
         CheckBox cb = (CheckBox) v.findViewById(R.id.alarm_switch);
-        cb.setChecked(mPref.getBoolean("alarm", true));
+        cb.setChecked(mPref.getBoolean(Utils.PREF_ALARM, true));
         cb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {

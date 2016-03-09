@@ -6,6 +6,7 @@ import com.ssiot.remote.data.model.TaskCenterModel;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +38,14 @@ public class TaskCenter{
         return DbHelperSQL.getInstance().Update(cmd) > 0;
     }
     
+    public boolean UpdateState_2(int id, int state,Timestamp ts){//TODO sql function getDate()//时间可以用此字符串2016-03-09 16:04:32.87
+        String cmd = "update cms2016.dbo.TaskCenter set State=2,ReceivedTime=getDate() where ID=" + id;
+        ArrayList<Object> params = new ArrayList<Object>();
+        params.add(state);
+        params.add(ts);
+        return DbHelperSQL.getInstance().Update(cmd) > 0;
+    }
+    
     public List<TaskCenterModel> GetModelList(String strWhere) {
         StringBuilder strSql = new StringBuilder();
         strSql.append("select * ");
@@ -44,6 +53,25 @@ public class TaskCenter{
         if (strWhere.trim() != "") {
             strSql.append(" where " + strWhere);
         }
+        SsiotResult sResult = DbHelperSQL.getInstance().Query(strSql.toString());
+        List<TaskCenterModel> list = null;
+        if (null != sResult && sResult.mRs != null){
+            list = DataTableToList(sResult.mRs);
+        }
+        if (null != sResult){
+            sResult.close();
+        }
+        return list;
+    }
+    
+//    方法1 select iot_user.Account,TaskCenter.* from cms2016.dbo.TaskCenter  
+//    inner join iot2014.dbo.iot_user  on   taskcenter.userid=67 and TaskCenter.UserID=iot_User.UserID
+//    方法2 select iot_user.Account,t.* from 
+//    (select * from cms2016.dbo.TaskCenter where userid=67 ) as t inner join iot2014.dbo.iot_user  on  t.UserID=iot_User.UserID
+    public List<TaskCenterModel> GetModelViewList(String wherestr) {
+        StringBuilder strSql = new StringBuilder();
+        strSql.append("select iot_user.UserName,t.* from " +
+        		"(select * from cms2016.dbo.TaskCenter where "+ wherestr+") as t inner join iot2014.dbo.iot_user on t.UserID=iot_User.UserID");
         SsiotResult sResult = DbHelperSQL.getInstance().Query(strSql.toString());
         List<TaskCenterModel> list = null;
         if (null != sResult && sResult.mRs != null){
@@ -86,6 +114,12 @@ public class TaskCenter{
             m._needimg = c.getBoolean("NeedImg");
             m._needlocation = c.getBoolean("NeedLocation");
             m._state = c.getInt("State");
+            m._receivedtime = c.getTimestamp("ReceivedTime");
+            try {//没查询user表时，return不能为空
+                m._username = c.getString("UserName");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             return m;
         } catch (SQLException e) {
             e.printStackTrace();

@@ -26,8 +26,7 @@
             android:background="@drawable/green_action_btn_select"
             android:clickable="true"
             android:drawableLeft="@drawable/ic_actionbar_send"
-            android:onClick="Send"
-            android:text="@id/textViewSend" />
+            android:text="发送" />
     </RelativeLayout>
 
     <ScrollView
@@ -46,75 +45,6 @@
                 android:layout_marginLeft="@dimen/Margin"
                 android:layout_marginRight="@dimen/Margin"
                 android:orientation="vertical" >
-
-                <LinearLayout
-                    android:id="@+id/LinearLayoutAckCycle"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:visibility="gone" >
-
-                    <LinearLayout
-                        style="@style/setItemTopBg"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/Margin"
-                        android:gravity="center_vertical"
-                        android:padding="@dimen/Margin" >
-
-                        <TextView
-                            android:id="@+id/TextViewNextName"
-                            style="@style/ItemTitleText"
-                            android:layout_width="fill_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1.0"
-                            android:text="进入周期任务" />
-
-                        <TextView
-                            android:id="@+id/textViewAckCycle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="@dimen/MarginMini"
-                            android:layout_marginRight="@dimen/MarginMini"
-                            android:text="不" />
-
-                        <ToggleButton
-                            android:id="@+id/toggleButtonAckCycle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/set_toggle"
-                            android:focusable="false"
-                            android:tag="0"
-                            android:textOff=""
-                            android:textOn="" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        style="@style/setItemBottomBg"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:padding="@dimen/Margin" >
-
-                        <TextView
-                            android:id="@+id/TextViewNextTime"
-                            style="@style/ItemTitleText"
-                            android:layout_width="fill_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1.0"
-                            android:text="进入周期任务时间" />
-
-                        <TextView
-                            android:id="@+id/TextViewStartAckCycle"
-                            style="@style/SetContentText"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:drawablePadding="@dimen/Margin10"
-                            android:drawableRight="@drawable/arrow_right_light"
-                            android:gravity="center"
-                            android:tag="start" />
-                    </LinearLayout>
-                </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/LinearLayoutHasFertilizes"
@@ -271,7 +201,7 @@
                     android:layout_marginTop="@dimen/Margin"
                     android:background="@drawable/bg_radius10"
                     android:gravity="center_vertical"
-                    android:visibility="visible" >
+                    android:visibility="gone" >
 
 <!--                     <unit.FixedGridLayout -->
 <!--                         android:id="@+id/linearLayoutPho" -->
@@ -292,26 +222,26 @@
                         android:textSize="@dimen/itemContent" />
                 </LinearLayout>
 
-<!--                 <LinearLayout -->
-<!--                     android:id="@+id/linearLayoutLocation" -->
-<!--                     android:layout_width="fill_parent" -->
-<!--                     android:layout_height="wrap_content" -->
-<!--                     android:layout_marginTop="@dimen/Margin" -->
-<!--                     android:background="@drawable/bg_input_select" -->
-<!--                     android:padding="@dimen/contentPadding" -->
-<!--                     android:visibility="gone" > -->
+                <LinearLayout
+                    android:id="@+id/linearLayoutLocation"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/Margin"
+                    android:background="@drawable/bg_input_select"
+                    android:padding="@dimen/contentPadding"
+                    android:visibility="gone" >
 
-<!--                     <TextView -->
-<!--                         android:id="@+id/textViewLocation" -->
-<!--                         android:layout_width="fill_parent" -->
-<!--                         android:layout_height="wrap_content" -->
-<!--                         android:layout_gravity="center|left" -->
-<!--                         android:drawableLeft="@drawable/ic_task_location" -->
-<!--                         android:gravity="center_vertical" -->
-<!--                         android:text="\u0009点击获取位置信息" -->
-<!--                         android:textColor="@color/aa" -->
-<!--                         android:textSize="@dimen/itemContent" /> -->
-<!--                 </LinearLayout> -->
+                    <TextView
+                        android:id="@+id/textViewLocation"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center|left"
+                        android:drawableLeft="@drawable/ic_task_location"
+                        android:gravity="center_vertical"
+                        android:text=""
+                        android:textColor="@color/aa"
+                        android:textSize="@dimen/itemContent" />
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="fill_parent"
@@ -345,39 +275,6 @@
                         android:background="@drawable/divide_ccc" />
 
 <!--                     <include layout="@layout/op_menu_task_new" /> -->
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/LinearLayoutReply"
-                    style="@style/setItemTopBg"
-                    android:layout_width="fill_parent"
-                    android:layout_height="@dimen/titleHeight"
-                    android:gravity="center_vertical" >
-
-                    <TextView
-                        style="@style/ItemTitleText"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1.0"
-                        android:text="私信汇报" />
-
-                    <TextView
-                        android:id="@+id/textViewReply"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/MarginMini"
-                        android:layout_marginRight="@dimen/MarginMini"
-                        android:text="不" />
-
-                    <ToggleButton
-                        android:id="@+id/toggleButtonReply"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/set_toggle"
-                        android:focusable="false"
-                        android:tag="0"
-                        android:textOff=""
-                        android:textOn="" />
                 </LinearLayout>
 
                 <LinearLayout

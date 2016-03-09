@@ -3,7 +3,10 @@ package com.ssiot.fish.task;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -17,15 +20,20 @@ import com.ssiot.fish.HeadActivity;
 import com.ssiot.fish.R;
 import com.ssiot.remote.Utils;
 import com.ssiot.remote.data.business.TaskCenter;
+import com.ssiot.remote.data.business.TaskReport;
+import com.ssiot.remote.data.business.User;
 import com.ssiot.remote.data.model.TaskCenterModel;
 import com.ssiot.remote.data.model.TaskReportModel;
+import com.ssiot.remote.data.model.UserModel;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class TaskGetDetailAct extends HeadActivity {
+    private static final String tag = "TaskGetDetailAct";
     View infoView;
     TableRow frameRow;
     TextView frameNameTextView;
@@ -45,14 +53,38 @@ public class TaskGetDetailAct extends HeadActivity {
     ListView reportListView;
 
     TaskCenterModel taskModel;
+    List<TaskReportModel> reportList = new ArrayList<TaskReportModel>();
+    
+    private static final int MSG_GET_TASK_INFO = 1;
+    private static final int MSG_STATE_CHANGE_END = 2;
+    private Handler mHandler = new Handler(){
+        public void handleMessage(android.os.Message msg) {
+            switch (msg.what) {
+                case MSG_GET_TASK_INFO:
+                    setvalue();
+                    initTitleBar(taskModel._state);
+                    break;
+                case MSG_STATE_CHANGE_END:
+                    if ((Boolean) msg.obj){
+                        setvalue();
+                        initTitleBar(2);
+                    }
+                    break;
+
+                default:
+                    break;
+            }
+        };
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         taskModel = (TaskCenterModel) getIntent().getSerializableExtra("taskcentermodel");
         initView();
-        setvalue();
-        initTitleBar();
+//        setvalue();//after thread
+        new GetTaskDetailThread(taskModel._id).start();
+        
     }
 
     private void initView() {
@@ -63,7 +95,7 @@ public class TaskGetDetailAct extends HeadActivity {
         // ((TableRow)infoView.findViewById(R.id.TableRowFrame));//任务园区
         // frameNameTextView =
         // ((TextView)infoView.findViewById(R.id.textViewFrameName));
-        sourceTextView = ((TextView) infoView.findViewById(R.id.textViewSource));// 任务来源
+//        sourceTextView = ((TextView) infoView.findViewById(R.id.textViewSource));// 任务来源
         // appendixLayout =
         // ((LinearLayout)infoView.findViewById(R.id.LinearLayoutAppendix));//附件
         // appendixRow =
@@ -102,8 +134,7 @@ public class TaskGetDetailAct extends HeadActivity {
         contentLayout = ((LinearLayout) infoView.findViewById(R.id.linearLayoutContent));// 即详细
         contentLayout.setOnClickListener(listener);
         contentTextView = ((TextView) infoView.findViewById(R.id.textViewContent));
-        reportListView = ((ListView) findViewById(R.id.listViewReport));// PullHeaderListView
-                                                                        // TODO
+        reportListView = ((ListView) findViewById(R.id.listViewReport));
         cTitleTextView = ((TextView) infoView.findViewById(R.id.textViewContentTitle));// 汇报
                                                                                        // 无汇报
         reportTextView = ((TextView) findViewById(R.id.textViewReport));// 写汇报按钮
@@ -113,39 +144,50 @@ public class TaskGetDetailAct extends HeadActivity {
     }
 
     private void setvalue() {
-        if (taskModel._state < 2){
+        
+        if (taskModel._state < 2 && isReceiver()){//状态是新建时才显示。只有接受者才能操作这个，
             getLayout.setVisibility(View.VISIBLE);
+            timeView.setText("未接收");
         } else {
             getLayout.setVisibility(View.GONE);
+            if (null != taskModel._receivedtime){
+                timeView.setText(Utils.formatTime(taskModel._receivedtime));
+            } else {
+                Log.e(tag, "----------_receivedtime==null");
+            }
         }
-        sourceTextView.setText(""+taskModel._userid);
+        senderTextView.setText(taskModel._username);//发起者
+//        sourceTextView.setText(""+taskModel._userid);//任务来源
         TextView mReciverView = (TextView) infoView.findViewById(R.id.textViewReFirstExe);
-        mReciverView.setText(taskModel._tousers);
-        startTimeTextView.setText(formatTime(taskModel._starttime));
-        endTimeTextView.setText(formatTime(taskModel._endtime));
+        mReciverView.setText(taskModel._parsedReceiverNames);//分配给
+        startTimeTextView.setText(Utils.formatTime(taskModel._starttime));
+        endTimeTextView.setText(Utils.formatTime(taskModel._endtime));
         contentTextView.setText(taskModel._contenttext);
+        cTitleTextView.setText(reportList.size() > 0 ? "汇报" : "无汇报");
         
-        ArrayList<TaskReportModel> datas = new ArrayList<TaskReportModel>();
-        TaskReportAdapter adapter = new TaskReportAdapter(TaskGetDetailAct.this, datas);
+        TaskReportAdapter adapter = new TaskReportAdapter(TaskGetDetailAct.this, reportList);
         reportListView.setAdapter(adapter);
     }
     
-    private void initTitleBar(){
+    private void initTitleBar(int state){
         TextView titleRight = (TextView) findViewById(R.id.title_bar_right);
-        if (taskModel._state < 2){
-            titleRight.setText("请queren");//TODO
+        if (state < 2 || !isReceiver()){
+            titleRight.setVisibility(View.GONE);
+//            titleRight.setText("请queren");//TODO
         } else {
+            titleRight.setVisibility(View.VISIBLE);
             titleRight.setText("写汇报");
+            titleRight.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(TaskGetDetailAct.this, TaskReportNewAct.class);
+                    intent.putExtra("taskcentermodel", taskModel);
+//                    intent.putExtra("taskid", taskModel._id);
+                    startActivityForResult(intent, REQUEST_NEW_REPORT);
+                }
+            });
         }
         
-//        titleRight.setBackgroundResource(R.id.)
-        titleRight.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(TaskGetDetailAct.this, TaskReportNewAct.class);
-                startActivity(intent);
-            }
-        });
         TextView titleLeft = (TextView) findViewById(R.id.title_bar_left);
         titleLeft.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -155,12 +197,26 @@ public class TaskGetDetailAct extends HeadActivity {
         });
     }
     
-    private String formatTime(Timestamp ts){
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        Date d = new Date(ts.getTime());
-        return formatter.format(d);
+    private boolean isReceiver(){
+        int myuserid = Utils.getIntPref(Utils.PREF_USERID, this);
+        return taskModel._tousers.contains(":"+myuserid + "}");
     }
+    
+    private static final int REQUEST_NEW_REPORT = 1;
+    @Override
+    protected void onActivityResult(int requestcode, int resultcode, Intent intent) {
+        switch (requestcode) {
+            case REQUEST_NEW_REPORT:
+                if (RESULT_OK == resultcode) {
+                    new GetTaskDetailThread(taskModel._id).start();//TODO
+                }
+                break;
 
+            default:
+                break;
+        }
+    }
+    
     View.OnClickListener listener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -169,7 +225,14 @@ public class TaskGetDetailAct extends HeadActivity {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            new TaskCenter().UpdateState(taskModel._id, 2);
+                            boolean ret = new TaskCenter().UpdateState_2(taskModel._id, 2,new Timestamp(System.currentTimeMillis()));
+                            List<TaskCenterModel> tasks = new TaskCenter().GetModelViewList(" ID=" + taskModel._id);
+                            if (null != tasks && tasks.size() > 0){
+                                taskModel = tasks.get(0);
+                            }
+                            Message msg = mHandler.obtainMessage(MSG_STATE_CHANGE_END);
+                            msg.obj = ret;
+                            mHandler.sendMessage(msg);
                         }
                     }).start();
                     
@@ -180,4 +243,37 @@ public class TaskGetDetailAct extends HeadActivity {
             }
         }
     };
+    
+    private class GetTaskDetailThread extends Thread{
+        private int id;
+        public GetTaskDetailThread(int taskid){
+            this.id = taskid;
+        }
+        @Override
+        public void run() {
+            List<TaskCenterModel> list = new TaskCenter().GetModelViewList(" ID=" + id);
+            if (null != list && list.size() > 0){
+                taskModel = list.get(0);
+                String tos = taskModel.getToUsersStr();
+                if (!TextUtils.isEmpty(tos)){
+                    List<UserModel> userlist = new User().GetModelList(" UserID in (" +tos+ ")");
+                    String receiverNames = "";
+                    if (null != userlist){
+                        for (int i = 0; i < userlist.size(); i ++){
+                            receiverNames += userlist.get(i)._username + " ";
+                        }
+                        taskModel._parsedReceiverNames = receiverNames;//任务接受者的名称
+                    }
+                }
+                
+                List<TaskReportModel> reportLi = new TaskReport().GetModelViewList(" TaskID=" + taskModel._id);
+                reportList.clear();
+                if (null != reportLi){
+                    reportList.addAll(reportLi);
+                }
+                mHandler.sendEmptyMessage(MSG_GET_TASK_INFO);
+            }
+            
+        }
+    }
 }
