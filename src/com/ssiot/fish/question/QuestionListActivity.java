@@ -64,7 +64,7 @@ public class QuestionListActivity extends HeadActivity{
     private class GetQuestionThread extends Thread{
         @Override
         public void run() {
-            List<QuestionModel> list = new Question().GetPageList(currentPages);
+            List<QuestionModel> list = new Question().GetPageViewList(currentPages);
             if (null != list){
                 questions.clear();
                 questions.addAll(list);
@@ -75,7 +75,7 @@ public class QuestionListActivity extends HeadActivity{
     
     private void loadMore(){
         currentPages ++;
-        List<QuestionModel> list = new Question().GetPageList(currentPages);
+        List<QuestionModel> list = new Question().GetPageViewList(currentPages);
         if (null != list){
             questions.addAll(list);//TODO 重复
         }

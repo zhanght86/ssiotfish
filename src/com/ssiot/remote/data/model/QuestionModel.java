@@ -14,4 +14,7 @@ public class QuestionModel implements Serializable{
     public float _longitude;
     public float _latitude;
     public int _replyCount;
+    public int _type = 1;//1 普通问题，2=其他问题，3....
+    
+    public String _username;//只有在getpageviewlist中有
 }

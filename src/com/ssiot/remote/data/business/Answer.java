@@ -47,6 +47,21 @@ public class Answer{
         return list;
     }
     
+//    public List<AnswerModel> GetModelViewList(String strWhere) {//把用户的地址信息也联合查询出来
+//        StringBuilder strSql = new StringBuilder();
+//        strSql.append("select iot_user.Address,t.* from " +
+//                "(select * from Answer where "+ strWhere+") as t inner join iot2014.dbo.iot_user on t.UserID=iot_User.UserID");
+//        SsiotResult sResult = DbHelperSQL.getInstance().Query(strSql.toString());
+//        List<AnswerModel> list = null;
+//        if (null != sResult && sResult.mRs != null){
+//            list = DataTableToList(sResult.mRs);
+//        }
+//        if (null != sResult){
+//            sResult.close();
+//        }
+//        return list;
+//    }
+    
     public List<AnswerModel> DataTableToList(ResultSet c){
         List<AnswerModel> models = new ArrayList<AnswerModel>();
         AnswerModel m = new AnswerModel();

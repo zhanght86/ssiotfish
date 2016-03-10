@@ -123,6 +123,11 @@ public class QuestionCardView extends BaseCardView
         hAskTitleTextView.setText(modelData._title.toString());
         iContentTextView.setText(modelData._contentText);
         mCountTextView.setText(""+modelData._replyCount);
+        if (modelData._type == 2){
+            guanfangView.setVisibility(View.VISIBLE);
+        } else {
+            guanfangView.setVisibility(View.GONE);
+        }
         if (!TextUtils.isEmpty(modelData._addr)){
             nAddrView.setText(modelData._addr);
         }

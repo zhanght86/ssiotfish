@@ -35,8 +35,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_toRightOf="@id/question_detail_card_av"
-            android:text="2015"
+            android:layout_alignParentRight="true"
+            android:text="2015-01-01"
             android:textColor="@color/master_card_time_color"
             android:textSize="@dimen/textsize_h4" />
 
@@ -52,8 +52,8 @@
             android:singleLine="true"
             android:text="农医生网友"
             android:textColor="@color/master_text_color_1"
-            android:textSize="@dimen/textsize_h1"
-            android:visibility="gone" />
+            android:textSize="@dimen/textsize_h3"
+            android:visibility="visible" />
 
         <TextView
             android:id="@+id/ask_card_delete"

@@ -349,12 +349,13 @@ public class Utils {
         List<RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
         for (RunningAppProcessInfo appProcess : appProcesses) {
              if (appProcess.processName.equals(context.getPackageName())) {
-                    if (appProcess.importance == RunningAppProcessInfo.IMPORTANCE_BACKGROUND) {
-                              Log.i("后台", appProcess.processName);
-                              return true;
-                    }else{
-                              Log.i("前台", appProcess.processName);
+                    if (appProcess.importance == RunningAppProcessInfo.IMPORTANCE_FOREGROUND ||
+                            appProcess.importance == RunningAppProcessInfo.IMPORTANCE_VISIBLE) {
+                              Log.i("前台", appProcess.processName + " "+  appProcess.importance);
                               return false;
+                    }else{
+                        Log.i("后台", appProcess.processName + appProcess.importance);
+                        return true;
                     }
                }
         }

@@ -127,6 +127,7 @@ public class QuestionNewActivity extends Activity{
                 model._title = questionTitle.getText().toString();
                 model._contentText = questionContent.getText().toString();
                 model._createTime = new Timestamp(System.currentTimeMillis());
+                model._type = 1;
                 if (null != mLocation){
                     model._addr = addr;
                     model._longitude = (float) mLocation.getLongitude();

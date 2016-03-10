@@ -95,8 +95,9 @@ public class FishMainActivity extends HeadActivity {
                 } else if ("渔场管理".equals(model.itemText)){
                     Intent intent = new Intent(FishMainActivity.this, FishpondMainActivity.class);
                     startActivity(intent);
-                } else if ("专家在线".equals(model.itemText)){
-                    
+                } else if ("专家在线".equals(model.itemText)){//专家在线只是问题类别不同
+                    Intent intent = new Intent(FishMainActivity.this, QuestionListActivity.class);
+                    startActivity(intent);
                 } else if ("生产管理".equals(model.itemText)){
                     Intent intent = new Intent(FishMainActivity.this, ProductManageActivity.class);
                     startActivity(intent);

@@ -15,9 +15,9 @@ public class Question{
     public int Add(QuestionModel model){
         StringBuilder strSql = new StringBuilder();
         strSql.append("insert into Question(");
-        strSql.append("UserID,Title,ContentText,CreateTime,PicUrls,Addr,LongiTude,Latitude,ReplyCount)");
+        strSql.append("UserID,Title,ContentText,CreateTime,PicUrls,Addr,LongiTude,Latitude,ReplyCount,QuestionType)");
         strSql.append(" values (");
-        strSql.append("?,?,?,?,?,?,?,?,?) ");
+        strSql.append("?,?,?,?,?,?,?,?,?,?) ");
         strSql.append(";select @@IDENTITY");
         
         ArrayList<Object> parameters = new ArrayList<Object>();
@@ -30,6 +30,7 @@ public class Question{
         parameters.add(model._longitude);
         parameters.add(model._latitude);
         parameters.add(model._replyCount);
+        parameters.add(model._type);
         return DbHelperSQL.getInstance().Update_object(strSql.toString(), parameters);
     }
     
@@ -55,6 +56,24 @@ public class Question{
         }
         return list;
     }
+    
+    public List<QuestionModel> GetPageViewList(int pageIndex){//与iot_User表联合查询
+        StringBuilder builder = new StringBuilder();
+        builder.append("select iot_user.UserName,questmp.* from ");
+        String sql = "select * from (select ROW_NUMBER() OVER (order by T.ID desc) AS ROW,T.* FROM Question T)TT "+
+                "WHERE TT.ROW between " + (pageIndex * 10 + 1) + " and " + (pageIndex * 10 + 10);
+        builder.append("(" + sql + ") as questmp ");
+        builder.append("left join iot2014.dbo.iot_user on questmp.UserID=iot_User.UserID");//left join 以左表为准
+        SsiotResult sResult = DbHelperSQL.getInstance().Query(builder.toString());
+        List<QuestionModel> list = null;
+        if (null != sResult && sResult.mRs != null) {
+            list = DataTableToList(sResult.mRs);
+        }
+        if (null != sResult) {
+            sResult.close();
+        }
+        return list;
+  }
     
     public List<QuestionModel> GetModelList(String strWhere) {
         StringBuilder strSql = new StringBuilder();
@@ -104,6 +123,13 @@ public class Question{
             m._longitude = c.getFloat("LongiTude");
             m._latitude = c.getFloat("LatiTude");
             m._replyCount = c.getInt("ReplyCount");
+            m._type = c.getInt("QuestionType");
+            try {
+                m._username = c.getString("UserName");
+            } catch (Exception e) {
+//                c.findColumn(columnName)
+                e.printStackTrace();
+            }
             return m;
         } catch (SQLException e) {
             e.printStackTrace();
