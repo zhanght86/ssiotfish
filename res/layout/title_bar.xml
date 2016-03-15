@@ -3,7 +3,7 @@
     android:id="@+id/title_bar_root"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:background="@color/master_title_bar_color" >
+    android:background="@color/DarkGreen" >
 
     <View
         android:id="@+id/translate_header"

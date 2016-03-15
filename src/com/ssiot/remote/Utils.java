@@ -54,6 +54,7 @@ public class Utils {
     public static final String PREF_AVATAR = "avatar";
     public static final String PREF_PARENTID = "parentid";//ParentId
     public static final String PREF_GROUPID = "groupid";
+    public static final String PREF_USERTYPE = "usertype";
     
     public static final String PREF_AUTOUPDATE = "autoupdate";
     public static final String PREF_ALARM = "alarm";

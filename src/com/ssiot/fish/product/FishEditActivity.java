@@ -57,6 +57,7 @@ public class FishEditActivity extends HeadActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        hideActionBar();
         tableName = getIntent().getStringExtra("edittable");
         setContentView(R.layout.activity_fishproduct_new);//TODO xml
         mPref = PreferenceManager.getDefaultSharedPreferences(FishEditActivity.this);
@@ -108,17 +109,16 @@ public class FishEditActivity extends HeadActivity{
                 }
             }
         });
-        TextView titleLeft = (TextView) findViewById(R.id.title_bar_left);
-        titleLeft.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                onBackPressed();
-                finish();
-            }
-        });
+        initTitleLeft(R.id.title_bar_left);
         
         TextView titleView = (TextView) findViewById(R.id.title_bar_title);
-        titleView.setText(tableName);
+        if (tableName.equals("FishDrug")){
+            titleView.setText("新增鱼药");
+        } else if (tableName.equals("FishFeed")){
+            titleView.setText("新增鱼饲料");
+        } else if (tableName.equals("FishSmall")){
+            titleView.setText("新增鱼苗");
+        }
     }
     
     public void ClickFunc(View v) {

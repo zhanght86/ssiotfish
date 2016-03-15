@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.ssiot.fish.R;
 import com.ssiot.fish.question.AlbumActivity;
 import com.ssiot.fish.question.QuestionDetailListActivity;
+import com.ssiot.fish.question.QuestionNewActivity;
 import com.ssiot.remote.GetImageThread;
 import com.ssiot.remote.GetImageThread.ThumnailHolder;
 import com.ssiot.remote.data.model.QuestionModel;
@@ -137,7 +138,7 @@ public class QuestionCardView extends BaseCardView
             kPicRootView.setVisibility(View.VISIBLE);
             String[] pics = modelData._picUrls.split(",");
             if (null != pics && pics.length > 0){
-                new GetImageThread(jPicImageView, "http://cloud.ssiot.com/"+pics[0], mHandler).start();
+                new GetImageThread(jPicImageView, "http://"+QuestionNewActivity.FTP_QUESTION_PATH+pics[0], mHandler).start();
             }
         }
 //        setOnClickListener(new OnClickListener() {

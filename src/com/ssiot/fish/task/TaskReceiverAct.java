@@ -57,6 +57,7 @@ public class TaskReceiverAct extends HeadActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        hideActionBar();
         setContentView(R.layout.activity_contacts);
         
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipelist_layout);

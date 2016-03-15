@@ -22,6 +22,7 @@ public class QuestionListActivity extends HeadActivity{
     VerticalSwipeRefreshLayout questionLayout;
     private ImageButton btnNew;
     private int currentPages = 0;
+    boolean isExpertMode = false;
     
     private static final int MSG_GET_END = 1;
     private Handler mHandler = new Handler(){
@@ -40,6 +41,7 @@ public class QuestionListActivity extends HeadActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        isExpertMode = getIntent().getBooleanExtra("isexpertmode", false);
         setContentView(R.layout.activity_question_user_list);
         btnNew = (ImageButton) findViewById(R.id.question_new);
         questionLayout = (VerticalSwipeRefreshLayout) findViewById(R.id.ask_listview);
@@ -54,6 +56,7 @@ public class QuestionListActivity extends HeadActivity{
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(QuestionListActivity.this, QuestionNewActivity.class);
+                intent.putExtra("isexpertmode", isExpertMode);
                 startActivity(intent);
             }
         });
@@ -64,7 +67,7 @@ public class QuestionListActivity extends HeadActivity{
     private class GetQuestionThread extends Thread{
         @Override
         public void run() {
-            List<QuestionModel> list = new Question().GetPageViewList(currentPages);
+            List<QuestionModel> list = new Question().GetPageViewList(currentPages,(isExpertMode ? " QuestionType=2 " : " QuestionType=1 or QuestionType is null "));
             if (null != list){
                 questions.clear();
                 questions.addAll(list);
@@ -75,7 +78,7 @@ public class QuestionListActivity extends HeadActivity{
     
     private void loadMore(){
         currentPages ++;
-        List<QuestionModel> list = new Question().GetPageViewList(currentPages);
+        List<QuestionModel> list = new Question().GetPageViewList(currentPages,(isExpertMode ? " QuestionType=2 " : " QuestionType=1 or QuestionType is null "));
         if (null != list){
             questions.addAll(list);//TODO 重复
         }

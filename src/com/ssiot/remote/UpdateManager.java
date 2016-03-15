@@ -28,7 +28,7 @@ import java.util.HashMap;
 import com.ssiot.fish.R;
 
 public class UpdateManager{
-    private static final String tag = "UpdateManager";
+    private static final String tag = "UpdateManager-FISH";
     public static final int NOTIFICATION_FLAG = 1; 
     private Context mContext;
     private Handler mAppHandler;
@@ -58,7 +58,7 @@ public class UpdateManager{
             try {
                 HashMap<String, String> mHashMap;
                 int curV = getCurVersionCode(mContext);
-                URL url = new URL("http://yun.ssiot.com/APK/ssiotversion.xml");
+                URL url = new URL("http://yun.ssiot.com/APK/ssiotfisheryversion.xml");
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.connect();
                 InputStream inStream = conn.getInputStream();
@@ -232,7 +232,7 @@ public class UpdateManager{
     }
     
     public void installApk() {
-        File apkfile = new File(getSavePath(), "ssiot2.apk");
+        File apkfile = new File(getSavePath(), "ssiotfishery.apk");
         if (!apkfile.exists()) {
             Toast.makeText(mContext, "未找到文件" + apkfile.getPath(), Toast.LENGTH_SHORT).show();
             return;

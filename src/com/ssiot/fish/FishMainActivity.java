@@ -7,6 +7,7 @@ import android.content.SharedPreferences.Editor;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,6 +29,7 @@ import com.ssiot.remote.expert.DiagnoseFishSelectActivity;
 import java.util.ArrayList;
 
 public class FishMainActivity extends HeadActivity {
+    private static final String tag = "FishMainActivity";
     private GridView gridView1;
     ArrayList<CellModel> cells;
     private SharedPreferences mPref;
@@ -35,7 +37,6 @@ public class FishMainActivity extends HeadActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setContentView(R.layout.activity_main_fish);
         mPref = PreferenceManager.getDefaultSharedPreferences(this);
         gridView1 = (GridView) findViewById(R.id.gridView1);
@@ -63,7 +64,7 @@ public class FishMainActivity extends HeadActivity {
         cells.add(new CellModel(R.drawable.cell_hudongjiaoliu,"互动交流", "map_hudong"));
         cells.add(new CellModel(R.drawable.cell_qiyehuizong,"企业汇总", "bdsj"));//绑定手机
         cells.add(new CellModel(R.drawable.cell_shichangdongtai,"市场动态", "map_yonghuzhinan"));//用户指南
-        cells.add(new CellModel(R.drawable.cell_zhengwuguanli,"更新", "map_findupdate"));
+//        cells.add(new CellModel(R.drawable.cell_zhengwuguanli,"更新", "map_findupdate"));
         ImageAdapter adapter = new ImageAdapter(this, cells);
         gridView1.setAdapter(adapter);
         gridView1.setSelector(new ColorDrawable(0));
@@ -75,19 +76,30 @@ public class FishMainActivity extends HeadActivity {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             if (null != cells){
                 CellModel model = cells.get(position);
-                switch (model.openType) {
-                    case CellModel.MODE_URL:
-                        Intent intent1 = new Intent(FishMainActivity.this, BrowserActivity.class);
-                        intent1.putExtra("url", model.urlString);
-//                        intent1.putExtra(LeibieManageActivity.headname, str2);
-                        startActivity(intent1);
-                        break;
-
-                    default:
-                        break;
-                }
-                if ("互动交流".equals(model.itemText)){
+//                switch (model.openType) {
+//                    case CellModel.MODE_URL:
+//                        Intent intent1 = new Intent(FishMainActivity.this, BrowserActivity.class);
+//                        intent1.putExtra("url", model.urlString);
+//                        startActivity(intent1);
+//                        break;
+//
+//                    default:
+//                        break;
+//                }
+                if ("测控中心".equals(model.itemText)){
+                    Intent intent = new Intent(FishMainActivity.this, MoniAndCtrlActivity.class);
+                    intent.putExtra("defaulttab", 1);
+                    startActivity(intent);
+                } else if ("统计报表".equals(model.itemText)){
+                    Intent intent = new Intent(FishMainActivity.this, MoniAndCtrlActivity.class);
+                    intent.putExtra("defaulttab", 2);
+                    startActivity(intent);
+                } else if ("视频监控".equals(model.itemText)){
+                    Intent intent = new Intent(FishMainActivity.this, VideoListActivity.class);
+                    startActivity(intent);
+                } else if ("互动交流".equals(model.itemText)){
                     Intent intent = new Intent(FishMainActivity.this, QuestionListActivity.class);
+                    intent.putExtra("isexpertmode", false);
                     startActivity(intent);
                 } else if ("鱼病诊断".equals(model.itemText)){
                     Intent intent = new Intent(FishMainActivity.this, DiagnoseFishSelectActivity.class);
@@ -97,6 +109,7 @@ public class FishMainActivity extends HeadActivity {
                     startActivity(intent);
                 } else if ("专家在线".equals(model.itemText)){//专家在线只是问题类别不同
                     Intent intent = new Intent(FishMainActivity.this, QuestionListActivity.class);
+                    intent.putExtra("isexpertmode", true);
                     startActivity(intent);
                 } else if ("生产管理".equals(model.itemText)){
                     Intent intent = new Intent(FishMainActivity.this, ProductManageActivity.class);
@@ -106,7 +119,7 @@ public class FishMainActivity extends HeadActivity {
                     startActivity(intent);
                 } else if ("物资交易".equals(model.itemText)){
                     Intent intent = new Intent(FishMainActivity.this, BrowserActivity.class);
-                    intent.putExtra("url", "http://www.taobao.com");
+                    intent.putExtra("url", "http://gn.ssiot.com/mobile2/index.html");
                     startActivity(intent);
                 } else if ("企业汇总".equals(model.itemText)){
                     Intent intent = new Intent(FishMainActivity.this, CompanyListActivity.class);
@@ -138,14 +151,6 @@ public class FishMainActivity extends HeadActivity {
                 e.putString(Utils.PREF_PWD, "");
                 e.commit();
                 return true;
-            case android.R.id.home:
-                View v = getWindow().peekDecorView();
-                if (v != null){
-                    InputMethodManager inputmanger = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    inputmanger.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                }
-                super.onBackPressed();
-                break;
             default:
                 break;
         }

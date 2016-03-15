@@ -160,10 +160,6 @@ public class MainActivity extends ActionBarActivity implements FMainBtnClickList
         return mCache;
     }
     
-    public String getUnique(){
-        return mUniqueID;
-    }
-    
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

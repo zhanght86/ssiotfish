@@ -1,14 +1,17 @@
 package com.ssiot.fish.task;
 
 import android.content.Context;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.GridView;
 import android.widget.TextView;
 
 import com.ssiot.fish.R;
+import com.ssiot.fish.question.PicAdapter;
 import com.ssiot.remote.Utils;
 import com.ssiot.remote.data.model.TaskReportModel;
 
@@ -19,11 +22,13 @@ public class TaskReportAdapter extends BaseAdapter{
     private Context mContext;
     List<TaskReportModel> mDatas;
     LayoutInflater inflater;
+    private Handler mHandler;
     
-    public TaskReportAdapter(Context c, List<TaskReportModel> a){
+    public TaskReportAdapter(Context c, List<TaskReportModel> a, Handler handler){
         mContext = c;
         inflater = LayoutInflater.from(c);
         mDatas = a;
+        mHandler = handler;
     }
 
     @Override
@@ -52,6 +57,7 @@ public class TaskReportAdapter extends BaseAdapter{
             holder.mTimeView = (TextView) v.findViewById(R.id.report_time);
             holder.mDetailView = (TextView) v.findViewById(R.id.report_detail);
             holder.mLocationView = (TextView) v.findViewById(R.id.report_location);
+            holder.mPicGridView = (GridView) v.findViewById(R.id.report_list_pic_grid);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -60,6 +66,17 @@ public class TaskReportAdapter extends BaseAdapter{
         holder.mNameView.setText(""+model._username);
         holder.mTimeView.setText(Utils.formatTime(model._createtime));
         holder.mDetailView.setText(model._contenttext);
+        
+        if (!TextUtils.isEmpty(model._img)){
+            ArrayList<String> imgPaths = new ArrayList<String>();
+            String[] paths = model._img.split(",");
+            for (int i = 0; i < paths.length; i ++){
+                imgPaths.add(paths[i]);
+            }
+            PicAdapter adapter = new PicAdapter(mContext, imgPaths, mHandler,TaskReportNewAct.FTP_TASK_PATH);
+            holder.mPicGridView.setAdapter(adapter);
+        }
+        
         if (!TextUtils.isEmpty(model._location)){
             holder.mLocationView.setVisibility(View.VISIBLE);
             holder.mLocationView.setText(model._location);
@@ -74,6 +91,7 @@ public class TaskReportAdapter extends BaseAdapter{
         TextView mTimeView;
         TextView mDetailView;
         TextView mLocationView;
+        GridView mPicGridView;
     }
     
 }

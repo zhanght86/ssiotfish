@@ -46,6 +46,7 @@ public class FishpondNewActivity extends HeadActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        hideActionBar();
         setContentView(R.layout.activity_fishpond_new);
         mPref = PreferenceManager.getDefaultSharedPreferences(FishpondNewActivity.this);
         nameView = findViewById(R.id.edit_name);

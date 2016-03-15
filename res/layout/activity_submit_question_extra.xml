@@ -99,7 +99,7 @@
 <!--                 f:itemWidth="75.0dip" -->
 <!--                 f:verticalSpacing="8.0dip" /> -->
 
-			<GridView
+			<com.ssiot.fish.question.widget.PicModelGridView
 			    android:id="@+id/submit_question_camera"
 			    android:layout_width="match_parent"
 			    android:layout_height="wrap_content"
@@ -108,7 +108,7 @@
 			    android:horizontalSpacing="8.0dp"
 			    android:numColumns="4"
 			    android:verticalSpacing="8.0dp"
-			    ></GridView>
+			    />
 			
             <View
                 android:layout_width="fill_parent"

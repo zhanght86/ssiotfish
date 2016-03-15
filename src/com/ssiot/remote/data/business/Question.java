@@ -1,5 +1,7 @@
 package com.ssiot.remote.data.business;
 
+import android.text.TextUtils;
+
 import com.ssiot.remote.data.DbHelperSQL;
 import com.ssiot.remote.data.SsiotResult;
 import com.ssiot.remote.data.model.QuestionModel;
@@ -57,10 +59,14 @@ public class Question{
         return list;
     }
     
-    public List<QuestionModel> GetPageViewList(int pageIndex){//与iot_User表联合查询
+    public List<QuestionModel> GetPageViewList(int pageIndex,String strWh){//与iot_User表联合查询
         StringBuilder builder = new StringBuilder();
         builder.append("select iot_user.UserName,questmp.* from ");
-        String sql = "select * from (select ROW_NUMBER() OVER (order by T.ID desc) AS ROW,T.* FROM Question T)TT "+
+        String whereStr = "";
+        if (!TextUtils.isEmpty(strWh)){
+            whereStr = " where " + strWh + " "; 
+        }
+        String sql = "select * from (select ROW_NUMBER() OVER (order by T.ID desc) AS ROW,T.* FROM Question T "+whereStr+")TT "+
                 "WHERE TT.ROW between " + (pageIndex * 10 + 1) + " and " + (pageIndex * 10 + 10);
         builder.append("(" + sql + ") as questmp ");
         builder.append("left join iot2014.dbo.iot_user on questmp.UserID=iot_User.UserID");//left join 以左表为准

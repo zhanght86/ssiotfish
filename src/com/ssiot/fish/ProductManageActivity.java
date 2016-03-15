@@ -34,15 +34,15 @@ public class ProductManageActivity extends HeadActivity{
     
     private void initGridView(){
         cells = new ArrayList<CellModel>();
-        cells.add(new CellModel(R.drawable.cell_cekong,"入库", "map_in"));
-        cells.add(new CellModel(R.drawable.cell_cekong,"出库", "map_out"));
-        cells.add(new CellModel(R.drawable.cell_cekong,"出入库列表", "map_productlist"));
-        cells.add(new CellModel(R.drawable.cell_cekong,"鱼药", "map_fishdrug"));
-        cells.add(new CellModel(R.drawable.cell_cekong,"鱼药列表", "map_fishdruglist"));
-        cells.add(new CellModel(R.drawable.cell_cekong,"饲料", "map_fishdruglist"));
-        cells.add(new CellModel(R.drawable.cell_cekong,"饲料列表", "map_fishdruglist"));
-        cells.add(new CellModel(R.drawable.cell_cekong,"鱼苗", "map_fishdruglist"));
-        cells.add(new CellModel(R.drawable.cell_cekong,"鱼苗列表", "map_fishdruglist"));
+        cells.add(new CellModel(R.drawable.cell_shenchanguanli,"入库", "map_in"));
+        cells.add(new CellModel(R.drawable.cell_shenchanguanli,"出库", "map_out"));
+        cells.add(new CellModel(R.drawable.cell_shenchanguanli,"出入库列表", "map_productlist"));
+        cells.add(new CellModel(R.drawable.cell_shenchanguanli,"鱼药", "map_fishdrug"));
+        cells.add(new CellModel(R.drawable.cell_shenchanguanli,"鱼药列表", "map_fishdruglist"));
+        cells.add(new CellModel(R.drawable.cell_shenchanguanli,"饲料", "map_fishdruglist"));
+        cells.add(new CellModel(R.drawable.cell_shenchanguanli,"饲料列表", "map_fishdruglist"));
+        cells.add(new CellModel(R.drawable.cell_shenchanguanli,"鱼苗", "map_fishdruglist"));
+        cells.add(new CellModel(R.drawable.cell_shenchanguanli,"鱼苗列表", "map_fishdruglist"));
         ImageAdapter adapter = new ImageAdapter(this, cells);
         gridView1.setAdapter(adapter);
         gridView1.setSelector(new ColorDrawable(0));

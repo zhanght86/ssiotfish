@@ -125,7 +125,7 @@ public class CompanyListActivity extends HeadActivity{
     protected class MyViewHolder extends RecyclerView.ViewHolder implements OnClickListener{
         private TextView mTitleView;
         private TextView mContentView;
-        IOTCompanyModel fishpond;
+        IOTCompanyModel mod;
         public MyViewHolder(View v) {
             super(v);
             mTitleView = (TextView) v.findViewById(R.id.txt_title);
@@ -134,14 +134,16 @@ public class CompanyListActivity extends HeadActivity{
         }
         
         public void fillData(IOTCompanyModel model){
-            fishpond = model;
+            mod = model;
             mTitleView.setText(model._name);
             mContentView.setText(model._companyContent);
         }
 
         @Override
         public void onClick(View v) {
-            //打开详细页面 TODO
+            Intent intent = new Intent(CompanyListActivity.this, CompanyDetailActivity.class);
+            intent.putExtra("company", mod);
+            startActivity(intent);
         }
     }
     

@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.ssiot.fish.HeadActivity;
 import com.ssiot.fish.R;
 import com.ssiot.fish.question.widget.VerticalSwipeRefreshLayout;
+import com.ssiot.remote.GetImageThread;
 import com.ssiot.remote.Utils;
 import com.ssiot.remote.data.business.Answer;
 import com.ssiot.remote.data.business.Question;
@@ -34,6 +35,7 @@ public class QuestionDetailListActivity extends HeadActivity{
     List<AnswerModel> datasList = new ArrayList<AnswerModel>();
     EditText mEditText;
     TextView mSendBtn;
+    RelativeLayout mEditBar;//ask_detail_tool
     SharedPreferences mPref;
     
     private static final int MSG_GET_END = 1;
@@ -53,7 +55,6 @@ public class QuestionDetailListActivity extends HeadActivity{
                         new GetAnswerThread().start();
                     }
                     break;
-
                 default:
                     break;
             }
@@ -62,6 +63,7 @@ public class QuestionDetailListActivity extends HeadActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        hideActionBar();
       //启动activity时不自动弹出软键盘
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         mPref = PreferenceManager.getDefaultSharedPreferences(QuestionDetailListActivity.this);
@@ -86,13 +88,12 @@ public class QuestionDetailListActivity extends HeadActivity{
         }
         mEditText = (EditText) findViewById(R.id.shop_cmt_submit_edittext);
         mSendBtn = (TextView) findViewById(R.id.shop_cmt_submit_button);
+        mEditBar = (RelativeLayout) findViewById(R.id.ask_detail_tool);
         mSendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String text = mEditText.getText().toString();
                 if (!TextUtils.isEmpty(text)){
-                    
-                    
                     final AnswerModel model = new AnswerModel();
                     model._questionid = qModel._id;
                     model._userid = mPref.getInt(Utils.PREF_USERID, 0);
@@ -114,7 +115,17 @@ public class QuestionDetailListActivity extends HeadActivity{
                 }
             }
         });
+        if (qModel._type == 2 && Utils.getIntPref(Utils.PREF_USERTYPE, this) != 2){//专家模式下普通用户不能回答
+            mEditBar.setVisibility(View.GONE);
+        }
+        initTitleBar();
         new GetAnswerThread().start();
+    }
+    
+    private void initTitleBar(){
+        initTitleLeft(R.id.title_bar_left);
+        TextView titleRight = (TextView) findViewById(R.id.title_bar_right);
+        titleRight.setVisibility(View.GONE);
     }
     
     private class GetAnswerThread extends Thread{

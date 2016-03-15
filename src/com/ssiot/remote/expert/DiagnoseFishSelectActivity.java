@@ -15,9 +15,10 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.ssiot.fish.HeadActivity;
 import com.ssiot.fish.R;
 
-public class DiagnoseFishSelectActivity extends ActionBarActivity{
+public class DiagnoseFishSelectActivity extends HeadActivity{
     private static final String tag = "DiagnoseFishSelectActivity";
     Spinner mFishSelectSpin;
     TextView mFishSelectText;

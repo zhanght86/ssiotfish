@@ -1,6 +1,8 @@
 package com.ssiot.fish.question.widget;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -8,12 +10,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
+import android.widget.GridView;
 import android.widget.TextView;
 
 import com.ssiot.fish.R;
+import com.ssiot.fish.question.PicAdapter;
+import com.ssiot.fish.question.PicGridAdapter;
+import com.ssiot.remote.GetImageThread;
 import com.ssiot.remote.Utils;
 import com.ssiot.remote.data.model.AnswerModel;
 import com.ssiot.remote.data.model.QuestionModel;
+
+import java.util.ArrayList;
 
 public class AnswerCardView extends FrameLayout{
     private static final String tag = "AnswerCardView";
@@ -25,6 +33,21 @@ public class AnswerCardView extends FrameLayout{
     TextView mContentTextView;
     TextView mTimeTextView;
     TextView mReplyAddrTextView;
+    
+    private Handler mHandler = new Handler(){
+        public void handleMessage(android.os.Message msg) {
+            switch (msg.what) {
+                case GetImageThread.MSG_GETFTPIMG_END:
+                    GetImageThread.ThumnailHolder thumb = (GetImageThread.ThumnailHolder) msg.obj;
+                    thumb.imageView.setImageBitmap(thumb.bitmap);
+                    break;
+
+                default:
+                    break;
+            }
+        };
+    };
+    
     public AnswerCardView(Context context) {
         this(context,null);
         // TODO Auto-generated constructor stub
@@ -85,11 +108,28 @@ public class AnswerCardView extends FrameLayout{
         }
         contentTextView.setText(qModel._contentText);
         countTextView.setText(""+qModel._replyCount);
+        if (qModel._type == 2){//待专家回答问题
+            TextView countLabel = (TextView) aView.findViewById(R.id.ask_card_replycount_label);
+            countLabel.setText("个专家回答");
+        }
         if (!TextUtils.isEmpty(qModel._addr)){
             addrView.setText(qModel._addr);
         }
         aView.findViewById(R.id.reply_detail_card).setVisibility(View.GONE);
         
-        
+        GridView gridView = (GridView) aView.findViewById(R.id.ask_card_pic);
+        if (!TextUtils.isEmpty(qModel._picUrls)){
+            gridView.setVisibility(View.VISIBLE);
+            String[] paths = qModel._picUrls.split(",");
+            if (null != paths){
+                ArrayList<String> as = new ArrayList<String>();
+                for (int i = 0; i < paths.length; i ++){
+                    as.add(paths[i]);
+                }
+                gridView.setAdapter(new PicAdapter(getContext(), as, mHandler));
+            }
+        } else {
+            gridView.setVisibility(View.GONE);
+        }
     }
 }

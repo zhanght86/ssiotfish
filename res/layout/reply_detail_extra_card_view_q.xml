@@ -36,6 +36,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
             android:text="2015-01-01"
             android:textColor="@color/master_card_time_color"
             android:textSize="@dimen/textsize_h4" />
@@ -81,21 +82,27 @@
         android:text="加载中"
         android:textColor="@color/master_text_color_2"
         android:textSize="@dimen/textsize_h3" />
-
-<!--     <com.satan.peacantdoctor.base.widget.PicModelGridView -->
-<!--         xmlns:imagewall="http://schemas.android.com/apk/res-auto" -->
-<!--         android:id="@+id/ask_card_pic" -->
-<!--         android:layout_width="fill_parent" -->
-<!--         android:layout_height="wrap_content" -->
-<!--         android:layout_marginBottom="10.0dip" -->
-<!--         android:layout_marginLeft="17.0dip" -->
-<!--         android:layout_marginRight="17.0dip" -->
-<!--         android:orientation="vertical" -->
-<!--         imagewall:fixed="true" -->
+    
+<!-- <GridView -->
+    <com.ssiot.fish.question.widget.PicModelGridView
+        android:id="@+id/ask_card_pic"
+        android:layout_width="fill_parent"
+        android:layout_height="300dp"
+        android:layout_marginBottom="10.0dip"
+        android:layout_marginLeft="17.0dip"
+        android:layout_marginRight="17.0dip"
+        android:numColumns="3"
+        android:columnWidth="10dp"
+        android:stretchMode="columnWidth"
+        android:horizontalSpacing="3dp"
+        android:verticalSpacing="3dp"
+         />
+<!--     xmlns:imagewall="http://schemas.android.com/apk/res-auto" -->
+<!--     imagewall:fixed="true" -->
 <!--         imagewall:one_size="120.0dip" -->
 <!--         imagewall:space_size="5.0dip" -->
 <!--         imagewall:three_size="80.0dip" -->
-<!--         imagewall:two_size="80.0dip" /> -->
+<!--         imagewall:two_size="80.0dip" -->
 
     <TextView
         android:id="@+id/ask_card_address"

@@ -18,10 +18,11 @@ import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.ssiot.fish.HeadActivity;
 import com.ssiot.fish.R;
 import com.ssiot.remote.Utils;
 
-public class BrowserActivity extends ActionBarActivity{
+public class BrowserActivity extends HeadActivity{
     private static final String tag  = "BrowserActivity";
     private static String urlString = "http://www.ssiot.com";
     WebView webView;
@@ -30,7 +31,6 @@ public class BrowserActivity extends ActionBarActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         Intent intent = getIntent();
         if (null != intent){
             urlString = intent.getStringExtra("url");

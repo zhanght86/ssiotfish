@@ -1,6 +1,7 @@
 package com.ssiot.fish.question;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,6 +17,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,11 +27,16 @@ import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ssiot.fish.HeadActivity;
 import com.ssiot.fish.R;
+import com.ssiot.fish.UploadFileBaseActivity;
 import com.ssiot.remote.SsiotConfig;
 import com.ssiot.remote.data.business.Question;
 import com.ssiot.remote.data.model.QuestionModel;
 
+import org.apache.commons.net.ftp.FTP;
+import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPFile;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
@@ -42,7 +49,9 @@ import org.json.JSONObject;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -50,8 +59,9 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import com.ssiot.remote.Utils;
 
-public class QuestionNewActivity extends Activity{
+public class QuestionNewActivity extends UploadFileBaseActivity{
     private static final String tag = "QuestionNewActivity";
+    private Dialog mDialog;
     TextView titleLeft;
     TextView titleRight;
     EditText questionTitle;
@@ -64,8 +74,13 @@ public class QuestionNewActivity extends Activity{
     Location mLocation;
     String addr = "";
     SharedPreferences mPref;
+    boolean isExpertMode = false;
+    String picUrls = "";
+    
+    public static final String FTP_QUESTION_PATH = "yun.ssiot.com/Upload/QuestionImg/";
     
     private static final int MSG_ADD_END = 1;
+    private static final int MSG_FTPUPLOAD_END = 3;
     private Handler mHandler = new Handler(){
         public void handleMessage(android.os.Message msg) {
             switch (msg.what) {
@@ -74,6 +89,16 @@ public class QuestionNewActivity extends Activity{
                         finish();
                     } else {
                         Toast.makeText(QuestionNewActivity.this, "error", Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+                case MSG_FTPUPLOAD_END:
+                    String remoteFileName = (String) msg.obj;
+                    if (!TextUtils.isEmpty(remoteFileName)){
+                        if (!TextUtils.isEmpty(picUrls)){
+                            picUrls += "," + remoteFileName;
+                        } else {
+                            picUrls = remoteFileName;
+                        }
                     }
                     break;
 
@@ -86,14 +111,15 @@ public class QuestionNewActivity extends Activity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        hideActionBar();
+        isExpertMode = getIntent().getBooleanExtra("isexpertmode", false);
         setContentView(R.layout.activity_submit_question_extra);
         mPref = PreferenceManager.getDefaultSharedPreferences(QuestionNewActivity.this);
 //        if (getActionBar() != null){
 //            getActionBar().hide();
 //        }
         
-        titleLeft = (TextView) findViewById(R.id.title_bar_left);
-        titleRight = (TextView) findViewById(R.id.title_bar_right);
+        
         questionTitle = (EditText) findViewById(R.id.submit_question_title_edittext);
         questionContent = (EditText) findViewById(R.id.submit_question_extra_edittext);
         mGridView = (GridView) findViewById(R.id.submit_question_camera);
@@ -110,14 +136,29 @@ public class QuestionNewActivity extends Activity{
                 }
             }
         });
-        //TODO
-        titleLeft.setOnClickListener(new View.OnClickListener() {
-            
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        
+        initTitleBar();
+        mLocation = getLocation();
+        if (null != mLocation){
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    addr = getAddrFromBaidu(mLocation);
+                    locationTextView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            locationTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.icon_submit_lbs_selected, 0, R.drawable.icon_arrow_grey, 0);
+                            locationTextView.setText(addr);
+                        }
+                    });
+                }
+            }).start();
+        }
+    }
+    
+    private void initTitleBar(){
+        initTitleLeft(R.id.title_bar_left);
+        titleRight = (TextView) findViewById(R.id.title_bar_right);
         titleRight.setOnClickListener(new View.OnClickListener() {
             
             @Override
@@ -127,7 +168,8 @@ public class QuestionNewActivity extends Activity{
                 model._title = questionTitle.getText().toString();
                 model._contentText = questionContent.getText().toString();
                 model._createTime = new Timestamp(System.currentTimeMillis());
-                model._type = 1;
+                model._picUrls = picUrls;
+                model._type = isExpertMode ? 2 : 1;
                 if (null != mLocation){
                     model._addr = addr;
                     model._longitude = (float) mLocation.getLongitude();
@@ -145,23 +187,6 @@ public class QuestionNewActivity extends Activity{
                 
             }
         });
-        
-        mLocation = getLocation();
-        if (null != mLocation){
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    addr = getAddrFromBaidu(mLocation);
-                    locationTextView.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            locationTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.icon_submit_lbs_selected, 0, R.drawable.icon_arrow_grey, 0);
-                            locationTextView.setText(addr);
-                        }
-                    });
-                }
-            }).start();
-        }
     }
     
     private String getAddrFromBaidu(Location lo){
@@ -257,40 +282,35 @@ public class QuestionNewActivity extends Activity{
                 }
                 bm = (Bitmap) data.getExtras().get("data");
                 if(bm != null){
-//                    imgView.setImageBitmap(bm);
                     picImgs.add(bm);
                     if (null != picAdapter){
                         picAdapter.notifyDataSetChanged();
                     }
-                    String spath = Environment.getExternalStorageDirectory()+ "/"+SsiotConfig.CACHE_DIR +"/"+ 
-                            "yuguanjia/question/uploadimg/" + System.currentTimeMillis() + ".jpg";
+                    
+                    final String fileName = System.currentTimeMillis() + ".jpg";
+                    final String spath = Environment.getExternalStorageDirectory()+ "/"+SsiotConfig.CACHE_DIR +"/"+ 
+                            "yuguanjia/questionimg/" + fileName;
                     saveImage(bm, spath);
-//                    uploadimg();//TODO
+                    mDialog = Utils.createLoadingDialog(this, "上传中");
+                    mDialog.show();
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            String remoteFileName = uploadimg(FTP_QUESTION_PATH, new File(spath), fileName);
+                            Message m = mHandler.obtainMessage(MSG_FTPUPLOAD_END);
+                            m.obj = remoteFileName;
+                            mHandler.sendMessage(m);
+                            if (null != mDialog && mDialog.isShowing()){
+                                mDialog.dismiss();
+                            }
+                        }
+                    }).start();
                 }
             }
         }
     }
     
-    public boolean saveImage(Bitmap photo, String spath) {  
-        try {
-            File f = new File(spath);
-            if (!f.exists()){
-                if (!f.getParentFile().exists()){
-                    f.getParentFile().mkdirs();
-                }
-            }
-            new File(spath).createNewFile();
-            BufferedOutputStream bos = new BufferedOutputStream(  
-                    new FileOutputStream(spath, false));  
-            photo.compress(Bitmap.CompressFormat.JPEG, 100, bos);  
-            bos.flush();  
-            bos.close();  
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;  
-        }  
-        return true;  
-    }
+
     
     private Location getLocation(){
         LocationManager locationManager = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);

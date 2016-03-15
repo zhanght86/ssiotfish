@@ -34,4 +34,6 @@ public class UserModel{
     
     public int _parentid;
     public int _usergroupid;
+    
+    public int _type = 1;
 }

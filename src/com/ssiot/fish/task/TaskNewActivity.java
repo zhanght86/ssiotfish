@@ -69,6 +69,7 @@ public class TaskNewActivity extends HeadActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        hideActionBar();
         setContentView(R.layout.task_new);
         initTitleBar();
         findViews();

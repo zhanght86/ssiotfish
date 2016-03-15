@@ -73,6 +73,7 @@ public class User{
             //TODO
             uModel._parentid = c.getInt("ParentId");
             uModel._usergroupid = c.getInt("UserGroupID");
+            uModel._type = c.getInt("UserType");
             return uModel;
         } catch (SQLException e) {
             e.printStackTrace();

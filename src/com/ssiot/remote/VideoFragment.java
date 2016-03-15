@@ -91,7 +91,8 @@ public class VideoFragment extends Fragment{
         
         
       //TODO in a better way
-        final String uniqueIdString = ((MainActivity) getActivity()).getUnique();
+//        final String uniqueIdString = ((MainActivity) getActivity()).getUnique();
+        final String uniqueIdString = Utils.getStrPref(Utils.PREF_USERKEY, getActivity());
         SharedPreferences mPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String userName = mPref.getString(Utils.PREF_USERNAME, "");
         

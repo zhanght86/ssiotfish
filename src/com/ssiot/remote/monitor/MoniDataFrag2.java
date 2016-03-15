@@ -1,5 +1,6 @@
 package com.ssiot.remote.monitor;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -299,9 +300,11 @@ public class MoniDataFrag2 extends BaseFragment{
     }
     
     private void setCacheData(){
-        MainActivity ma = (MainActivity) getParentFragment().getParentFragment().getActivity();
-        MyCache cache = ma.getCaheManager();
-        cache.put("monidata_list", mListData);
+        Activity ma = getParentFragment().getParentFragment().getActivity();
+        if (ma instanceof MainActivity){
+            MyCache cache = ((MainActivity) ma).getCaheManager();
+            cache.put("monidata_list", mListData);
+        }
     }
     
     @Override

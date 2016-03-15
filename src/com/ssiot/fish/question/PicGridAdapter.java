@@ -4,6 +4,7 @@ import android.R.mipmap;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -17,10 +18,12 @@ import java.util.ArrayList;
 public class PicGridAdapter extends BaseAdapter{
     ArrayList<Bitmap> mImgs;
     private Context mContext;
+    LayoutInflater mInflater;
 
     public PicGridAdapter(Context context, ArrayList<Bitmap> imgs){
         mImgs = imgs;
         mContext = context;
+        mInflater = LayoutInflater.from(mContext);
     }
     
     @Override
@@ -41,14 +44,9 @@ public class PicGridAdapter extends BaseAdapter{
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ImageView imageView;
-        if (convertView == null){
-            imageView = new ImageView(mContext);
-            imageView.setScaleType(ScaleType.CENTER_CROP);
-            convertView = imageView;
-        } else {
-//            imageView = (ImageView) convertView.getTag();
-            imageView = (ImageView) convertView;
-        }
+        convertView = mInflater.inflate(R.layout.item_image, parent,false);
+        imageView = (ImageView) convertView.findViewById(R.id.imageview);
+//        imageView.setScaleType(ScaleType.CENTER_CROP);
         if (position < mImgs.size()){
 //            Bitmap bmp = BitmapFactory.decodeFile(mImgs.get(position));
             Bitmap bmp = mImgs.get(position);

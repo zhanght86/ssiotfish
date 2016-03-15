@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.ssiot.fish.HeadActivity;
 import com.ssiot.fish.R;
+import com.ssiot.remote.GetImageThread;
 import com.ssiot.remote.Utils;
 import com.ssiot.remote.data.business.TaskCenter;
 import com.ssiot.remote.data.business.TaskReport;
@@ -56,7 +57,7 @@ public class TaskGetDetailAct extends HeadActivity {
     List<TaskReportModel> reportList = new ArrayList<TaskReportModel>();
     
     private static final int MSG_GET_TASK_INFO = 1;
-    private static final int MSG_STATE_CHANGE_END = 2;
+    private static final int MSG_STATE_CHANGE_END = 3;
     private Handler mHandler = new Handler(){
         public void handleMessage(android.os.Message msg) {
             switch (msg.what) {
@@ -70,6 +71,10 @@ public class TaskGetDetailAct extends HeadActivity {
                         initTitleBar(2);
                     }
                     break;
+                case GetImageThread.MSG_GETFTPIMG_END:
+                    GetImageThread.ThumnailHolder thumb = (GetImageThread.ThumnailHolder) msg.obj;
+                    thumb.imageView.setImageBitmap(thumb.bitmap);
+                    break;
 
                 default:
                     break;
@@ -80,6 +85,7 @@ public class TaskGetDetailAct extends HeadActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        hideActionBar();
         taskModel = (TaskCenterModel) getIntent().getSerializableExtra("taskcentermodel");
         initView();
 //        setvalue();//after thread
@@ -141,6 +147,7 @@ public class TaskGetDetailAct extends HeadActivity {
         reportTextView.setOnClickListener(listener);
 
         reportListView.addHeaderView(infoView);
+        findViewById(R.id.title_bar_right).setVisibility(View.GONE);
     }
 
     private void setvalue() {
@@ -165,7 +172,7 @@ public class TaskGetDetailAct extends HeadActivity {
         contentTextView.setText(taskModel._contenttext);
         cTitleTextView.setText(reportList.size() > 0 ? "汇报" : "无汇报");
         
-        TaskReportAdapter adapter = new TaskReportAdapter(TaskGetDetailAct.this, reportList);
+        TaskReportAdapter adapter = new TaskReportAdapter(TaskGetDetailAct.this, reportList, mHandler);
         reportListView.setAdapter(adapter);
     }
     
@@ -188,13 +195,7 @@ public class TaskGetDetailAct extends HeadActivity {
             });
         }
         
-        TextView titleLeft = (TextView) findViewById(R.id.title_bar_left);
-        titleLeft.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        initTitleLeft(R.id.title_bar_left);
     }
     
     private boolean isReceiver(){

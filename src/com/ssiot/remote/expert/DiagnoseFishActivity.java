@@ -18,10 +18,11 @@ import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.ssiot.fish.HeadActivity;
 import com.ssiot.fish.R;
 import com.ssiot.remote.Utils;
 
-public class DiagnoseFishActivity extends ActionBarActivity{
+public class DiagnoseFishActivity extends HeadActivity{
     private static final String tag  = "DiagnoseFishActivity";
     private String urlString = "http://www.adds.org.cn/SelfDiagnosis";
     WebView webView;
@@ -95,7 +96,7 @@ public class DiagnoseFishActivity extends ActionBarActivity{
             default:
                 break;
         }
-        return true;
+        return super.onOptionsItemSelected(item);
     }
     
     @SuppressLint("NewApi")

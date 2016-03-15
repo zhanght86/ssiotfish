@@ -202,6 +202,19 @@
                     android:background="@drawable/bg_radius10"
                     android:gravity="center_vertical"
                     android:visibility="gone" >
+                    
+                    <com.ssiot.fish.question.widget.PicModelGridView
+                        android:id="@+id/report_new_pic_grid"
+                        android:layout_width="fill_parent"
+                        android:layout_height="300dp"
+                        android:layout_marginBottom="10.0dip"
+                        android:layout_marginLeft="17.0dip"
+                        android:layout_marginRight="17.0dip"
+                        android:columnWidth="10dp"
+                        android:horizontalSpacing="3dp"
+                        android:numColumns="3"
+                        android:stretchMode="columnWidth"
+                        android:verticalSpacing="3dp" />
 
 <!--                     <unit.FixedGridLayout -->
 <!--                         android:id="@+id/linearLayoutPho" -->
@@ -209,6 +222,7 @@
 <!--                         android:layout_height="60.0dip" -->
 <!--                         android:orientation="horizontal" -->
 <!--                         android:visibility="gone" /> -->
+
 
                     <TextView
                         android:id="@+id/textViewAddPho"

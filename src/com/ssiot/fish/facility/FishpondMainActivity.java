@@ -38,8 +38,8 @@ public class FishpondMainActivity extends HeadActivity{
     
     private void initGridView(){
         cells = new ArrayList<CellModel>();
-        cells.add(new CellModel(R.drawable.cell_cekong,"新建渔场", "map_newyuchang"));
-        cells.add(new CellModel(R.drawable.cell_cekong,"我的渔场", "map_myyuchang"));
+        cells.add(new CellModel(R.drawable.cell_yuchangguanli,"新建渔场", "map_newyuchang"));
+        cells.add(new CellModel(R.drawable.cell_yuchangguanli,"我的渔场", "map_myyuchang"));
         ImageAdapter adapter = new ImageAdapter(this, cells);
         gridView1.setAdapter(adapter);
         gridView1.setSelector(new ColorDrawable(0));

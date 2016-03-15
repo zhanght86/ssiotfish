@@ -92,7 +92,8 @@
                     android:layout_alignParentRight="true"
                     android:layout_marginBottom="5.0dip"
                     android:layout_marginRight="5.0dip"
-                    android:background="@drawable/icon_pic_more" />
+                    android:background="@drawable/icon_pic_more"
+                    android:visibility="gone" />
             </RelativeLayout>
 
             <TextView

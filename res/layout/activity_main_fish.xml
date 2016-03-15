@@ -6,8 +6,8 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.ssiot.fish.FishMainActivity"
-    android:background="@drawable/default_bg" >
+     >
+<!--      android:background="@drawable/default_bg" -->
 
     <LinearLayout
         android:id="@+id/MainLinearLayout"

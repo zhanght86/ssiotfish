@@ -57,6 +57,7 @@ public class ProductEditActivity extends HeadActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        hideActionBar();
         isProductIn = getIntent().getBooleanExtra("isproductin", true);
         setContentView(R.layout.activity_product_new);
         mPref = PreferenceManager.getDefaultSharedPreferences(ProductEditActivity.this);
