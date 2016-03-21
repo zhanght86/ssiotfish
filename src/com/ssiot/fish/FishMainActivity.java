@@ -1,11 +1,19 @@
 package com.ssiot.fish;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.AlertDialog.Builder;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
@@ -14,6 +22,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.GridView;
 import android.widget.AdapterView;
+import android.widget.Toast;
 
 import com.ssiot.fish.facility.FishpondMainActivity;
 import com.ssiot.fish.question.QuestionListActivity;
@@ -21,19 +30,25 @@ import com.ssiot.fish.task.TaskActivity;
 import com.ssiot.remote.BrowserActivity;
 import com.ssiot.remote.LoginActivity;
 import com.ssiot.remote.MainActivity;
+import com.ssiot.remote.SettingFrag;
 import com.ssiot.remote.SsiotService;
+import com.ssiot.remote.UpdateManager;
 import com.ssiot.remote.Utils;
 import com.ssiot.remote.data.business.IOTCompany;
 import com.ssiot.remote.expert.DiagnoseFishSelectActivity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
-public class FishMainActivity extends HeadActivity {
+public class FishMainActivity extends HeadActivity{
     private static final String tag = "FishMainActivity";
     private GridView gridView1;
     ArrayList<CellModel> cells;
     private SharedPreferences mPref;
-
+    
+    private UpdateManager mUpdaManager;
+    private Notification mNoti;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,28 +57,26 @@ public class FishMainActivity extends HeadActivity {
         gridView1 = (GridView) findViewById(R.id.gridView1);
         initGridView();
         
-//        int[] iii = {R.drawable.cell_cekong,R.drawable.cell_data,R.drawable.cell_hudongjiaoliu,R.drawable.cell_qiyehuizong,R.drawable.cell_renwuzhongxin,
-//                R.drawable.cell_shenchanguanli,R.drawable.cell_shichangdongtai,R.drawable.cell_video,R.drawable.cell_wuzijiaoyi,R.drawable.cell_yubingzhengduan
-//                ,R.drawable.cell_yuchangguanli,R.drawable.cell_zhengwuguanli,R.drawable.cell_zhuanjiazaixian};
-//        for (int i = 0; i < iii.length; i ++){
-//            Utils.changePic2(this,iii[i]);
-//        }
+        if (mPref.getBoolean(Utils.PREF_AUTOUPDATE, true) == true){
+            mUpdaManager = new UpdateManager(this);
+            mUpdaManager.startGetRemoteVer();
+        }
     }
     
     private void initGridView(){
         cells = new ArrayList<CellModel>();
-        cells.add(new CellModel(R.drawable.cell_cekong,"测控中心", "map_zhengwu"));//政务管理
-        cells.add(new CellModel(R.drawable.cell_data,"统计报表", "map_qiye"));//企业管理
-        cells.add(new CellModel(R.drawable.cell_video,"视频监控", "map_jstg"));//技术推广
-        cells.add(new CellModel(R.drawable.cell_renwuzhongxin,"任务中心", "map_zhuisu"));//质量追溯
-        cells.add(new CellModel(R.drawable.cell_yubingzhengduan,"鱼病诊断", "map_xinxi"));//信息服务
-        cells.add(new CellModel(R.drawable.cell_zhuanjiazaixian,"专家在线", "map_jinrong",CellModel.MODE_URL).setUrl("http://www.zhdcoop.com/"));//金融服务
-        cells.add(new CellModel(R.drawable.cell_shenchanguanli,"生产管理", "map_webbrow"));//市场动态
-        cells.add(new CellModel(R.drawable.cell_yuchangguanli,"渔场管理", "map_qiyezaixian"));//企业在线
-        cells.add(new CellModel(R.drawable.cell_wuzijiaoyi,"物资交易", "map_yztb"));//渔资淘宝
+        cells.add(new CellModel(R.drawable.cell_cekong,"监测预警", "map_zhengwu"));//测控中心
+        cells.add(new CellModel(R.drawable.cell_data,"控制中心", "map_qiye"));//统计报表
+        cells.add(new CellModel(R.drawable.cell_video,"视频监控", "map_jstg"));//
+        cells.add(new CellModel(R.drawable.cell_renwuzhongxin,"任务中心", "map_zhuisu"));//
+        cells.add(new CellModel(R.drawable.cell_yubingzhengduan,"鱼病诊断", "map_xinxi"));//
+        cells.add(new CellModel(R.drawable.cell_zhuanjiazaixian,"专家在线", "map_jinrong",CellModel.MODE_URL).setUrl("http://www.zhdcoop.com/"));
+        cells.add(new CellModel(R.drawable.cell_shenchanguanli,"生产管理", "map_webbrow"));//
+        cells.add(new CellModel(R.drawable.cell_yuchangguanli,"渔场管理", "map_qiyezaixian"));//
+        cells.add(new CellModel(R.drawable.cell_wuzijiaoyi,"物资交易", "map_yztb"));//
         cells.add(new CellModel(R.drawable.cell_hudongjiaoliu,"互动交流", "map_hudong"));
-        cells.add(new CellModel(R.drawable.cell_qiyehuizong,"企业汇总", "bdsj"));//绑定手机
-        cells.add(new CellModel(R.drawable.cell_shichangdongtai,"市场动态", "map_yonghuzhinan"));//用户指南
+        cells.add(new CellModel(R.drawable.cell_qiyehuizong,"企业汇总", "bdsj"));//
+        cells.add(new CellModel(R.drawable.cell_shichangdongtai,"市场动态", "map_yonghuzhinan"));//
 //        cells.add(new CellModel(R.drawable.cell_zhengwuguanli,"更新", "map_findupdate"));
         ImageAdapter adapter = new ImageAdapter(this, cells);
         gridView1.setAdapter(adapter);
@@ -86,11 +99,11 @@ public class FishMainActivity extends HeadActivity {
 //                    default:
 //                        break;
 //                }
-                if ("测控中心".equals(model.itemText)){
+                if ("监测预警".equals(model.itemText)){
                     Intent intent = new Intent(FishMainActivity.this, MoniAndCtrlActivity.class);
                     intent.putExtra("defaulttab", 1);
                     startActivity(intent);
-                } else if ("统计报表".equals(model.itemText)){
+                } else if ("控制中心".equals(model.itemText)){
                     Intent intent = new Intent(FishMainActivity.this, MoniAndCtrlActivity.class);
                     intent.putExtra("defaulttab", 2);
                     startActivity(intent);
@@ -135,6 +148,7 @@ public class FishMainActivity extends HeadActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.menu_f_main, menu);
         return true;
     }
 
@@ -151,9 +165,58 @@ public class FishMainActivity extends HeadActivity {
                 e.putString(Utils.PREF_PWD, "");
                 e.commit();
                 return true;
+            case R.id.action_frag_main_setting:
+                Intent intent = new Intent(FishMainActivity.this, SettingActivity.class);
+                startActivity(intent);
+                break;
             default:
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
+    
+    private void showUpdateChoseDialog(HashMap<String, String> mVerMap){
+        final HashMap<String, String> tmpMap = mVerMap;
+        AlertDialog.Builder builder =new Builder(this);
+        builder.setTitle(R.string.soft_update_title);
+        builder.setMessage(R.string.soft_update_info);
+        builder.setPositiveButton(R.string.soft_update_updatebtn, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                mNoti = mUpdaManager.showNotification(FishMainActivity.this);
+//                        .setProgressBar(R.id.noti_progress, 100, 0, false);
+                mUpdaManager.startDownLoad(tmpMap);
+//                showDownloadDialog(tmpMap);
+                dialog.dismiss();
+                Editor e = mPref.edit();
+                e.putBoolean(Utils.PREF_AUTOUPDATE, true);
+                e.commit();
+                Toast.makeText(FishMainActivity.this, "转向后台下载，可在通知栏中查看进度。", Toast.LENGTH_SHORT).show();
+            }
+        });
+        builder.setNegativeButton(R.string.soft_update_later, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Editor e = mPref.edit();
+                e.putBoolean(Utils.PREF_AUTOUPDATE, false);
+                e.commit();
+                dialog.dismiss();
+            }
+        });
+        Dialog noticeDialog = builder.create();
+        noticeDialog.show();
+    }
+    
+//    @Override
+//    public void onFSettingBtnClick() {
+//        if (mUpdaManager == null){
+//            mUpdaManager = new UpdateManager(FishMainActivity.this, mHandler);
+//        }
+//        if (mPref.getBoolean(Utils.PREF_AUTOUPDATE, true) == false){
+//            Editor editor = mPref.edit();
+//            editor.putBoolean(Utils.PREF_AUTOUPDATE, true);
+//            editor.commit();
+//        }
+//        mUpdaManager.startGetRemoteVer();
+//    }
 }

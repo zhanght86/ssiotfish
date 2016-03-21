@@ -107,7 +107,7 @@ public class MoniDataFrag2 extends BaseFragment{
                             buildLeftView(mTimeTextTitle, mLeftLinear, mShowData);
                             buildRightView(mRightLinear, mShowData);
                         } else {
-                            Toast.makeText(mContext, "未查询到结果", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(mContext, "无数据", Toast.LENGTH_SHORT).show();
                         }
                     }
                     break;

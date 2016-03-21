@@ -201,15 +201,17 @@
                     android:layout_marginTop="@dimen/Margin"
                     android:background="@drawable/bg_radius10"
                     android:gravity="center_vertical"
+                    android:orientation="horizontal"
                     android:visibility="gone" >
                     
                     <com.ssiot.fish.question.widget.PicModelGridView
                         android:id="@+id/report_new_pic_grid"
                         android:layout_width="fill_parent"
                         android:layout_height="300dp"
+                        android:layout_marginTop="10dp"
                         android:layout_marginBottom="10.0dip"
-                        android:layout_marginLeft="17.0dip"
-                        android:layout_marginRight="17.0dip"
+                        android:layout_marginLeft="10.0dip"
+                        android:layout_marginRight="10.0dip"
                         android:columnWidth="10dp"
                         android:horizontalSpacing="3dp"
                         android:numColumns="3"
@@ -233,7 +235,8 @@
                         android:gravity="center"
                         android:text="\u0009添加图片"
                         android:textColor="@color/txt_aa_select"
-                        android:textSize="@dimen/itemContent" />
+                        android:textSize="@dimen/itemContent"
+                        android:visibility="gone" />
                 </LinearLayout>
 
                 <LinearLayout

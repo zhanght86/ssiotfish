@@ -94,7 +94,7 @@ public class SsiotService extends Service{
                 synchronized (lock) {
                     
                     try {
-                        Thread.sleep(10 * 1000);
+                        Thread.sleep(60 * 1000);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

@@ -126,6 +126,12 @@
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="com.ssiot.fish.update.versiongot" />
+                <action android:name="com.ssiot.fish.update.downloadprogress" />
+                <action android:name="com.ssiot.fish.update.downfinish" />
+                <action android:name="com.ssiot.fish.update.error" />
+            </intent-filter>
         </receiver>
         
         <service android:name="com.ssiot.remote.SsiotService"
@@ -147,6 +153,8 @@
         <activity
             android:name=".question.QuestionDetailListActivity"
             android:label="@string/app_name"
+            android:configChanges="orientation|keyboardHidden"
+            android:windowSoftInputMode="adjustPan"
             android:screenOrientation="portrait" />
         
         <activity
@@ -240,6 +248,17 @@
             android:name=".VideoListActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".SettingActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+        
+        <activity
+            android:name="com.ssiot.remote.UpdateDialogActivity"
+            android:label="@string/app_name"
+            android:theme="@style/MyDialogStyle"
+            android:screenOrientation="portrait" />
+<!--         android:theme="@android:style/Theme.Dialog" -->
 
     </application>
     

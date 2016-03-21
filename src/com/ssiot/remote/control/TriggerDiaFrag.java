@@ -54,7 +54,7 @@ public class TriggerDiaFrag extends DialogFragment{
     private Bundle mBundle;
     ArrayList<String> deviceNames = new ArrayList<String>();
     ArrayList<Integer> deviceNos = new ArrayList<Integer>();
-    private String userkey = MainActivity.mUniqueID;
+    private String userkey;// = MainActivity.mUniqueID;//TODO in SSIOT.apk
     private boolean isTriMODE = true;
     
     private Spinner mDeviceSpinner;
@@ -126,6 +126,7 @@ public class TriggerDiaFrag extends DialogFragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        userkey = Utils.getStrPref(Utils.PREF_USERKEY, getActivity());
         mBundle = getArguments();
         deviceNames = mBundle.getStringArrayList(Utils.BUN_DEVICE_NAMES);
         deviceNos = mBundle.getIntegerArrayList(Utils.BUN_DEVICE_NOS);

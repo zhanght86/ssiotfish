@@ -511,7 +511,7 @@ public class DataAPI {
     /// <returns></returns>
     public static SsiotResult GetData(String grainsize, String valuetype, String begintime, String endtime, String orderby, int beginindex, int endindex, 
             boolean unit, int range, List<SensorViewModel> sensorlist, String nodenolist) {//TODO20160115临时改的 _old
-        return mLiveDataSevice.GetData(grainsize, valuetype, begintime, endtime, orderby, beginindex, endindex, unit, range, sensorlist, nodenolist);
+        return mLiveDataSevice.GetData_3(grainsize, valuetype, begintime, endtime, orderby, beginindex, endindex, unit, range, sensorlist, nodenolist);
     }
     
     public static SsiotResult GetData_old(String grainsize, String valuetype, String begintime, String endtime, String orderby, int beginindex, int endindex, 

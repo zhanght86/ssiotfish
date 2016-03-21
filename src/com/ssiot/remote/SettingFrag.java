@@ -1,26 +1,13 @@
 package com.ssiot.remote;
 
-import android.R.integer;
-import android.annotation.SuppressLint;
-import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
-import android.app.Dialog;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -33,8 +20,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.ProgressBar;
-import android.widget.RemoteViews;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,56 +32,17 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Timer;
+
+import com.ssiot.fish.FishMainActivity;
 import com.ssiot.fish.R;
 
 public class SettingFrag extends Fragment{
     public static final String tag = "SettingFragment";
     private FSettingBtnClickListener mFSettingBtnClickListener;
     
-    private TextView mVersionTextView;
     private TextView mVerStatusView;
     HashMap<String, String> mHashMap;
-    private int remoteVersion = 0;
     private SharedPreferences mPref;
-    
-    private String showText = "";
-    private static final int MSG_GETVERSION_END = 1;
-    private static final int MSG_PROGRESS_UPDATE = 2;
-    private static final int MSG_DOWNLOAD_FINISH = 3;
-    private static final int MSG_SHOWTEXT = 4;
-//    private Handler mHandler = new Handler(){
-//        public void handleMessage(android.os.Message msg) {
-//            switch (msg.what) {
-//                case MSG_GETVERSION_END:
-//                    if (remoteVersion == 0){
-//                        Toast.makeText(getActivity(), "未获取到最新版本信息", Toast.LENGTH_SHORT).show();
-//                        
-//                    } else if (remoteVersion > getCurVersionCode()){
-//                        if (null != mVerStatusView){
-//                            mVerStatusView.setText("有新版本");
-//                        }
-//                        showNoticeDialog();
-//                    } else if (remoteVersion == getCurVersionCode()){
-//                        if (null != mVerStatusView){
-//                            mVerStatusView.setText("已是最新");
-//                        }
-//                    } else {
-//                        Toast.makeText(getActivity(), "版本错误", Toast.LENGTH_SHORT).show();
-//                    }
-//                        
-//                    break;
-//                case MSG_PROGRESS_UPDATE:
-//                    break;
-//                case MSG_DOWNLOAD_FINISH:
-//                    break;
-//                case MSG_SHOWTEXT:
-//                    Toast.makeText(getActivity(), showText, Toast.LENGTH_SHORT).show();
-//                    break;
-//                default:
-//                    break;
-//            }
-//        };
-//    };
     
     public static final String ACTION_SSIOT_UPDATE = "com.ssiot.remote.update";
     BroadcastReceiver updateBroadcastReceiver = new BroadcastReceiver(){
@@ -125,7 +71,6 @@ public class SettingFrag extends Fragment{
         // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        mFSettingBtnClickListener = (FSettingBtnClickListener) getActivity();
         getActivity().registerReceiver(updateBroadcastReceiver, new IntentFilter(ACTION_SSIOT_UPDATE));
         mPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
     }
@@ -134,11 +79,11 @@ public class SettingFrag extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // TODO Auto-generated method stub
         View v = inflater.inflate(R.layout.fragment_setting, container, false);
-        mVersionTextView = (TextView) v.findViewById(R.id.app_version);
+        TextView mVersionTextView = (TextView) v.findViewById(R.id.app_version);
         mVerStatusView = (TextView) v.findViewById(R.id.app_version_status);
         String text = getActivity().getResources().getString(R.string.app_name) + getCurVersionName(getActivity());
         mVersionTextView.setText(text);
-        Button b = (Button) v.findViewById(R.id.checkupdate);
+        View b = (View) v.findViewById(R.id.checkupdate);
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -149,9 +94,16 @@ public class SettingFrag extends Fragment{
                 if (UpdateManager.updating){
                     Toast.makeText(getActivity(), "更新正在运行,请等待。", Toast.LENGTH_SHORT).show();
                 } else {
-                    if (null != mFSettingBtnClickListener){
-                        mFSettingBtnClickListener.onFSettingBtnClick();
+//                    if (null != mFSettingBtnClickListener){
+//                        mFSettingBtnClickListener.onFSettingBtnClick();
+//                    }
+                    UpdateManager mUpdaManager = new UpdateManager(getActivity());
+                    if (mPref.getBoolean(Utils.PREF_AUTOUPDATE, true) == false){
+                        Editor editor = mPref.edit();
+                        editor.putBoolean(Utils.PREF_AUTOUPDATE, true);
+                        editor.commit();
                     }
+                    mUpdaManager.startGetRemoteVer();
                 }
             }
         });

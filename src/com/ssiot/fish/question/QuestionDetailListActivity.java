@@ -52,6 +52,7 @@ public class QuestionDetailListActivity extends HeadActivity{
                     if (msg.arg1 > 0){
 //                        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
                         mEditText.setText("");
+                        qModel._replyCount ++;
                         new GetAnswerThread().start();
                     }
                     break;
@@ -64,8 +65,6 @@ public class QuestionDetailListActivity extends HeadActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         hideActionBar();
-      //启动activity时不自动弹出软键盘
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         mPref = PreferenceManager.getDefaultSharedPreferences(QuestionDetailListActivity.this);
         qModel = (QuestionModel) getIntent().getSerializableExtra("questionmodel");
         if (null == qModel){

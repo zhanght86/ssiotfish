@@ -38,67 +38,10 @@ public class MoniAndCtrlActivity extends HeadActivity implements FSettingBtnClic
     private Notification mNoti;
     private final static String TAG_HEADER_TAB = "tag_header_tab";
     
-    public static final int MSG_GETVERSION_END = 1;
-    public static final int MSG_DOWNLOADING_PREOGRESS = 2;
-    public static final int MSG_DOWNLOAD_FINISH = 3;
-    public static final int MSG_SHOWERROR = 4;
-    public static final int MSG_DOWNLOAD_CANCEL = 5;
-    private Handler mHandler = new Handler(){
-        public void handleMessage(android.os.Message msg) {
-            switch (msg.what) {
-                case MSG_GETVERSION_END:
-                    if (msg.arg1 <= 0){//大多是网络问题
-                        Intent i = new Intent(SettingFrag.ACTION_SSIOT_UPDATE);
-                        i.putExtra("checkresult", 0);
-                        sendBroadcast(i);
-                    } else if (msg.arg1 > msg.arg2){//remoteversion > curVersion
-                        HashMap<String, String> mVerMap = (HashMap<String, String>) msg.obj;
-                        showUpdateChoseDialog(mVerMap);
-                        
-                        Intent i = new Intent(SettingFrag.ACTION_SSIOT_UPDATE);
-                        i.putExtra("checkresult", 1);
-                        sendBroadcast(i);
-                    } else if (msg.arg1 == msg.arg2){
-                        Intent i = new Intent(SettingFrag.ACTION_SSIOT_UPDATE);
-                        i.putExtra("checkresult", 2);
-                        sendBroadcast(i);
-                    } else {
-                        Toast.makeText(MoniAndCtrlActivity.this, "本地版本高于服务器版本", Toast.LENGTH_SHORT).show();
-                    }
-                    break;
-                case MSG_DOWNLOADING_PREOGRESS:
-                    Log.v(tag, "-------PREOGRESS----" +msg.arg1 + " " + (null != mNoti));
-                    int pro = msg.arg1;
-                    if (null != mNoti){
-                        NotificationManager mnotiManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-//                        mNoti.contentView.setProgressBar(R.id.noti_progress, 100, pro, false);
-//                        mNoti.contentView.setTextViewText(R.id.noti_text, "" + pro);
-                        mNoti.setLatestEventInfo(MoniAndCtrlActivity.this, "正在更新", "已下载：" + pro + "%", 
-                                PendingIntent.getActivity(MoniAndCtrlActivity.this, -1, new Intent(""), 0));
-                        mnotiManager.notify(UpdateManager.NOTIFICATION_FLAG, mNoti);
-                    }
-                    break;
-                case MSG_DOWNLOAD_FINISH:
-                    NotificationManager mnotiManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                    mnotiManager.cancel(UpdateManager.NOTIFICATION_FLAG);
-                    mUpdaManager.installApk();
-                    break;
-                case MSG_SHOWERROR:
-                    NotificationManager mManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                    mManager.cancel(UpdateManager.NOTIFICATION_FLAG);
-                    Toast.makeText(MoniAndCtrlActivity.this, "下载出现错误", Toast.LENGTH_LONG).show();
-                    break;
-
-                default:
-                    break;
-            }
-        };
-    };
-    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        hideActionBar();
+//        hideActionBar();
         setContentView(R.layout.activity_main);
         mPref = PreferenceManager.getDefaultSharedPreferences(this);
         defaulttabInt = getIntent().getIntExtra("defaulttab", 1);
@@ -124,10 +67,7 @@ public class MoniAndCtrlActivity extends HeadActivity implements FSettingBtnClic
             Log.v(tag, "---------------fragcount&&&&&&&&&&:"+getSupportFragmentManager().getBackStackEntryCount());
         }
         
-        if (mPref.getBoolean(Utils.PREF_AUTOUPDATE, true) == true){
-            mUpdaManager = new UpdateManager(this, mHandler);
-            mUpdaManager.startGetRemoteVer();
-        }
+        
     }
     
     public final static int REQUEST_CODE_CTR_CIRCLE = 2;
@@ -181,7 +121,7 @@ public class MoniAndCtrlActivity extends HeadActivity implements FSettingBtnClic
     @Override
     public void onFSettingBtnClick() {
         if (mUpdaManager == null){
-            mUpdaManager = new UpdateManager(this, mHandler);
+            mUpdaManager = new UpdateManager(this);
         }
         if (mPref.getBoolean(Utils.PREF_AUTOUPDATE, true) == false){
             Editor editor = mPref.edit();
@@ -191,35 +131,4 @@ public class MoniAndCtrlActivity extends HeadActivity implements FSettingBtnClic
         mUpdaManager.startGetRemoteVer();
     }
     
-    private void showUpdateChoseDialog(HashMap<String, String> mVerMap){
-        final HashMap<String, String> tmpMap = mVerMap;
-        AlertDialog.Builder builder =new Builder(this);
-        builder.setTitle(R.string.soft_update_title);
-        builder.setMessage(R.string.soft_update_info);
-        builder.setPositiveButton(R.string.soft_update_updatebtn, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                mNoti = mUpdaManager.showNotification(MoniAndCtrlActivity.this);
-//                        .setProgressBar(R.id.noti_progress, 100, 0, false);
-                mUpdaManager.startDownLoad(tmpMap);
-//                showDownloadDialog(tmpMap);
-                dialog.dismiss();
-                Editor e = mPref.edit();
-                e.putBoolean(Utils.PREF_AUTOUPDATE, true);
-                e.commit();
-                Toast.makeText(MoniAndCtrlActivity.this, "转向后台下载，可在通知栏中查看进度。", Toast.LENGTH_SHORT).show();
-            }
-        });
-        builder.setNegativeButton(R.string.soft_update_later, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Editor e = mPref.edit();
-                e.putBoolean(Utils.PREF_AUTOUPDATE, false);
-                e.commit();
-                dialog.dismiss();
-            }
-        });
-        Dialog noticeDialog = builder.create();
-        noticeDialog.show();
-    }
 }

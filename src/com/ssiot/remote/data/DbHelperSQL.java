@@ -161,7 +161,7 @@ public class DbHelperSQL{
     //注意：问号与arrylist个数一致
     public SsiotResult Query(String SQLString, ArrayList<String> cmdParams){
         synchronized (objlock) {
-            Log.v(tag, "1#带参数Query####" + SQLString);
+            Log.v(tag, "1#带参数Query####" + SQLString + "------------" +toLogString(cmdParams));
             long time1 = SystemClock.uptimeMillis();
             try {
                 
@@ -421,6 +421,16 @@ public class DbHelperSQL{
         }
         for (int i = 0; i < ar.size(); i ++){
             str += " "+ar.get(i);
+        }
+        return str;
+    }
+    
+    private String toLogString(List list){
+        String str = "";
+        if (null != list && list.size() > 0){
+            for (int i = 0; i < list.size(); i ++){
+                str += list.get(i).toString();
+            }
         }
         return str;
     }

@@ -97,7 +97,9 @@ public class MoniChartFrag2 extends BaseFragment{
                     if (null != mListData){
                         initChartSpinner(mListData);
                         initChart();
-                    }
+                    } else {
+						Toast.makeText(mContext, "无数据", Toast.LENGTH_SHORT).show();
+					}
                     break;
 
                 default:

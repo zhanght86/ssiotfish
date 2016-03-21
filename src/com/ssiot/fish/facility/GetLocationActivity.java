@@ -24,9 +24,10 @@ import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.model.LatLng;
+import com.ssiot.fish.HeadActivity;
 import com.ssiot.fish.R;
 
-public class GetLocationActivity extends Activity {
+public class GetLocationActivity extends HeadActivity {
     private static final String tag = "GetLocationActivity";
 
     private MapView mMapView;
@@ -36,6 +37,7 @@ public class GetLocationActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        hideActionBar();
         SDKInitializer.initialize(getApplicationContext());
         setContentView(R.layout.activity_map);
         mMapView = (MapView) findViewById(R.id.mapview);
@@ -52,10 +54,11 @@ public class GetLocationActivity extends Activity {
         mBaiduMap.setMapStatus(mMapStatusUpdate);
         InitLocation();
         completeLis();
-        findViews();
+        initTitleView();
     }
     
-    private void findViews(){
+    private void initTitleView(){
+        initTitleLeft(R.id.title_bar_left);
         TextView mRightView = (TextView) findViewById(R.id.title_bar_right);
         mRightView.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -44,11 +44,12 @@ import android.widget.*;
 import android.support.v7.app.ActionBarActivity;
 
 import com.ssiot.fish.FishMainActivity;
+import com.ssiot.fish.HeadActivity;
 import com.ssiot.fish.R;
 import com.ssiot.remote.data.business.User;
 import com.ssiot.remote.data.model.UserModel;
 
-public class LoginActivity extends ActionBarActivity {
+public class LoginActivity extends HeadActivity {
     private static final String tag = "LoginActivity";
     private EditText logEditText;
     private EditText pwdEditText;
@@ -111,8 +112,8 @@ public class LoginActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // ����ȫ��
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+//                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_login);
         /*
          * LayoutInflater layout=this.getLayoutInflater(); View

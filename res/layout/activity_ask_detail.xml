@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/base_activity_rootview"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
 
 <!--     <com.satan.peacantdoctor.base.ui.BaseTitleBar -->
 <!--         android:id="@id/title_bar" -->
@@ -139,7 +139,7 @@
 <!--     jingbo add this  copy from activity_chat.xml-->
     <RelativeLayout
         android:id="@+id/ask_detail_tool"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:padding="6.0dip" >
@@ -194,8 +194,8 @@
 
     <com.ssiot.fish.question.widget.VerticalSwipeRefreshLayout
         android:id="@+id/shop_cmt_listview"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_above="@id/ask_detail_tool"
         android:layout_below="@id/title_bar_detail" />
 
