@@ -38,7 +38,7 @@ public class BrowserActivity extends HeadActivity{
         setContentView(R.layout.activity_web_browser);
         
         webView = (WebView) findViewById(R.id.webview);
-        webView.getSettings().setBuiltInZoomControls(false);// 设置出现缩放工具
+        webView.getSettings().setBuiltInZoomControls(true);// 设置出现缩放工具
         webView.getSettings().setUseWideViewPort(true);//扩大比例的缩放
         webView.getSettings().setSupportZoom(true);// 设置可以支持缩放 
         webView.getSettings().setLoadWithOverviewMode(true); 

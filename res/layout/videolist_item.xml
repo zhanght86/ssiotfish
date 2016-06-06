@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    android:descendantFocusability="blocksDescendants"
     android:layout_height="wrap_content" >
     
 <!--     36 20 -->
@@ -42,10 +43,6 @@
             />
     </RelativeLayout>
 
-    
-
-    
-    
     <ImageView 
         android:id="@+id/arrow"
         android:layout_width="wrap_content"
@@ -72,6 +69,18 @@
         android:layout_centerVertical="true"
         android:layout_toLeftOf="@id/arrow"
         android:paddingRight="5dp"
-        android:src="@null"/>
-
+        android:visibility="invisible"
+        android:src="@drawable/connect_fail_2"/>
+    
+    <TextView 
+        android:id="@+id/startysyun"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/status"
+        android:padding="4dp"
+        android:layout_marginRight="4dp"
+        android:background="@drawable/bg_navitem_normal"
+        android:visibility="gone"
+        android:text="萤石云播放"/>
 </RelativeLayout>

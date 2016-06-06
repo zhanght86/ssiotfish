@@ -20,6 +20,7 @@
 
     <color name="white">#ffffffff</color>
     <color name="red">#ffee0000</color>
+    <color name="black">#ff000000</color>
     <color name="grey">#ffaaaaaa</color>
     <drawable name="grey">#ffaaaaaa</drawable>
     <drawable name="ssiot_green">#ff69c911</drawable>
@@ -84,4 +85,13 @@
 	<color name="master_card_time_color">#ff929292</color>
 	<color name="master_gold_color">#fffcba42</color>
 	<color name="master_red_color">#ffd0132a</color>
+<!-- 	copy 萤石云 -->
+	<color name="gray_text">#adadad</color>
+	<color name="viewfinder_frame">#929292</color>
+	<color name="common_sub_text">#888888</color>
+	<color name="source_detection_btn_color">#48a9fb</color>
+	<color name="black_bg">#000000</color>
+	<color name="dark_bg_70p">#bb000000</color>
+	<color name="common_bg">#f0f0f3</color>
+	<color name="quality_focused_color">#448cf3</color>
 </resources>

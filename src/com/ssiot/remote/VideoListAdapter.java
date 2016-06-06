@@ -1,6 +1,7 @@
 package com.ssiot.remote;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,14 +14,17 @@ import com.ssiot.remote.data.model.VLCVideoInfoModel;
 
 import java.util.List;
 import com.ssiot.fish.R;
+import com.videogo.ui.realplay.EZPrepareAct;
 
 public class VideoListAdapter extends BaseAdapter{
     private static String tag = "VideoListAdapter";
     private List<VLCVideoInfoModel> mDataList;
     private LayoutInflater mInflater;
+    private Context mContext;
     
     public VideoListAdapter(Context c,List<VLCVideoInfoModel> ss){
         Log.v(tag, "----------videolistsize:"+ss.size());
+        mContext = c;
         mDataList = ss;
         mInflater = LayoutInflater.from(c);
     }
@@ -55,22 +59,41 @@ public class VideoListAdapter extends BaseAdapter{
             holder.typeText = (TextView) convertView.findViewById(R.id.videoitem_type);
 //            holder.arrow = (ImageView) convertView.findViewById(R.id.arrow);
             holder.status = (ImageView) convertView.findViewById(R.id.status);
+            holder.ysYun = (TextView) convertView.findViewById(R.id.startysyun);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        VLCVideoInfoModel vModel = mDataList.get(position);
-        holder.imageView.setImageResource(vModel._tcpport == 0 ? R.drawable.video_rtsp_6 : R.drawable.video_dahua_6);
+        final VLCVideoInfoModel vModel = mDataList.get(position);
+        holder.imageView.setImageResource(vModel._devicetype == 0 ? R.drawable.video_rtsp_6 : R.drawable.video_dahua_6);
         holder.textView.setText(vModel._address.trim());
         holder.video_type.setText("设备类型：" +vModel._type);
         holder.typeText.setText(vModel._type);
         if(vModel.status == 1){
+            holder.status.setVisibility(View.VISIBLE);
             holder.status.setImageResource(R.drawable.connect_ok_green);
         } else if (vModel.status == 2){
+            holder.status.setVisibility(View.VISIBLE);
             holder.status.setImageResource(R.drawable.connect_fail_2);
         } else {
-            holder.status.setImageBitmap(null);
+            holder.status.setVisibility(View.INVISIBLE);
         }
+        holder.ysYun.setOnClickListener(null);
+        if (vModel._ssiotezviz){
+            holder.ysYun.setVisibility(View.VISIBLE);
+            holder.ysYun.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent ysPrepareAct = new Intent(mContext,EZPrepareAct.class);
+                    ysPrepareAct.putExtra("deviceserial", vModel._serialno);
+                    ysPrepareAct.putExtra("verifycode", "");
+                    mContext.startActivity(ysPrepareAct);
+                }
+            });
+        } else {
+            holder.ysYun.setVisibility(View.GONE);
+        }
+        
         return convertView;
     }
     
@@ -81,6 +104,7 @@ public class VideoListAdapter extends BaseAdapter{
         TextView typeText;
 //        ImageView arrow;
         ImageView status;
+        TextView ysYun;
     }
     
 }

@@ -94,7 +94,7 @@ public class VLCVideoInfo {
     //获得数据列表
     private SsiotResult GetList(String strWhere) {
         StringBuilder strSql = new StringBuilder();
-        strSql.append("select VLCVideoInfoID,AreaID,AreaName,UserName,PassWord,URL,IP,Port,Address,Channel,Subtype,Type,CreateTime,Remark,Longitude,Latitude,TcpPort ");
+        strSql.append("select * ");
         strSql.append(" FROM VLCVideoInfo ");
         if (strWhere.trim() != "") {
             strSql.append(" where " + strWhere);
@@ -135,10 +135,19 @@ public class VLCVideoInfo {
             vModel._type = c.getString("Type");
             try {
                 vModel._tcpport = c.getInt("TcpPort");
+                vModel._devicetype = c.getInt("DeviceType");
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            if (c.findColumn("FacilitiesID") > 0){
+                vModel._facilitiesid = c.getInt("FacilitiesID");
+            }
             vModel._remark = c.getString("Remark");
+            vModel._devicetype = c.getInt("DeviceType");
+            vModel._serialno = c.getString("SerialNo");
+            vModel._verifycode = c.getString("VerifyCode");
+            vModel._ssiotezviz = c.getBoolean("SSiotEzviz");
+            
 //            Log.v(tag, "-------tcpport---------------------------------" + vModel._tcpport + vModel._address);
             // TODO
             return vModel;

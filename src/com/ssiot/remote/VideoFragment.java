@@ -168,6 +168,7 @@ public class VideoFragment extends Fragment{
                         intent.putExtra("videopswd", vModel._password);
                         intent.putExtra("addrtitle", vModel._address);
                         intent.putExtra("tcpport", vModel._tcpport);
+                        intent.putExtra("devicetype", vModel._devicetype);
                         startActivity(intent);
                     } else if ("海康".equals(vModel._type) && vModel._tcpport != 0){ 
                         Intent intent = new Intent(getActivity(), VideoActivity.class);
@@ -177,6 +178,7 @@ public class VideoFragment extends Fragment{
                         videoBundle.putString("videopswd", vModel._password);
                         videoBundle.putString("addrtitle", vModel._address);
                         videoBundle.putInt("tcpport", vModel._tcpport);
+                        videoBundle.putInt("devicetype", vModel._devicetype);
                         intent.putExtra("videobundle", videoBundle);
                         startActivity(intent);
                     } else {

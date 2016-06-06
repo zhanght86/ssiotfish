@@ -63,6 +63,7 @@ public class HCLiveFrag extends BaseFragment{
     private String mStrUser = "admin";
     private String mStrPwd = "js123456";
     private String mTitle = "海康视频监控";
+    private int mDeviceType = 0;
     
     private static final int MSG_SHOW_MSG = 1;
     private static final int MSG_SHOW_DEFAULT_MSG = 2;
@@ -92,6 +93,7 @@ public class HCLiveFrag extends BaseFragment{
         mStrPwd = getArguments().getString("videopswd");
         mPort = getArguments().getInt("tcpport");
         mTitle = getArguments().getString("addrtitle");
+        mDeviceType = getArguments().getInt("devicetype");
         initeSdk();
         PowerManager pm = (PowerManager) getActivity().getSystemService(Context.POWER_SERVICE);
         mWakeLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, tag);
@@ -109,7 +111,17 @@ public class HCLiveFrag extends BaseFragment{
         m_osurfaceView.getHolder().addCallback(callback);
         setBigTitle(v);
         RelativeLayout rLayout = (RelativeLayout) v.findViewById(R.id.ptzroot);
-        initPTZ(rLayout);
+        
+        if (mDeviceType != 1){
+            rLayout.setVisibility(View.GONE);
+            v.findViewById(R.id.video_divider).setVisibility(View.GONE);
+            View squareLay = v.findViewById(R.id.camera_square);
+            RelativeLayout.LayoutParams rlp = (RelativeLayout.LayoutParams) squareLay.getLayoutParams();
+            rlp.addRule(RelativeLayout.CENTER_VERTICAL);
+            squareLay.setLayoutParams(rlp);
+        } else {
+            initPTZ(rLayout);
+        }
         sendShowMyDlg("正在连接");
         new Thread(new Runnable() {
             @Override

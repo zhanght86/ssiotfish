@@ -1,6 +1,8 @@
 package com.ssiot.remote.data.model;
 
-public class VLCVideoInfoModel{
+import java.io.Serializable;
+
+public class VLCVideoInfoModel implements Serializable{
     public int _vlcvideoinfoid;
     public int _areaid;
     public String _areaname;
@@ -18,6 +20,11 @@ public class VLCVideoInfoModel{
     public String _longitude;
     public String _latitude;
     public int _tcpport;
+    public int _facilitiesid = 0;
+    public int _devicetype = 0;
+    public String _serialno;
+    public String _verifycode = "";
+    public boolean _ssiotezviz = false;
     
     //非数据库内的值，表示连接状态 0=未知，1= online；2=fail
     public int status = 0;//

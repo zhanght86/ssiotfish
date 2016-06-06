@@ -70,6 +70,7 @@ public class DahuaLiveActivity extends ActionBarActivity{
     private String mStrPassWord = "";
     
     private String mAddrTitle = "";
+    private int mDeviceType = 0;
     
     private Dialog mDialog;
     //-----------------------------------
@@ -141,6 +142,7 @@ public class DahuaLiveActivity extends ActionBarActivity{
         mStrUserName = getIntent().getStringExtra("videoname");
         mStrPassWord = getIntent().getStringExtra("videopswd");
         mAddrTitle = getIntent().getStringExtra("addrtitle");
+        mDeviceType = getIntent().getIntExtra("devicetype", 0);
         Log.v(tag, ""+mStrIp + " "+mStrport + ""+ mStrUserName +" " +mStrPassWord + " " +mAddrTitle);
 //        mStrIp = "112.4.228.23";
 //        mStrport = "37771";
@@ -152,7 +154,16 @@ public class DahuaLiveActivity extends ActionBarActivity{
         m_PlayView = (SurfaceView)findViewById(R.id.view_PlayWindow);
         View m_layoutPtz = View.inflate(this, R.layout.dahua_ptzview, null);
         RelativeLayout rLayout = (RelativeLayout) findViewById(R.id.ptzroot);
-        initPTZ(rLayout);
+        if (mDeviceType != 1){
+            rLayout.setVisibility(View.GONE);//这句才有效
+            findViewById(R.id.video_divider).setVisibility(View.GONE);
+            View squareLay = findViewById(R.id.camera_square);
+            RelativeLayout.LayoutParams rlp = (RelativeLayout.LayoutParams) squareLay.getLayoutParams();
+            rlp.addRule(RelativeLayout.CENTER_VERTICAL);
+            squareLay.setLayoutParams(rlp);
+        } else {
+            initPTZ(rLayout);
+        }
         showDialog();
         new Thread(new Runnable() {
             @Override
