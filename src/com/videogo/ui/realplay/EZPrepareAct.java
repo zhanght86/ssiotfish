@@ -61,8 +61,8 @@ public class EZPrepareAct extends Activity{//备注：EZOpenSDK.jar中包含了A
         setContentView(R.layout.dialog_loading);
         deviceSerial = getIntent().getStringExtra("deviceserial");
         verifyCode = getIntent().getStringExtra("verifycode");
-        deviceSerial = "585915553";//585915553 TODO 
-        verifyCode = "";
+//        deviceSerial = "585915553";//585915553 TODO 
+//        verifyCode = "";
         new GetTokenThread().start();
     }
     

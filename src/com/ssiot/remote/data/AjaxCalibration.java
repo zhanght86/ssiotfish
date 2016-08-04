@@ -180,7 +180,7 @@ public class AjaxCalibration{
                     settingModel_New._other = 0;
                     settingModel_New._value = value;
                     Timestamp dt = new Timestamp(System.currentTimeMillis());
-                    settingModel_New._timespan = (int) dt.getTime()/1000;//TODO
+                    settingModel_New._timespan = (int) (dt.getTime()/1000);//TODO
                     settingModel_New._sendtime = dt;
                     settingModel_New._sendstate = 0; 
                     settingModel_New._resendcount = 0;
@@ -194,7 +194,7 @@ public class AjaxCalibration{
                     settingModel_Add._other = 0; 
                     settingModel_Add._value = value;
                     Timestamp dt = new Timestamp(System.currentTimeMillis());
-                    settingModel_Add._timespan = (int) dt.getTime()/1000;
+                    settingModel_Add._timespan = (int) (dt.getTime()/1000);
                     settingModel_Add._sendtime = dt;
                     int count = settingbll.Add(settingModel_Add);
                     return count > 0;
@@ -209,7 +209,7 @@ public class AjaxCalibration{
                 settingModel._uniqueid = nodeModel._uniqueid;
                 settingModel._value = value;
                 Timestamp dt = new Timestamp(System.currentTimeMillis());
-                settingModel._timespan = (int) dt.getTime()/1000;
+                settingModel._timespan = (int) (dt.getTime()/1000);
                 settingModel._sendtime = dt;
                 int count = settingbll.Add(settingModel);
                 return count > 0;

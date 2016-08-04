@@ -76,14 +76,27 @@
             android:button="@drawable/check_circle_selector"/>
     </RelativeLayout>
     
+    
+    
     <TextView 
-        android:id="@+id/app_info"
+        android:id="@+id/company_info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
-        android:text="更多功能，敬请期待"
+        android:text="雨研·莎菲特 版权所有"
         android:textSize="16sp"/>
+    
+    <TextView 
+        android:id="@+id/app_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@id/company_info"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:text="更多功能，敬请期待"
+        android:textSize="13sp"/>
 </RelativeLayout>

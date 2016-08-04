@@ -136,9 +136,9 @@ public class MoniCalibrationFrag extends BaseFragment{
         });
         
         bdButton.setSelected(true);
-        if (!"c2460cc2-0cec-49e4-9e60-c0dae264".equals(MainActivity.mUniqueID)){//非管理员账户不能进行校准
-            jzButton.setVisibility(View.GONE);
-        }
+//        if (!"c2460cc2-0cec-49e4-9e60-c0dae264".equals(MainActivity.mUniqueID)){//非管理员账户不能进行校准
+//            jzButton.setVisibility(View.GONE);
+//        }
         mSendBtn = (Button) v.findViewById(R.id.cali_send);
         mSendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
