@@ -16,14 +16,7 @@
         android:src="@drawable/bg_contact_avatar_48"
         android:scaleType="centerCrop" />
 
-    <TextView
-        android:id="@+id/textViewOrg"
-        style="@style/itemTitleText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5.0dip"
-        android:layout_toRightOf="@id/imageViewIcon"
-        android:text="未知用户名" />
+    
 
     <CheckBox
         android:id="@+id/checkBoxSel"
@@ -35,6 +28,16 @@
         android:checked="false"
         android:visibility="visible" />
     
+    
+    <TextView
+        android:id="@+id/textViewOrg"
+        style="@style/itemTitleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5.0dip"
+        android:layout_toRightOf="@id/imageViewIcon"
+        android:layout_toLeftOf="@id/checkBoxSel"
+        android:text="未知用户名" />
     
 
 <!--     <TextView -->

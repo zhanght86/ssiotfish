@@ -7,9 +7,12 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
@@ -22,8 +25,10 @@ import com.ssiot.remote.SsiotService;
 import com.ssiot.remote.UpdateDialogActivity;
 import com.ssiot.remote.UpdateManager;
 import com.ssiot.remote.Utils;
+import com.ssiot.remote.aliyun.MQTTRecvMsg;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 
 public class SsiotReceiver extends BroadcastReceiver{
@@ -34,11 +39,23 @@ public class SsiotReceiver extends BroadcastReceiver{
     public static final String ACTION_SSIOT_V_DOWNLOAD_PROGRESS = "com.ssiot.fish.update.downloadprogress";
     public static final String ACTION_SSIOT_V_DOWNLOAD_FINISH = "com.ssiot.fish.update.downfinish";
     public static final String ACTION_SSIOT_V_DOWNLOAD_ERROR = "com.ssiot.fish.update.error";
+    public static final String ACTION_NOTIFICAION_DELETE = "com.ssiot.fish.notification.delete";
     
     public static final int NOTIFICATION_FLAG = 1; 
     Notification mProgressNoti;
     @Override
     public void onReceive(Context context, Intent intent) {
+    	new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					MQTTRecvMsg.main();//TODO 测试阿里云mqtt
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			}
+		}).start();
+    	
         
         String action = intent.getAction();
         Log.v(tag, "-----onReceive-----" + action +" "+ intent);
@@ -99,6 +116,11 @@ public class SsiotReceiver extends BroadcastReceiver{
             NotificationManager mManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             mManager.cancel(UpdateManager.NOTIFICATION_FLAG);
             Toast.makeText(context, "下载出现错误", Toast.LENGTH_LONG).show();
+        } else if (ACTION_NOTIFICAION_DELETE.equals(action)){
+        	SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        	Editor e = sp.edit();
+        	e.putString(Utils.PREF_LAST_OFFLINE, "");
+        	e.commit();
         }
     }
     

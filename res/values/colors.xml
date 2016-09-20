@@ -68,7 +68,26 @@
 	<color name="transparent">#00000000</color>
 	<color name="c333333">#ff333333</color>
 	<color name="itemPressColor">#ffc7d9bc</color>
-
+	<color name="device_offline_actived">#ffda646d</color>
+	<color name="device_warning_actived">#ffffb06e</color>
+	<color name="device_connect_actived">#ff2d8931</color>
+	<color name="device_connect_running">#ff00a0e9</color>
+	<color name="device_working_actived">#ff3394da</color>
+	<color name="Gray">#ffafafaf</color>
+	<color name="unRead">#ffff8c69</color>
+	<color name="tcagri_theme_main_bgcolor">#ff2d8931</color>
+	<color name="da">#ffdadada</color>
+	<color name="e5">#ffe5e5e5</color>
+	
+	<color name="cicleColor">#ffcccccc</color>
+	<color name="shnesYellow">#ffe9d255</color>
+	<color name="yellow">#fff88e12</color>
+	<color name="help_button_view">#ffcccccc</color>
+	<color name="sta_line">#ff579522</color>
+	<color name="sta_high">#ff76bbb0</color>
+	<color name="sta_low">#ffb4dda1</color>
+	<color name="device_report_normal">#f02f7a16</color>
+	
 	
 <!-- 	copy 渔业通 还是农医生？？-->
 	<color name="master_text_color_1">#ff333333</color>
@@ -85,6 +104,12 @@
 	<color name="master_card_time_color">#ff929292</color>
 	<color name="master_gold_color">#fffcba42</color>
 	<color name="master_red_color">#ffd0132a</color>
+	
+<!-- 	copy from FloatActionMenu -->
+    <color name="default_normal">#ff0099cc</color> <!-- android.R.color.holo_blue_dark -->
+    <color name="default_pressed">#ff33b5e5</color> <!-- android.R.color.holo_blue_light -->
+    <color name="default_disabled">#aaa</color><!-- android.R.color.darker_gray -->
+
 <!-- 	copy 萤石云 -->
 	<color name="gray_text">#adadad</color>
 	<color name="viewfinder_frame">#929292</color>

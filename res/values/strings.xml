@@ -494,8 +494,33 @@
 	<string name="setTime">持续时长</string>
 	<string name="setSpand">每次间隔</string>
 	<string name="needNo">不需要</string>
+	<string name="need">需要</string>
 	<string name="toggleYes">是</string>
 	<string name="toggleNo">不</string>
+	<string name="setControlTimeTitle">时段</string>
+	<string name="startTime">开始时间</string>
+	<string name="endTime">结束时间</string>
+	<string name="errorTimeStarMoreEnd">开始时间不能大于结束时间</string>
+	<string name="setInitDevice1Title">打开条件</string>
+	<string name="setInitDevice2TitleStop">停止条件</string>
+	<string name="setInitDevice2TitleClose">关闭条件</string>
+	<string name="opMore">大于</string>
+	<string name="opLess">小于</string>
+	<string name="susTime">2</string>
+	<string name="minute">分钟</string>
+	<string name="intervalTime">15</string>
+	<string name="state">状态</string>
+	<string name="sensorSetStartState">已启用。当数据达到预警值时将发出预警</string>
+	<string name="sensorSetControlStartState">已启用。当数据达到启动时机时将发出预警</string>
+	<string name="sensorSetStopState">禁用</string>
+	<string name="back">取消</string>
+	<string name="sure">确定</string>
+	<string name="selSenDevice">选择传感器</string>
+	<string name="noDataLocalSensorStr">没有和该设备连接的本地传感器设备</string>
+	<string name="msg_sensor_summary">当传感器%1$s%2$s预警%3$s时发出预警。</string>
+	
+	
+	
 <!-- 	萤石云 -->
 	<string name="countdown">留言时长还剩%d秒</string>
 	<string name="secure_validate">硬件安全验证</string>

@@ -164,13 +164,13 @@ public class LatestData{
     public LatestDataModel DataRowToModel(ResultSet row){
         LatestDataModel lm = new LatestDataModel();
         try {
-            lm._latestdataid = Integer.parseInt(row.getString("LatestDataID"));
-//            lm._collectiontime = row.getTime("CollectionTime");//TODO not time ;is DateTime
+            lm._latestdataid = row.getInt("LatestDataID");
+            lm._collectiontime = row.getTimestamp("CollectionTime");
             lm._uniqueid = row.getString("UniqueID");
-            lm._channel = Integer.parseInt(row.getString("Channel"));
-            lm._sensorno = Integer.parseInt(row.getString("SensorNo"));
-            //
-            lm._islive = Integer.parseInt(row.getString("IsLive"));
+            lm._channel = row.getInt("Channel");
+            lm._sensorno = row.getInt("SensorNo");
+            lm._data = row.getFloat("Data");//TODO 其他好多地方这个没用到20160401
+            lm._islive = row.getInt("ISLive");
             return lm;
         } catch (Exception e) {
             e.printStackTrace();

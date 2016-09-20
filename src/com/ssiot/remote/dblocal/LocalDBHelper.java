@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class LocalDBHelper extends SQLiteOpenHelper{
     public static final String TABLE_TRACEPROFILE = "traceprofiles";
     public static final String TABLE_ALARM = "alarmrule";
+    public static final String TABLE_MSG = "msghistory";
     /**  
      *   
      * @param context 应用程序上下文  
@@ -16,7 +17,7 @@ public class LocalDBHelper extends SQLiteOpenHelper{
      *    
      */  
     public LocalDBHelper(Context context) {
-        super(context, "ssiot.db", null , 2);
+        super(context, "ssiot.db", null , 3);
     }  
   
     // 在mydbOpenHelper 在数据库第一次被创建的时候  会执行onCreate();  
@@ -30,6 +31,12 @@ public class LocalDBHelper extends SQLiteOpenHelper{
                 + "ProName varchar,"  
                 + "ProBatchNo varchar,"  
                 + "ProListingDate varchar)"); //integer
+        db.execSQL("create table if not exists msghistory("  
+                + "id integer primary key,"
+                + "TitleStr text,"
+                + "DetailStr text,"
+                + "UrlStr text,"
+                + "CreateTime DATETIME DEFAULT CURRENT_TIMESTAMP)");
 //        db.execSQL("create table if not exists alarmrule("  
 //                + "id integer primary key," 
 //                + "NodeUniqueID varchar,"
@@ -43,7 +50,7 @@ public class LocalDBHelper extends SQLiteOpenHelper{
         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!on update " + oldVersion + " "+newVersion);
 //        db.execSQL("ALTER TABLE localssiot ADD phone VARCHAR(12) NULL ");
         db.execSQL("DROP TABLE IF EXISTS traceprofiles");
-//        db.execSQL("DROP TABLE IF EXISTS alarmrule");
+        db.execSQL("DROP TABLE IF EXISTS msghistory");
         onCreate(db);//一个山寨的方法 http://blog.csdn.net/zhouy1989/article/details/7484715 
         
         //TODO 升级时有问题 如果数据表格不对应！！不会更新 TODO

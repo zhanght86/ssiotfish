@@ -23,6 +23,7 @@ import com.ssiot.remote.data.business.Answer;
 import com.ssiot.remote.data.business.Question;
 import com.ssiot.remote.data.model.AnswerModel;
 import com.ssiot.remote.data.model.QuestionModel;
+import com.ssiot.remote.yun.webapi.WS_Fish;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -52,7 +53,7 @@ public class QuestionDetailListActivity extends HeadActivity{
                     if (msg.arg1 > 0){
 //                        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
                         mEditText.setText("");
-                        qModel._replyCount ++;
+//                        qModel._replyCount ++;
                         new GetAnswerThread().start();
                     }
                     break;
@@ -104,8 +105,11 @@ public class QuestionDetailListActivity extends HeadActivity{
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            int ret = new Answer().Add(model);
-                            int replayadd = new Question().UpdateReplyCount(qModel._id, qModel._replyCount + 1);
+//                            int ret = new Answer().Add(model);
+                            int ret = new WS_Fish().SaveAnswer(model);
+//                            int replayadd = new Question().UpdateReplyCount(qModel._id, qModel._replyCount + 1);
+                            qModel._replyCount ++;
+                            new WS_Fish().SaveQuestion(qModel);
                             Message m = mHandler.obtainMessage(MSG_ADD_END);
                             m.arg1 = ret;
                             mHandler.sendMessage(m);
@@ -130,7 +134,8 @@ public class QuestionDetailListActivity extends HeadActivity{
     private class GetAnswerThread extends Thread{
         @Override
         public void run() {
-            List<AnswerModel> list = new Answer().GetModelList(" QuestionID=" + qModel._id);
+//            List<AnswerModel> list = new Answer().GetModelList(" QuestionID=" + qModel._id);
+        	List<AnswerModel> list = new WS_Fish().GetAnswers(qModel._id);
             datasList.clear();
             if (null != list){
                 datasList.addAll(list);

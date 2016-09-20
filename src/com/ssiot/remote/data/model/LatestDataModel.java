@@ -9,6 +9,6 @@ public class LatestDataModel {
     public String _uniqueid;
     public int _channel;
     public int _sensorno;
-//    public decimal _data;
+    public float _data;
     public int _islive = 0;
 }

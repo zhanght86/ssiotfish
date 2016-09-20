@@ -34,8 +34,15 @@ import com.ssiot.remote.SettingFrag;
 import com.ssiot.remote.SsiotService;
 import com.ssiot.remote.UpdateManager;
 import com.ssiot.remote.Utils;
+import com.ssiot.remote.aliyun.MsgListAct;
+import com.ssiot.remote.aliyun.TxtAct;
 import com.ssiot.remote.data.business.IOTCompany;
 import com.ssiot.remote.expert.DiagnoseFishSelectActivity;
+import com.ssiot.remote.expert.FacilityNodeListAct;
+import com.ssiot.remote.expert.WaterAnalysisLauncherAct;
+import com.ssiot.remote.expert.WaterColorDiagnoseAct;
+import com.ssiot.remote.yun.monitor.MonitorAct;
+import com.ssiot.remote.yun.sta.StatisticsAct;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,11 +55,14 @@ public class FishMainActivity extends HeadActivity{
     
     private UpdateManager mUpdaManager;
     private Notification mNoti;
+    private Context mContext;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mContext = this;
         setContentView(R.layout.activity_main_fish);
+        startService(new Intent(this, SsiotService.class));
         mPref = PreferenceManager.getDefaultSharedPreferences(this);
         gridView1 = (GridView) findViewById(R.id.gridView1);
         initGridView();
@@ -66,17 +76,23 @@ public class FishMainActivity extends HeadActivity{
     private void initGridView(){
         cells = new ArrayList<CellModel>();
         cells.add(new CellModel(R.drawable.cell_cekong,"监测预警", "map_zhengwu"));//测控中心
-        cells.add(new CellModel(R.drawable.cell_data,"控制中心", "map_qiye"));//统计报表
-        cells.add(new CellModel(R.drawable.cell_video,"视频监控", "map_jstg"));//
-        cells.add(new CellModel(R.drawable.cell_renwuzhongxin,"任务中心", "map_zhuisu"));//
+//        cells.add(new CellModel(R.drawable.cell_data,"控制中心", "map_qiye"));//统计报表
+//        cells.add(new CellModel(R.drawable.cell_video,"视频监控", "map_jstg"));//
+        cells.add(new CellModel(R.drawable.cell_data,"数据中心", "xxxxx"));
+//        cells.add(new CellModel(R.drawable.cell_renwuzhongxin,"任务中心", "map_zhuisu"));//
         cells.add(new CellModel(R.drawable.cell_yubingzhengduan,"鱼病诊断", "map_xinxi"));//
+        cells.add(new CellModel(R.drawable.cell_yubingzhengduan,"水色诊断", "map_shuise"));
         cells.add(new CellModel(R.drawable.cell_zhuanjiazaixian,"专家在线", "map_jinrong",CellModel.MODE_URL).setUrl("http://www.zhdcoop.com/"));
         cells.add(new CellModel(R.drawable.cell_shenchanguanli,"生产管理", "map_webbrow"));//
-        cells.add(new CellModel(R.drawable.cell_yuchangguanli,"渔场管理", "map_qiyezaixian"));//
+//        cells.add(new CellModel(R.drawable.cell_yuchangguanli,"渔场管理", "map_qiyezaixian"));//
         cells.add(new CellModel(R.drawable.cell_wuzijiaoyi,"物资交易", "map_yztb"));//
         cells.add(new CellModel(R.drawable.cell_hudongjiaoliu,"互动交流", "map_hudong"));
         cells.add(new CellModel(R.drawable.cell_qiyehuizong,"企业汇总", "bdsj"));//
         cells.add(new CellModel(R.drawable.cell_shichangdongtai,"市场动态", "map_yonghuzhinan"));//
+        cells.add(new CellModel(R.drawable.cell_shichangdongtai,"消息记录", "map_xiaoxi"));//
+        cells.add(new CellModel(R.drawable.cell_shichangdongtai,"水质分析", "map_shuizhifenxi"));//
+        cells.add(new CellModel(R.drawable.cell_shichangdongtai,"气象信息", "map_shuizhifenxi"));//
+        cells.add(new CellModel(R.drawable.cell_shichangdongtai,"技术资讯", "map_shuizhifenxi"));
 //        cells.add(new CellModel(R.drawable.cell_zhengwuguanli,"更新", "map_findupdate"));
         ImageAdapter adapter = new ImageAdapter(this, cells);
         gridView1.setAdapter(adapter);
@@ -100,8 +116,9 @@ public class FishMainActivity extends HeadActivity{
 //                        break;
 //                }
                 if ("监测预警".equals(model.itemText)){
-                    Intent intent = new Intent(FishMainActivity.this, MoniAndCtrlActivity.class);
-                    intent.putExtra("defaulttab", 1);
+//                    Intent intent = new Intent(FishMainActivity.this, MoniAndCtrlActivity.class);
+//                    intent.putExtra("defaulttab", 1);
+                    Intent intent = new Intent(mContext, MonitorAct.class);
                     startActivity(intent);
                 } else if ("控制中心".equals(model.itemText)){
                     Intent intent = new Intent(FishMainActivity.this, MoniAndCtrlActivity.class);
@@ -110,6 +127,9 @@ public class FishMainActivity extends HeadActivity{
                 } else if ("视频监控".equals(model.itemText)){
                     Intent intent = new Intent(FishMainActivity.this, VideoListActivity.class);
                     startActivity(intent);
+                } else if ("数据中心".equals(model.itemText)){
+                	Intent intent = new Intent(mContext, StatisticsAct.class);
+                	startActivity(intent);
                 } else if ("互动交流".equals(model.itemText)){
                     Intent intent = new Intent(FishMainActivity.this, QuestionListActivity.class);
                     intent.putExtra("isexpertmode", false);
@@ -117,6 +137,9 @@ public class FishMainActivity extends HeadActivity{
                 } else if ("鱼病诊断".equals(model.itemText)){
                     Intent intent = new Intent(FishMainActivity.this, DiagnoseFishSelectActivity.class);
                     startActivity(intent);
+                } else if ("水色诊断".equals(model.itemText)){
+                	Intent intent = new Intent(FishMainActivity.this, WaterColorDiagnoseAct.class);
+                	startActivity(intent);
                 } else if ("渔场管理".equals(model.itemText)){
                     Intent intent = new Intent(FishMainActivity.this, FishpondMainActivity.class);
                     startActivity(intent);
@@ -124,8 +147,8 @@ public class FishMainActivity extends HeadActivity{
                     Intent intent = new Intent(FishMainActivity.this, QuestionListActivity.class);
                     intent.putExtra("isexpertmode", true);
                     startActivity(intent);
-                } else if ("生产管理".equals(model.itemText)){
-                    Intent intent = new Intent(FishMainActivity.this, ProductManageActivity.class);
+                } else if ("生产管理".equals(model.itemText)){//TODO 三代界面之后是这个生产管理界面
+                    Intent intent = new Intent(FishMainActivity.this, com.ssiot.remote.yun.manage.ProductManageActivity.class);
                     startActivity(intent);
                 } else if ("任务中心".equals(model.itemText)){
                     Intent intent = new Intent(FishMainActivity.this, TaskActivity.class);
@@ -139,6 +162,18 @@ public class FishMainActivity extends HeadActivity{
                     startActivity(intent);
                 } else if ("市场动态".equals(model.itemText)){
                     Intent intent = new Intent(FishMainActivity.this, MarketNewsActivity.class);
+                    startActivity(intent);
+                } else if ("消息记录".equals(model.itemText)){
+                    Intent intent = new Intent(FishMainActivity.this, MsgListAct.class);//MsgListAct
+                    startActivity(intent);
+                } else if ("水质分析".equals(model.itemText)){
+                    Intent intent = new Intent(FishMainActivity.this, WaterAnalysisLauncherAct.class);
+                    startActivity(intent);
+                } else if ("气象信息".equals(model.itemText)){
+                    Intent intent = new Intent(FishMainActivity.this, WeatherLaunchAct.class);
+                    startActivity(intent);
+                } else if ("技术资讯".equals(model.itemText)){
+                    Intent intent = new Intent(FishMainActivity.this, ArticleListAct.class);
                     startActivity(intent);
                 }
             }
@@ -158,8 +193,8 @@ public class FishMainActivity extends HeadActivity{
             case R.id.action_logout:
                 Intent loginIntent = new Intent(FishMainActivity.this, LoginActivity.class);
                 startActivity(loginIntent);
-//                SsiotService.cancel = true;
-//                stopService(new Intent(this, SsiotService.class));
+                SsiotService.cancel = true;
+                stopService(new Intent(this, SsiotService.class));
                 finish();
                 Editor e = mPref.edit();
                 e.putString(Utils.PREF_PWD, "");

@@ -10,14 +10,15 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.RemoteViews;
 
-import com.ssiot.remote.data.DataAPI;
-import com.ssiot.remote.data.DbHelperSQL;
+import com.ssiot.remote.backwork.OffLineListenerThread;
 import com.ssiot.remote.data.business.AlarmRule;
 import com.ssiot.remote.data.business.ControlActionInfo;
 import com.ssiot.remote.data.business.LiveData;
@@ -30,12 +31,18 @@ import com.ssiot.remote.data.model.LiveDataModel;
 import com.ssiot.remote.data.model.NodeModel;
 import com.ssiot.remote.data.model.SensorModel;
 import com.ssiot.remote.monitor.MoniAlarmFrag;
+import com.ssiot.remote.yun.webapi.WS_API;
+import com.ssiot.remote.yun.webapi.WS_Fish;
+import com.ssiot.remote.yun.webapi.WS_User;
 
 import java.nio.channels.SelectableChannel;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import com.ssiot.fish.R;
 
 public class SsiotService extends Service{
@@ -49,9 +56,30 @@ public class SsiotService extends Service{
     private Object lock = new Object();
     SharedPreferences mPref;
     private LiveDataBackWorker mWorker;
+    private OffLineListenerThread mOffLineWorker;
     List<AlarmRuleModel> mAlarmModels;
     private List<NotiInfo> notiInfos = new ArrayList<SsiotService.NotiInfo>();
-    List<SensorModel> sensor_dic;
+//    List<SensorModel> sensor_dic;
+    
+    //BUG 小米手机熄屏后4分钟左右，getalarm连接不上网络，即使亮屏后也不行。 
+    //小米手机--设置--其他高级设置--电源和性能--神隐模式 默认是标准,在屏保后4分钟左右会限制后台应用的网络功能
+    private static final int MSG_RUN_ALARM = 1;
+    private Handler mHandler = new Handler(){
+    	public void handleMessage(android.os.Message msg) {
+    		switch (msg.what) {
+			case MSG_RUN_ALARM:
+				new LiveDataBackWorker_2().start();
+				
+				mHandler.removeMessages(MSG_RUN_ALARM);
+				Message m = mHandler.obtainMessage(MSG_RUN_ALARM);
+		        mHandler.sendMessageDelayed(m, 60 * 1000);
+				break;
+
+			default:
+				break;
+			}
+    	};
+    };
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -66,6 +94,7 @@ public class SsiotService extends Service{
 //        actionInfoList = controlActionInfoBll.GetModelList(" ControlType=6 AND Operate='打开'");
 //        newestDataList = liveDataBll.GetNewestDataFromLiveData(10000);
         mWorker = new LiveDataBackWorker();
+        mOffLineWorker = new OffLineListenerThread(this);
     }
     
     @Override
@@ -79,11 +108,19 @@ public class SsiotService extends Service{
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.v(tag, "-------------onStartCommand---------------");
         cancel = false;
-        if (!mWorker.isAlive() && isLogedIn() && Utils.getBooleabPref(Utils.PREF_ALARM, this)){
-            mWorker.start();//TODO
+//        if (!mWorker.isAlive() && isLogedIn() && Utils.getBooleabPref(Utils.PREF_ALARM, this)){
+////        	mWorker = new LiveDataBackWorker();//this is to resolve (IllegalThreadStateException: Thread already started)
+//            mWorker.start();//TODO
+//        }
+        mHandler.removeMessages(MSG_RUN_ALARM);
+        Message msg = mHandler.obtainMessage(MSG_RUN_ALARM);
+        mHandler.sendMessageDelayed(msg, 60 * 1000);
+        
+        mOffLineWorker.cancle = false;
+        if (!mOffLineWorker.isAlive() && isLogedIn() && Utils.getBooleabPref(Utils.PREF_OFFLINE_NOTICE, this) ){
+        	mOffLineWorker.start();
         }
         return super.onStartCommand(intent, flags, startId);
-        
     }
     
     private class LiveDataBackWorker extends Thread{
@@ -91,8 +128,8 @@ public class SsiotService extends Service{
         public void run() {
             cancel = false;
             while (!cancel) {
+            	Log.v(tag, "^^^^^^^^^^^^^^^^LiveDataBackWorker^^^" + Utils.formatTime(new Timestamp(System.currentTimeMillis())));
                 synchronized (lock) {
-                    
                     try {
                         Thread.sleep(60 * 1000);
                     } catch (Exception e) {
@@ -103,161 +140,64 @@ public class SsiotService extends Service{
                         continue;
                     }
                     if (!Utils.isNetworkConnected(SsiotService.this)){
-                        Log.v(tag, "-----no net-----" + new Date().toString());
+                        Log.e(tag, "-----no net-----" + new Date().toString());
                         continue;
                     }
-                    if (null == sensor_dic || sensor_dic.size() == 0){
-                        sensor_dic = new Sensor().GetModelList("1=1");
-                    }
-                    getWitchToCompare("");
                     
+//                    if (null == sensor_dic || sensor_dic.size() == 0){
+//                        sensor_dic = new Sensor().GetModelList("1=1");
+//                    }
                     
-                    String alarmUniques = "";
-                    if (null != mAlarmModels && mAlarmModels.size() > 0){//找出包含的节点
-                        for (int i = 0; i < mAlarmModels.size(); i ++){
-                            alarmUniques += mAlarmModels.get(i)._uniqueID + ",";
-                        }
-                        if (!TextUtils.isEmpty(alarmUniques) && alarmUniques.endsWith(",")){
-                            alarmUniques = alarmUniques.substring(0, alarmUniques.length()-1);
-                        }
-                    } else {
-                        continue;//没有预警规则
+                    String account = Utils.getStrPref(Utils.PREF_USERNAME, getApplicationContext());
+                    HashMap<String, String> msgs = new WS_API().GetAlarming_v2(account);
+                    Log.v(tag, "-------------------LiveDataBackWorker working alrmingStr:---"+msgs.toString());
+                    if (null != msgs && msgs.size() > 0){
+                    	Iterator iter = msgs.entrySet().iterator();
+                    	while(iter.hasNext()){//一个节点发一条notificaition
+                    		Map.Entry entry = (Map.Entry) iter.next();
+                    		showNotification(getApplicationContext(),(String)entry.getKey(), (String)entry.getValue());
+                    	}
                     }
-                    List<LiveDataModel> tmp = null;
-                    if (!TextUtils.isEmpty(alarmUniques)){
-                        tmp = liveDataBll.GetNewestDataFromLiveData(10000," UniqueID in(" +alarmUniques+")" );
-                    }
-                    newestDataList.clear();
-                    if (tmp != null && tmp.size() > 0){
-                        newestDataList.addAll(tmp);
-                    }
-                    compare(newestDataList, mAlarmModels);
+                }
+            }
+        }
+    }
+    
+    private class LiveDataBackWorker_2 extends Thread{
+        @Override
+        public void run() {
+        	Log.v(tag, "^^^^^^^^^^^^^^^^LiveDataBackWorker2^^^" + Utils.formatTime(new Timestamp(System.currentTimeMillis())));
+            synchronized (lock) {
+                if (false == mPref.getBoolean("alarm", true)){//TODO
+                    Log.v(tag, "-----alarm set false-----" + new Date().toString());
+                    return;
+                }
+                if (!Utils.isNetworkConnected(SsiotService.this)){
+                    Log.e(tag, "-----no net-----" + new Date().toString());
+                    return;
+                }
+                
+//                if (null == sensor_dic || sensor_dic.size() == 0){
+//                    sensor_dic = new Sensor().GetModelList("1=1");
+//                	sensor_dic = new WS_Fish().
+//                }
+                
+                String account = Utils.getStrPref(Utils.PREF_USERNAME, getApplicationContext());
+                HashMap<String, String> msgs = new WS_API().GetAlarming_v2(account);
+                Log.v(tag, "-------------------LiveDataBackWorker working alrmingStr:---"+msgs.toString());
+                if (null != msgs && msgs.size() > 0){
+                	Iterator iter = msgs.entrySet().iterator();
+                	while(iter.hasNext()){//一个节点发一条notificaition
+                		Map.Entry entry = (Map.Entry) iter.next();
+                		showNotification(getApplicationContext(),(String)entry.getKey(), (String)entry.getValue());
+                	}
                 }
             }
         }
     }
 
-    private void getWitchToCompare(String account){//TODO account
-        account = mPref.getString(Utils.PREF_USERNAME, "");
-        if (TextUtils.isEmpty(account)){
-            Log.e(tag, "------account = null");
-            return;
-        }
-        String areas = DataAPI.GetAllAreaIDsByAccount(account);
-        Node nodeBll = new Node();
-        List<NodeModel> nodes = nodeBll.GetModelListByAreaIDs(areas);
-        String nodeUniques = "";
-        if (null != nodes){
-            for (int i = 0; i < nodes.size(); i ++){
-                nodeUniques += nodes.get(i)._uniqueid + ",";
-            }
-        }
-        if (!TextUtils.isEmpty(nodeUniques) && nodeUniques.endsWith(",")){
-            nodeUniques = nodeUniques.substring(0, nodeUniques.length()-1);
-        }
-        AlarmRule alarmBll = new AlarmRule();
-        if (!TextUtils.isEmpty(nodeUniques)){
-            mAlarmModels = alarmBll.GetModelList(" NodeUniqueID in (" + nodeUniques+")");
-        }
-    }
-    
-    private void compare(List<LiveDataModel> lives, List<AlarmRuleModel> alarms){
-        if (null != alarms){
-            for (int i = 0; i < alarms.size();i ++){
-                AlarmRuleModel model = alarms.get(i);
-                String unique = model._uniqueID;
-                List<LiveDataModel> list = getThisNodeData(lives, unique);
-                List<AlarmRuleBean> beanList = model.parseAlarmJSON(model._ruleStr);
-                if (MoniAlarmFrag.relationDatas[0].equals(model._relation)){//规则1;同时满足条件
-                    int alarmFlag = 0;//
-                    for(int k = 0; k < beanList.size(); k ++){//遍历一个节点下的 sensor规则
-                        AlarmRuleBean bean = beanList.get(k);
-                        for (int kk = 0; kk < list.size(); kk ++){//对一条sensor规则 遍历livedata
-                            LiveDataModel m = list.get(kk);
-                            if (m._sensorno == bean.sensorType && m._channel == bean.channel){//找到了
-                                if ("大于".equals(bean.type)){
-                                    float val = Float.parseFloat(bean.value);
-                                    if (m._data > val){
-                                        alarmFlag ++;
-                                    }
-                                } else if ("小于".equals(bean.type)){
-                                    float val = Float.parseFloat(bean.value);
-                                    if (m._data < val){
-                                        alarmFlag ++;
-                                    }
-                                } else if ("之间".equals(bean.type)){
-                                    float val1 = Float.parseFloat(bean.value.substring(0, bean.value.indexOf(",")));
-                                    float val2 = Float.parseFloat(bean.value.substring(bean.value.indexOf(",") + 1,bean.value.length()));
-                                    if (m._data >= val1 && m._data <= val2){
-                                        alarmFlag ++;
-                                    }
-                                }
-                                break;
-                            }
-                        }
-                    }
-                    if (alarmFlag > 0 && alarmFlag == beanList.size()){
-                        sendNotification(unique, list);
-                    }
-                } else {//规则2:满足其中之一
-                    boolean alarmF = false;
-                    for(int k = 0; k < beanList.size(); k ++){//遍历一个节点下的 sensor规则
-                        AlarmRuleBean bean = beanList.get(k);
-                        for (int kk = 0; kk < list.size(); kk ++){//对一条sensor规则 遍历livedata
-                            LiveDataModel m = list.get(kk);
-                            if (m._sensorno == bean.sensorType && m._channel == bean.channel){//找到了
-                                if ("大于".equals(bean.type)){
-                                    float val = Float.parseFloat(bean.value);
-                                    if (m._data > val){
-                                        alarmF = true;
-                                        sendNotification(unique, list);
-                                    }
-                                } else if ("小于".equals(bean.type)){
-                                    float val = Float.parseFloat(bean.value);
-                                    if (m._data < val){
-                                        alarmF = true;
-                                        sendNotification(unique, list);
-                                    }
-                                } else if ("之间".equals(bean.type)){
-                                    float val1 = Float.parseFloat(bean.value.substring(0, bean.value.indexOf(",")));
-                                    float val2 = Float.parseFloat(bean.value.substring(bean.value.indexOf(",") + 1,bean.value.length()));
-                                    if (m._data >= val1 && m._data <= val2){
-                                        alarmF = true;
-                                        sendNotification(unique, list);
-                                    }
-                                }
-                                break;
-                            }
-                        }
-                        if (alarmF){
-                            break;
-                        }
-                    }
-                }
-                
-            }
-        }
-        //发通知， 且记录到数据库 时间 节点 (传感器s 数值s)
-        
-    }
-    
-    private List<LiveDataModel> getThisNodeData(List<LiveDataModel> lives,String nodeUnique){
-        List<LiveDataModel> list = new ArrayList<LiveDataModel>();
-        for (int i = 0; i < lives.size(); i ++){
-            if (nodeUnique.equals(lives.get(i)._uniqueid)){
-                list.add(lives.get(i));
-            }
-        }
-        return list;
-    }
-    
-    private void sendNotification(String unique,List<LiveDataModel> thisnodeDatas){
-        Log.w(tag, "-----alarming------" + unique);
-        showNotification(this, unique, thisnodeDatas);
-    }
-    
     @SuppressLint("NewApi") //必须检查版本
-    private Notification showNotification(Context c, String unique, List<LiveDataModel> singleNodeDatas) {
+    private Notification showNotification(Context c, String unique, String contentTxt) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
             Notification notification = new Notification(R.drawable.ic_launcher, "更新", System.currentTimeMillis());
             notification.setLatestEventInfo(c, "111111111", "22222222", 
@@ -271,14 +211,8 @@ public class SsiotService extends Service{
             // builder.setTicker(title);
             builder.setSmallIcon(R.drawable.ic_launcher);
             builder.setWhen(System.currentTimeMillis());
-            String contentTxt = "";
-            if (null != singleNodeDatas && singleNodeDatas.size() > 0){
-                builder.setContentTitle("预警节点:" + singleNodeDatas.get(0)._uniqueid);
-                
-                for (int i = 0; i < singleNodeDatas.size(); i ++){
-                    LiveDataModel liveDataModel = singleNodeDatas.get(i);
-                    contentTxt += buildContentText(liveDataModel);
-                }
+            if (null != unique){
+                builder.setContentTitle("预警节点:" + unique);
                 builder.setContentText("监测值：" + contentTxt);
                 Log.v(tag, "---notimsg:" + contentTxt);
             }
@@ -307,35 +241,16 @@ public class SsiotService extends Service{
         }
     }
     
-    private String buildContentText(LiveDataModel live){
-        String str = "";
-        if (null != sensor_dic && sensor_dic.size() > 0){
-            for (int i = 0; i < sensor_dic.size(); i ++){
-                if (live._sensorno == sensor_dic.get(i)._sensorno){
-                    if (TextUtils.isEmpty(sensor_dic.get(i)._unit)){
-                        str = ""+sensor_dic.get(i)._sensorname + live._channel + ":" + live._data + ";";
-                    } else {
-                        str = ""+sensor_dic.get(i)._sensorname + live._channel + ":" + live._data + sensor_dic.get(i)._unit + ";";
-                    }
-                    break;
-                }
-            }
-        } else {
-            str = ""+live._sensorno + live._channel + ":" + live._data + ";";
-        }
-        return str;
-    }
-    
-    private boolean nearlyExists(String unique, List<NotiInfo> notis){
+    private boolean nearlyExists(String unique, List<NotiInfo> notis){//作用  30分钟内相同的节点不再发出noti
         for (int j = 0; j < notis.size(); j ++){//删除老的记录
-            if (System.currentTimeMillis() - notis.get(j).time > 20 * 60 * 1000){//20分钟前的数据 
+            if (System.currentTimeMillis() - notis.get(j).time > 30 * 60 * 1000){//30分钟前的数据 
                 notis.remove(j);
                 j --;
             }
         }
         if (null != notis){
             for (int i = 0; i < notis.size(); i ++){
-                if ((System.currentTimeMillis() - notis.get(i).time < 2 * 60 * 1000) && unique.equals(notis.get(i).nodeUnique)){
+                if ((System.currentTimeMillis() - notis.get(i).time < 30 * 60 * 1000) && unique.equals(notis.get(i).nodeUnique)){
                     return true;
                 }
             }

@@ -92,6 +92,40 @@ public class ControlLog{
         return null;
     }
     
+    public List<ControlLogModel> GetModelPageList(String strWhere) {
+        StringBuilder strSql = new StringBuilder();
+        strSql.append("select TOP 10 * ");
+        strSql.append(" FROM ControlLog ");
+        if (strWhere.trim() != "") {
+            strSql.append(" where " + strWhere);
+        }
+        SsiotResult sResult = DbHelperSQL.getInstance().Query(strSql.toString());
+        List<ControlLogModel> list = null;
+        if (null != sResult && null != sResult.mRs){
+            list = DataTableToList(sResult.mRs);
+        }
+        if (null != sResult){
+            sResult.close();
+        }
+        return list;
+    }
+    
+    public List<ControlLogModel> DataTableToList(ResultSet c){
+        List<ControlLogModel> models = new ArrayList<ControlLogModel>();
+        ControlLogModel m = new ControlLogModel();
+        try {
+            while(c.next()){
+                m = DataRowToModel(c);
+                if (m != null){
+                    models.add(m);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return models;
+    }
+    
     //------------------------
     
     public int AddManyCount_dataaccess(List<ControlLogModel> controlLogList){

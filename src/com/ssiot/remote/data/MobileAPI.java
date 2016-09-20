@@ -421,7 +421,7 @@ public class MobileAPI{
         return nodeData_list;
     }
     
-    private static String getNumberPartFromStr(String value_str){
+    public static String getNumberPartFromStr(String value_str){
         String dataStr = "";
         for (int j = 0; j < value_str.length(); j ++){
             if ((value_str.charAt(j) >= '0' && value_str.charAt(j) <= '9')

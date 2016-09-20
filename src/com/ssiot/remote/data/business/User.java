@@ -74,6 +74,11 @@ public class User{
             uModel._parentid = c.getInt("ParentId");
             uModel._usergroupid = c.getInt("UserGroupID");
             uModel._type = c.getInt("UserType");
+            try {
+                uModel._devicetype = c.getInt("UserDeviceType");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             return uModel;
         } catch (SQLException e) {
             e.printStackTrace();

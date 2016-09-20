@@ -24,6 +24,8 @@ import com.ssiot.fish.HeadActivity;
 import com.ssiot.fish.R;
 import com.ssiot.remote.data.business.IOTCompany;
 import com.ssiot.remote.data.model.IOTCompanyModel;
+import com.ssiot.remote.yun.webapi.WS_Fish;
+import com.ssiot.remote.yun.webapi.WS_TraceProject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,7 +89,8 @@ public class CompanyListActivity extends HeadActivity{
     private class GetCompanyThread extends Thread{
         @Override
         public void run() {
-            List<IOTCompanyModel> list = new IOTCompany().GetModelList(" 1=1");
+//            List<IOTCompanyModel> list = new IOTCompany().GetModelList(" 1=1");
+            List<IOTCompanyModel> list = new WS_TraceProject().GetCompanys(1, 999, "1=1");
             if (null != list && list.size() > 0){
                 mDatas.clear();
                 mDatas.addAll(list);

@@ -39,18 +39,17 @@ import android.widget.Toast;
 import com.ssiot.remote.BaseFragment;
 import com.ssiot.remote.BrowserActivity;
 import com.ssiot.remote.GetImageThread;
+import com.ssiot.remote.Utils;
 import com.ssiot.remote.GetImageThread.ThumnailHolder;
 import com.ssiot.fish.R;
 import com.ssiot.remote.data.AjaxHistory;
 import com.ssiot.remote.data.DataAPI;
 import com.ssiot.remote.data.business.TraceQRcode;
-import com.ssiot.remote.data.business.User;
 import com.ssiot.remote.data.model.TraceProfileModel;
 import com.ssiot.remote.data.model.TraceQRcodeModel;
 import com.ssiot.remote.dblocal.LocalDBHelper;
 import com.ssiot.remote.monitor.MoniNodeListFrag;
 import com.ssiot.remote.myzxing.MipcaActivityCapture;
-import com.ssiot.remote.view.SquareLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -316,8 +315,8 @@ public class HistoryFragment extends BaseFragment{
         public void run() {
             sendShowMyDlg("正在获取溯源信息...");
             mAllTraces.clear();
-            int parentID = new DataAPI().GetUserIDByUserKey(userKey);
-            List<TraceProfileModel> list = new AjaxHistory().getUserTraceProfiles(parentID);
+            int userid = Utils.getIntPref(Utils.PREF_USERID, getActivity());
+            List<TraceProfileModel> list = new AjaxHistory().getUserTraceProfiles(userid);//TODO webservice
             if (null != list && list.size() > 0){
                 mAllTraces.addAll(list);
             }

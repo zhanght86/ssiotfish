@@ -41,11 +41,44 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" >
+            
+            <TableLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:shrinkColumns="0" >
+
+                <TableRow
+                    android:id="@+id/row_productbatch"
+                    style="@style/setItemBgClickBg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/subMenuHeight"
+                    android:onClick="ClickFunc" >
+
+                    <TextView
+                        style="@style/ItemTitleText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:text="批次:" />
+
+                    <TextView
+                        android:id="@+id/txt_productbatch"
+                        style="@style/SetContentText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:drawablePadding="@dimen/Margin10"
+                        android:drawableRight="@drawable/arrow_right_light"
+                        android:gravity="right"
+                        android:text="请选择" />
+                </TableRow>
+            </TableLayout>
 
             <LinearLayout
                 android:id="@+id/linearLayoutRe"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/Margin"
                 android:background="@drawable/bg_input_normal" >
 
                 <TextView
@@ -77,7 +110,22 @@
                     android:onClick="ClickAdd"
                     android:src="@drawable/add_select" />
             </LinearLayout>
-
+            
+            <Spinner 
+		        android:id="@+id/taskstage_pick"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:layout_marginTop="@dimen/MarginTop"
+		        android:spinnerMode="dialog"
+		        />
+            
+            <Spinner 
+		        android:id="@+id/tasktype_pick"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:layout_marginTop="@dimen/MarginTop"
+		        android:spinnerMode="dialog"/>
+            
             <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -110,18 +158,42 @@
 <!--                     android:layout_height="wrap_content" -->
 <!--                     layout="@layout/op_menu_task_new" /> -->
             </LinearLayout>
+            
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/MarginTop"
+                android:background="@drawable/bg_input_normal"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:orientation="vertical" >
+
+                <EditText
+                    android:id="@+id/editTextWorkLoad"
+                    style="@style/hintText"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/transparent"
+                    android:gravity="left"
+                    android:hint="任务工作量(天)"
+                    android:padding="@dimen/contentPadding"
+                    android:numeric="decimal" />
+
+            </LinearLayout>
 
             <TextView
                 style="@style/SetTitleText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/setMaginLeft"
-                android:text="起止日期" />
+                android:text="起止日期"
+                android:visibility="gone" />
 
             <include
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                layout="@layout/op_time" />
+                layout="@layout/op_time"
+                android:visibility="gone" />
 
             <TextView
                 style="@style/SetTitleText"
@@ -154,7 +226,7 @@
                         android:layout_marginLeft="@dimen/MarginMini"
                         android:layout_marginRight="@dimen/MarginMini"
                         android:gravity="right"
-                        android:text="@string/needNo" />
+                        android:text="@string/need" />
 
                     <ToggleButton
                         android:id="@+id/toggleButtonPho"
@@ -162,6 +234,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:focusable="false"
+                        android:checked="true"
                         android:tag="0"
                         android:textOn=""
                         android:textOff="" />
@@ -187,10 +260,78 @@
                         android:layout_marginLeft="@dimen/MarginMini"
                         android:layout_marginRight="@dimen/MarginMini"
                         android:gravity="right"
-                        android:text="@string/needNo" />
+                        android:text="@string/need" />
 
                     <ToggleButton
                         android:id="@+id/toggleButtonLocation"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/set_toggle"
+                        android:focusable="false"
+                        android:checked="true"
+                        android:tag="0"
+                        android:textOff=""
+                        android:textOn="" />
+                </TableRow>
+                
+                <TableRow
+                    style="@style/setItemTopBg"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/MarginTop"
+                    android:clickable="true" >
+
+                    <TextView
+                        style="@style/ItemTitleText"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.0"
+                        android:text="需要填写肥料记录" />
+
+                    <TextView
+                        android:id="@+id/textViewFertilizer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/MarginMini"
+                        android:layout_marginRight="@dimen/MarginMini"
+                        android:gravity="right"
+                        android:text="@string/needNo" />
+
+                    <ToggleButton
+                        android:id="@+id/toggleButtonFertilizer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/set_toggle"
+                        android:focusable="false"
+                        android:tag="0"
+                        android:textOff=""
+                        android:textOn="" />
+                </TableRow>
+                
+                <TableRow
+                    style="@style/setItemBottomBg"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="true" >
+
+                    <TextView
+                        style="@style/ItemTitleText"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.0"
+                        android:text="需要填写农药记录" />
+
+                    <TextView
+                        android:id="@+id/textViewPesticide"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/MarginMini"
+                        android:layout_marginRight="@dimen/MarginMini"
+                        android:gravity="right"
+                        android:text="@string/needNo" />
+
+                    <ToggleButton
+                        android:id="@+id/toggleButtonPesticide"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:background="@drawable/set_toggle"

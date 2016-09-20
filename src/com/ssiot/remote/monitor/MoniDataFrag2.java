@@ -107,7 +107,7 @@ public class MoniDataFrag2 extends BaseFragment{
                             buildLeftView(mTimeTextTitle, mLeftLinear, mShowData);
                             buildRightView(mRightLinear, mShowData);
                         } else {
-                            Toast.makeText(mContext, "无数据", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(mContext, "未查询到结果", Toast.LENGTH_SHORT).show();
                         }
                     }
                     break;
@@ -284,7 +284,8 @@ public class MoniDataFrag2 extends BaseFragment{
             sendShowMyDlg("正在查询");
             if (nodeno >= 0){
 //                List<NodeView2Model> nList = new AjaxGetNodesDataByUserkey().GetNodesDataByUserkeyAndType(MainActivity.mUniqueID, ""+nodeno, grainSize);
-                List<NodeView2Model> nList = new AjaxGetNodesDataByUserkey().GetNodesDetailData(MainActivity.mUniqueID, ""+nodeno, grainSize,startTime,endTime);
+                String userUnique = Utils.getStrPref(Utils.PREF_USERKEY, getActivity());
+                List<NodeView2Model> nList = new AjaxGetNodesDataByUserkey().GetNodesDetailData(userUnique, ""+nodeno, grainSize,startTime,endTime);
                 DbHelperSQL.getInstance().outSideClose();
                 mListData.clear();
                 mListData.addAll(nList);

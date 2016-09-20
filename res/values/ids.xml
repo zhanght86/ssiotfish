@@ -42,4 +42,8 @@
   <item name="tag_first" type="id"></item>
   <item name="tag_second" type="id"></item>
   <item name="tag_third" type="id"></item>
+  
+<!--   copy from FloatingActionMenu -->
+  <item name="fab_expand_menu_button" type="id"/>
+    <item name="fab_label" type="id"/>
 </resources>

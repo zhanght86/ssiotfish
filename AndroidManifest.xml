@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ssiot.fish"
-    android:versionCode="5"
-    android:versionName="1.4" >
+    android:versionCode="6"
+    android:versionName="1.5.beta" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -70,7 +70,7 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE"/>
 
     <android:uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    
+    <uses-permission android:name="android.permission.BAIDU_LOCATION_SERVICE" />
     
 
     <uses-sdk
@@ -87,8 +87,14 @@
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="GZuY9lvKWfdh9NtoctRiZLUy" />
+
+        <service
+            android:name="com.baidu.location.f"
+            android:enabled="true"
+            android:process=":remote" >
+        </service>
         
-        <activity
+<activity
             android:name=".FishMainActivity"
             android:label="@string/app_name" >
 <!--             <intent-filter> -->
@@ -311,6 +317,297 @@
             android:theme="@style/MyDialogStyle"
             android:screenOrientation="portrait" />
 <!--         android:theme="@android:style/Theme.Dialog" -->
+
+        <activity
+            android:name="com.ssiot.remote.expert.SymptomAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.ssiot.remote.expert.SolutionAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.ssiot.remote.expert.WaterSolutionAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.ssiot.remote.expert.WaterColorDiagnoseAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+
+
+		<activity
+            android:name="com.ssiot.remote.yun.monitor.MonitorAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" 
+            >
+            
+         </activity>
+
+
+
+		<activity
+            android:name="com.ssiot.remote.NodePickerAct"
+            android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysHidden" >
+        </activity>
+        
+		<activity
+            android:name="com.ssiot.remote.aliyun.MsgListAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+		<activity
+            android:name="com.ssiot.remote.aliyun.TxtAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+
+		<activity
+            android:name="com.ssiot.remote.yun.detail.FarmDetailPagerActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" 
+            >
+         </activity>
+         <activity
+            android:name="com.ssiot.remote.yun.detail.sensors.FarmDetailSensorPagerAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" 
+            />
+         <activity
+            android:name="com.ssiot.remote.yun.detail.cntrols.FarmDetailCtrlerPagerActivity"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" 
+            />
+         <activity
+            android:name="com.ssiot.remote.yun.detail.cntrols.ControlSetAct"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" 
+            />
+         
+         <activity
+            android:name="com.ssiot.remote.yun.WheelValAct"
+            android:label="@string/app_name"
+            android:theme="@style/MyDialogStyle"
+            android:screenOrientation="portrait" 
+            />
+         <activity
+            android:name="com.ssiot.remote.yun.TimePickDiaAct"
+            android:label="@string/app_name"
+            android:theme="@style/MyDialogStyle"
+            android:screenOrientation="portrait" 
+            />
+         
+         <activity
+            android:name="com.ssiot.remote.yun.detail.sensors.AlarmRuleSetAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" 
+            />
+         <activity
+            android:name="com.ssiot.remote.yun.MainMenuAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" 
+            >
+             
+         </activity>
+         <activity
+            android:name="com.ssiot.remote.yun.sta.StatisticsAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" 
+            />
+         <activity
+            android:name="com.ssiot.remote.yun.sta.StaLineAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" 
+            />
+         
+         <activity
+            android:name="com.ssiot.remote.yun.sta.StaBarAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" 
+            />
+         <activity
+            android:name="com.ssiot.remote.yun.sta.StaWindOraAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" 
+            />
+         
+         <activity
+            android:name="com.ssiot.remote.yun.MainAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" 
+            >
+<!--              <intent-filter> -->
+<!--                 <action android:name="android.intent.action.MAIN" /> -->
+<!--                 <category android:name="android.intent.category.LAUNCHER" /> -->
+<!--             </intent-filter> -->
+         </activity>
+         <activity
+            android:name="com.ssiot.remote.yun.SettingActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" 
+            />
+         <activity
+            android:name="com.ssiot.remote.yun.history.ProductHistoryAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" 
+            />
+         <activity
+            android:name="com.ssiot.remote.yun.expert.ExpertSystemAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" 
+            />
+         <activity
+            android:name="com.ssiot.remote.yun.manage.ProductManageActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" 
+            />
+         <activity
+            android:name="com.ssiot.remote.yun.manage.BatchAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" 
+            />
+         <activity
+            android:name="com.ssiot.remote.yun.manage.ItemListAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" 
+            />
+         <activity
+            android:name="com.ssiot.remote.yun.manage.ProductBatchDetailAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" 
+            />
+         <activity
+            android:name="com.ssiot.remote.yun.manage.ProductPlanDetailAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" 
+            />
+         
+         
+         
+         <activity
+            android:name="com.ssiot.remote.yun.manage.task.TaskActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.ssiot.remote.yun.manage.task.TaskNewActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.ssiot.remote.yun.manage.task.TaskReceiverAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.ssiot.remote.yun.manage.task.TaskGetDetailAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.ssiot.remote.yun.manage.task.TaskReportNewAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+         <activity
+            android:name="com.ssiot.remote.yun.manage.InputsInEditAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+		<activity
+            android:name="com.ssiot.remote.yun.manage.InputsOutEditAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+		<activity
+            android:name="com.ssiot.remote.yun.manage.EditFertilizerAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+		<activity
+            android:name="com.ssiot.remote.yun.manage.EditPesticideAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+         <activity
+            android:name=".yun.manage.ProductsInEditAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+         <activity
+            android:name="com.ssiot.remote.yun.manage.ProductsPackEditAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+         <activity
+            android:name="com.ssiot.remote.yun.manage.BatchEditAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+         <activity
+            android:name="com.ssiot.remote.yun.manage.EditProductPlanAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+         <activity
+            android:name="com.ssiot.remote.yun.manage.TaskPickAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+         <activity
+            android:name="com.ssiot.remote.yun.manage.EditTaskMouldAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+         <activity
+            android:name="com.ssiot.remote.yun.manage.EnableTaskAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+         <activity
+            android:name="com.ssiot.remote.yun.manage.EditGrowthAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+         <activity
+            android:name="com.ssiot.remote.yun.manage.EditInputsLogAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+         <activity
+            android:name="com.ssiot.remote.yun.manage.EditDiseaseLogAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+         <activity
+            android:name="com.ssiot.remote.yun.manage.ProductsInEditAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+         <activity
+            android:name="com.ssiot.remote.yun.manage.ProductsPackDetailAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+         <activity
+            android:name="com.ssiot.remote.yun.manage.BatchManageAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+         
+         
+<!--          水质分析录入界面-首页列表页 -->
+		<activity
+            android:name="com.ssiot.remote.expert.WaterAnalysisLauncherAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+         <activity
+            android:name="com.ssiot.remote.expert.FacilityNodeListAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+         <activity
+            android:name="com.ssiot.remote.expert.ManualDataEditAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+         <activity
+            android:name="com.ssiot.fish.WeatherLaunchAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+         <activity
+            android:name="com.ssiot.remote.expert.WaterColorSolutionAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+         <activity
+            android:name=".ArticleListAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+         <activity
+            android:name="com.ssiot.remote.yun.NewsAct"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+
+
 
 
 

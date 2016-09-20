@@ -135,6 +135,11 @@ public class VLCVideoInfo {
             vModel._type = c.getString("Type");
             try {
                 vModel._tcpport = c.getInt("TcpPort");
+            } catch (Exception e) {
+            	Log.e(tag, vModel._username + " no tcpport");
+//                e.printStackTrace();
+            }
+            try {
                 vModel._devicetype = c.getInt("DeviceType");
             } catch (Exception e) {
                 e.printStackTrace();

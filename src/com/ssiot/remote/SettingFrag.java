@@ -17,23 +17,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashMap;
-import java.util.Timer;
-
-import com.ssiot.fish.FishMainActivity;
 import com.ssiot.fish.R;
 
 public class SettingFrag extends Fragment{
@@ -114,12 +104,46 @@ public class SettingFrag extends Fragment{
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (null != mPref){
                     Editor e = mPref.edit();
-                    e.putBoolean("alarm", isChecked);
+                    e.putBoolean(Utils.PREF_ALARM, isChecked);
                     e.commit();
+                    if (isChecked){
+                    	startBackService();
+                    }
                 }
             }
         });
+        
+        CheckBox cbOffLine = (CheckBox) v.findViewById(R.id.offline_switch);
+        cbOffLine.setChecked(mPref.getBoolean(Utils.PREF_OFFLINE_NOTICE, false));
+        cbOffLine.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (null != mPref){
+                    Editor e = mPref.edit();
+                    e.putBoolean(Utils.PREF_OFFLINE_NOTICE, isChecked);
+                    e.putString(Utils.PREF_LAST_OFFLINE, "");//每次清除一下
+                    e.commit();
+                    if (isChecked){
+                    	startBackService();
+                    }
+                }
+            }
+        });
+        RelativeLayout rl = (RelativeLayout) v.findViewById(R.id.offline_relativelayout);
+        rl.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(getActivity(),NodePickerAct.class);
+				startActivity(intent);
+			}
+		});
         return v;
+    }
+    
+    private void startBackService(){
+    	Intent localIntent = new Intent();  
+        localIntent.setClass(getActivity(), SsiotService.class);
+        getActivity().startService(localIntent);
     }
     
     @Override

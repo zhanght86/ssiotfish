@@ -28,6 +28,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -48,14 +49,15 @@ import com.ssiot.fish.HeadActivity;
 import com.ssiot.fish.R;
 import com.ssiot.remote.data.business.User;
 import com.ssiot.remote.data.model.UserModel;
-
+import com.ssiot.remote.yun.MainAct;
+import com.ssiot.remote.yun.webapi.WS_User;
 public class LoginActivity extends HeadActivity {
     private static final String tag = "LoginActivity";
     private EditText logEditText;
     private EditText pwdEditText;
     private CheckBox checkbox;
     private Button logButton;
-    private String userName = "";
+    private String account = "";
     private String password = "";
     private String uniqueID = "";
     private Dialog mWaitDialog;
@@ -64,6 +66,7 @@ public class LoginActivity extends HeadActivity {
     private final int MSG_LOGIN_RETURN = 1;
     private final int MSG_LOGIN_TIMEOUT = 2;
     private final int MSG_LOGIN_CON_FAIL = 3;
+    private final int MSG_TOAST = 4;
     private Handler mHandler = new Handler() {
         public void handleMessage(android.os.Message msg) {
             if (null != mWaitDialog){
@@ -77,7 +80,7 @@ public class LoginActivity extends HeadActivity {
                                 .getDefaultSharedPreferences(LoginActivity.this);
                         if (mPref != null) {
                             Editor editor = mPref.edit();
-                            editor.putString(Utils.PREF_USERNAME, userName);
+                            editor.putString(Utils.PREF_USERNAME, account);
                             editor.putString(Utils.PREF_PWD, password);
                             editor.putString("rememberPWD", checkbox.isChecked() ? "yes" : "no");
                             editor.commit();
@@ -91,16 +94,21 @@ public class LoginActivity extends HeadActivity {
                         finish();
                     } else {
                         Toast.makeText(getApplicationContext(), "用户名或密码有误",
-                                Toast.LENGTH_LONG).show();
+                                Toast.LENGTH_SHORT).show();
                     }
                     break;
                 case MSG_LOGIN_TIMEOUT:
                     Toast.makeText(getApplicationContext(), "登陆失败",
-                            Toast.LENGTH_LONG).show();
+                            Toast.LENGTH_SHORT).show();
                     break;
                 case MSG_LOGIN_CON_FAIL:
                     Toast.makeText(getApplicationContext(), "连接服务器失败",
-                            Toast.LENGTH_LONG).show();
+                            Toast.LENGTH_SHORT).show();
+                    break;
+                case MSG_TOAST:
+                	String str = (String) msg.obj;
+                    Toast.makeText(getApplicationContext(), str,
+                            Toast.LENGTH_SHORT).show();
                     break;
                 default:
                     break;
@@ -143,11 +151,11 @@ public class LoginActivity extends HeadActivity {
         logButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                userName = logEditText.getText().toString();
+            	account = logEditText.getText().toString();
                 password = pwdEditText.getText().toString();
                 String isRemember;
 
-                if (TextUtils.isEmpty(userName) || TextUtils.isEmpty(password)) {
+                if (TextUtils.isEmpty(account) || TextUtils.isEmpty(password)) {
                     Toast.makeText(getApplicationContext(), "用户名和密码不能为空", Toast.LENGTH_LONG)
                             .show();
                 } else {
@@ -185,31 +193,51 @@ public class LoginActivity extends HeadActivity {
         public void run() {
             try {
                 if (Utils.isNetworkConnected(LoginActivity.this)){
-                    List<UserModel> users =  new User().GetModelList(" Account='" + userName + "'");
-                    if (null != users && users.size() > 0){
-                        UserModel model = users.get(0);
-                        if (null != password && null != model._userpassword && password.equals(model._userpassword.trim())){
-                            uniqueID = model._uniqueid;
-                            MainActivity.AreaID = model._areaid;
-                            savePrefs(model);
-                            mHandler.sendEmptyMessage(MSG_LOGIN_RETURN);
-                            return;
-                        } else {
-                            Log.e(tag, "-----logint-----" + password + model._userpassword);
-                        }
+//                    List<UserModel> users =  new User().GetModelList(" Account='" + account + "'");
+//                    if (users != null && users.size() > 0){
+//                    	UserModel model = users.get(0);
+//                    	uniqueID = model._uniqueid;
+//                    	MainActivity.AreaID = model._areaid;
+//                    	int mainuserid = new WS_User().getMainUserId(model._userid);
+//                    	savePrefs(model, mainuserid);
+//                        mHandler.sendEmptyMessage(MSG_LOGIN_RETURN);
+//                    } else {
+//                    	sendToast("用户名或密码错误");
+//                    	return;
+//                    }
+                    
+                    
+                    UserModel uModel = new WS_User().GetUserByPsw(account, password);
+                    if (uModel != null){
+                    	uModel._userpassword = password;
+                    	uniqueID = uModel._uniqueid;
+                    	MainActivity.AreaID = uModel._areaid;
+                    	int mainuserid = new WS_User().getMainUserId(uModel._userid);
+                    	savePrefs(uModel, mainuserid);
+                        mHandler.sendEmptyMessage(MSG_LOGIN_RETURN);
+                        return;
+                    } else {
+                    	sendToast("用户名或密码错误");
+                    	return;
                     }
                 } else {
-//                    mHandler.sendEmptyMessage(MSG_LOGIN_CON_FAIL);
+                	sendToast("请检查网络");
                 }
-                
             } catch (Exception e) {
+            	sendToast("出现异常，请重试");
                 e.printStackTrace();
             }
-            mHandler.sendEmptyMessage(MSG_LOGIN_CON_FAIL);
         }
     }
     
-    private void savePrefs(UserModel model){
+    @Override
+    public void sendToast(String msg){
+    	Message m = mHandler.obtainMessage(MSG_TOAST);
+    	m.obj = msg;
+    	mHandler.sendMessage(m);
+    }
+    
+    private void savePrefs(UserModel model, int mainuserid){
         Editor e = mPref.edit();
         e.putInt(Utils.PREF_USERID, model._userid);
         e.putString(Utils.PREF_USERNAME, model._account);
@@ -217,11 +245,13 @@ public class LoginActivity extends HeadActivity {
         e.putString(Utils.PREF_USERKEY, model._uniqueid);
         e.putString(Utils.PREF_USERNAMETEXT, model._username);
         e.putInt(Utils.PREF_AREAID, model._areaid);
-        e.putString(Utils.PREF_ADDR, model._address);
-        e.putString(Utils.PREF_AVATAR, model._avatar);
+//        e.putString(Utils.PREF_ADDR, model._address);
+//        e.putString(Utils.PREF_AVATAR, model._avatar);
         e.putInt(Utils.PREF_PARENTID, model._parentid);
         e.putInt(Utils.PREF_GROUPID, model._usergroupid);
         e.putInt(Utils.PREF_USERTYPE, model._type);
+        e.putInt(Utils.PREF_USERDEVICETYPE, model._devicetype);
+        e.putInt(Utils.PREF_MAIN_USERID, mainuserid);
         e.commit();
     }
     

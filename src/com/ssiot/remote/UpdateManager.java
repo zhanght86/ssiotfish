@@ -124,7 +124,6 @@ public class UpdateManager{
                         throw new IOException("----HashMap is null!");
                     }
                     URL url = new URL(mHashMap.get("url"));
-                    //URL url = new URL("yun.ssiot.com/UpdateSoftDemo.apk");
                     // 创建连接
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     conn.connect();

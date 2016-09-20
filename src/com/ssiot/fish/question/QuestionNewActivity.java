@@ -33,6 +33,7 @@ import com.ssiot.fish.UploadFileBaseActivity;
 import com.ssiot.remote.SsiotConfig;
 import com.ssiot.remote.data.business.Question;
 import com.ssiot.remote.data.model.QuestionModel;
+import com.ssiot.remote.yun.webapi.WS_Fish;
 
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
@@ -178,7 +179,8 @@ public class QuestionNewActivity extends UploadFileBaseActivity{
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        int ret = new Question().Add(model);
+//                        int ret = new Question().Add(model);
+                    	int ret = new WS_Fish().SaveQuestion(model);
                         Message m = mHandler.obtainMessage(MSG_ADD_END);
                         m.arg1 = ret;
                         mHandler.sendMessage(m);

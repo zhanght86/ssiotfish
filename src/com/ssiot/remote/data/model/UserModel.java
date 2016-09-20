@@ -36,4 +36,5 @@ public class UserModel{
     public int _usergroupid;
     
     public int _type = 1;
+    public int _devicetype = 2;
 }

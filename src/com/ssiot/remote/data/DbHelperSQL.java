@@ -194,7 +194,7 @@ public class DbHelperSQL{
         }
     }
     
-    public boolean Query_object(String SQLString, ArrayList<Object> cmdParams){
+    public SsiotResult Query_object(String SQLString, ArrayList<Object> cmdParams){
         synchronized (objlock) {
             Log.v(tag, "1#####Query_objecty####" + SQLString + "####" + getString(cmdParams));
             long time1 = SystemClock.uptimeMillis();
@@ -202,7 +202,7 @@ public class DbHelperSQL{
                 if (!connectIsOk(connection)){
                     connection = new SqlConnection(connectionString);
                     if (!connection.Open()){
-                        return false;
+                        return null;
                     }
                 }
                 Log.v(tag, "2#--------open connection time " + (SystemClock.uptimeMillis()-time1) + !connection.con.isClosed());
@@ -213,10 +213,14 @@ public class DbHelperSQL{
                 }
                 preStatement.setQueryTimeout(9);
                 
-                boolean b = preStatement.execute();
-                preStatement.close();
+                ResultSet rs = preStatement.executeQuery();
+                SsiotResult sr = new SsiotResult(rs, preStatement);
+                usingResultList.add(sr);
+                sendDelayClose();
                 Log.v(tag, "3#-------------Query_object cost time" + (SystemClock.uptimeMillis()-time1));
-                return b;
+                return sr;
+//                preStatement.close();
+//                return b;
             } catch (Exception e) {
                 closeAll();
                 e.printStackTrace();
@@ -224,7 +228,7 @@ public class DbHelperSQL{
             Intent i = new Intent(SsiotReceiver.ACTION_SSIOT_MSG);
             i.putExtra("showmsg", "数据操作出现问题" + (SystemClock.uptimeMillis()-time1));
             ContextUtilApp.getInstance().sendBroadcast(i);
-            return false;
+            return null;
         }
     }
     
@@ -346,6 +350,7 @@ public class DbHelperSQL{
         public boolean Open(){
             String JDriver = "net.sourceforge.jtds.jdbc.Driver";
             String connectDB = "jdbc:jtds:sqlserver://ssiot2014.sqlserver.rds.aliyuncs.com:3433/iot2014;loginTimeout=9;socketTimeout=25";
+//            String connectDB = "jdbc:jtds:sqlserver://114.55.145.45:1433/fisher;loginTimeout=9;socketTimeout=25";
 //            String JDriver = "com.microsoft.sqlserver.jdbc.SQLServerDriver";//驱动程序无法通过使用安全套接字层(SSL)加密与 SQL Server 建立安全连接。错误:“Socket closed” ??jre jdk??
 //            String connectDB = "jdbc:sqlserver://ssiot2014.sqlserver.rds.aliyuncs.com:3433;DatabaseName=iot2014;loginTimeout=9;socketTimeout=25";
             long timebegingopen = SystemClock.uptimeMillis();
@@ -365,6 +370,8 @@ public class DbHelperSQL{
             try {
                 String user = "angeliot";
                 String password = "1qaz_PL";
+//                String user = "fisher";
+//                String password = "324#$th6s";
                 con = DriverManager.getConnection(connectDB, user, password);// 连接数据库对象
                 Log.v(tag, "连接ssiot数据库成功");
             } catch (Exception e) {

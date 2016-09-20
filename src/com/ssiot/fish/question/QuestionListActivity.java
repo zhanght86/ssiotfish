@@ -12,6 +12,7 @@ import com.ssiot.fish.R;
 import com.ssiot.fish.question.widget.VerticalSwipeRefreshLayout;
 import com.ssiot.remote.data.business.Question;
 import com.ssiot.remote.data.model.QuestionModel;
+import com.ssiot.remote.yun.webapi.WS_Fish;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +22,7 @@ public class QuestionListActivity extends HeadActivity{
     List<QuestionModel> questions = new ArrayList<QuestionModel>();
     VerticalSwipeRefreshLayout questionLayout;
     private ImageButton btnNew;
-    private int currentPages = 0;
+    private int currentPages = 1;
     boolean isExpertMode = false;
     
     private static final int MSG_GET_END = 1;
@@ -67,7 +68,8 @@ public class QuestionListActivity extends HeadActivity{
     private class GetQuestionThread extends Thread{
         @Override
         public void run() {
-            List<QuestionModel> list = new Question().GetPageViewList(currentPages,(isExpertMode ? " QuestionType=2 " : " QuestionType=1 or QuestionType is null "));
+//            List<QuestionModel> list = new Question().GetPageViewList(currentPages,(isExpertMode ? " QuestionType=2 " : " QuestionType=1 or QuestionType is null "));
+            List<QuestionModel> list = new WS_Fish().GetQuestions(currentPages, 10, isExpertMode ? 2 : 1);
             if (null != list){
                 questions.clear();
                 questions.addAll(list);
@@ -78,7 +80,8 @@ public class QuestionListActivity extends HeadActivity{
     
     private void loadMore(){
         currentPages ++;
-        List<QuestionModel> list = new Question().GetPageViewList(currentPages,(isExpertMode ? " QuestionType=2 " : " QuestionType=1 or QuestionType is null "));
+//        List<QuestionModel> list = new Question().GetPageViewList(currentPages,(isExpertMode ? " QuestionType=2 " : " QuestionType=1 or QuestionType is null "));
+        List<QuestionModel> list = new WS_Fish().GetQuestions(currentPages, 10, isExpertMode ? 2 : 1);
         if (null != list){
             questions.addAll(list);//TODO 重复
         }

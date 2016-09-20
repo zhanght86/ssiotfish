@@ -1,6 +1,7 @@
 
 package com.ssiot.remote.data;
 
+import android.R.fraction;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -19,6 +20,7 @@ import com.ssiot.remote.data.business.VLCVideoInfo;
 import com.ssiot.remote.data.model.AlarmRuleModel;
 import com.ssiot.remote.data.model.AreaModel;
 import com.ssiot.remote.data.model.ControlActionInfoModel;
+import com.ssiot.remote.data.model.ControlDeviceModel;
 import com.ssiot.remote.data.model.ControlLogModel;
 import com.ssiot.remote.data.model.LatestDataModel;
 import com.ssiot.remote.data.model.NodeModel;
@@ -30,7 +32,12 @@ import com.ssiot.remote.data.model.view.ControlDeviceViewModel;
 import com.ssiot.remote.data.model.view.ControlTimeConditionModel;
 import com.ssiot.remote.data.model.view.CtrLoopConditionModel;
 import com.ssiot.remote.data.model.view.NodeViewModel;
+import com.ssiot.remote.data.model.view.ProductSensorViewModel;
+import com.ssiot.remote.data.model.view.S30HostViewModel;
 import com.ssiot.remote.data.model.view.SensorViewModel;
+import com.ssiot.remote.yun.monitor.DeviceBean;
+import com.ssiot.remote.yun.monitor.YunNodeModel;
+import com.ssiot.remote.yun.unit.XYStringHolder;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -40,6 +47,8 @@ import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 //仿照 Business/Angel.Extend.Business/API/DataAPI.cs
@@ -482,7 +491,7 @@ public class DataAPI {
         return mSensorSevice.GetSensorListByNodeNoString(nodenos);
     }
     
-    //line766 根据传感器名称（ShortName）获取传感器对象
+    //line766 根据传感器名称（ShortName）获取传感器对象collection
     public static SensorModel GetSensorModelBySensorName(String shortName){
         if (!TextUtils.isEmpty(shortName)){
             try {
@@ -681,5 +690,490 @@ public class DataAPI {
             return alarmRuleBll.Delete(unique);
         }
         return false;
+    }
+    
+    //2.0设备在新界面上的兼容
+    public static List<YunNodeModel> getYunNodeModels(int areaid){
+        //所有监测节点
+        //所有控制节点
+        //所有视频算一个节点??
+        //Node表 -ProductID   ProductSensor表
+        //select T.NodeID,ProductSensor.* from  (select * from Node where AreaID=145)T left join ProductSensor on T.ProductID=ProductSensor.ProductID order by NodeID ASC
+        //ControlNode表，  ControlDevice表
+        //视频
+        List<YunNodeModel> models = new ArrayList<YunNodeModel>();
+        String areaIDs = GetSelfAndChildrenAreaIDsByAreaID(areaid);
+        if (!TextUtils.isEmpty(areaIDs)){
+//            String cmd = "select T.NodeID,T.Location,ProductSensor.* from  " +
+//                    "(select * from Node where AreaID in ("+ areaIDs+ "))T left join ProductSensor on T.ProductID=ProductSensor.ProductID order by NodeID ASC";
+            String cmd = "select TT.*,Sensor.ShortName from " +
+            		"(select T.NodeID,T.UniqueID,T.NodeNo,T.Location,ProductSensor.* from  " +
+            		"(select * from Node where AreaID in ("+areaIDs +"))T left join ProductSensor on T.ProductID=ProductSensor.ProductID )TT" +
+            		" left join Sensor on TT.SensorID= Sensor.SensorNo order by NodeID ASC";
+            SsiotResult sResult = DbHelperSQL.getInstance().Query(cmd);
+            if (null != sResult && null != sResult.mRs){
+                ResultSet dt = sResult.mRs;
+                try {
+                    YunNodeModel lastYunNode = null;
+                    while(dt.next()){
+                        if (dt.getInt("SensorID") == 1402){//电池电压
+                            continue;
+                        }
+                        int nodeNo = dt.getInt("NodeNo");
+                        if (lastYunNode != null && nodeNo == lastYunNode.mNodeNo){
+                        } else {
+                            String nodeString = dt.getString("Location");
+                            String nodeUnique = dt.getString("UniqueID");
+                            YunNodeModel m = new YunNodeModel(DeviceBean.TYPE_SENSOR, -1, "", -1, "", nodeNo, nodeString + nodeNo);
+                            m.mNodeUnique = nodeUnique;
+                            models.add(m);
+                            lastYunNode = m;
+                        }
+                        int deviceTypeNo = dt.getInt("SensorID");
+                        int channel = dt.getInt("Channel");
+                        String name = dt.getString("ShortName") + (channel == 0 ? "" : ""+channel);
+                        lastYunNode.addDeviceBean(new DeviceBean(DeviceBean.TYPE_SENSOR, deviceTypeNo, channel, name));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            if (null != sResult){
+                sResult.close();
+            }
+            
+            String cmd2 = "select T.ID as TID,T.NodeNo,T.UniqueID,T.Installation,ControlDevice.* from  " +
+            		"(select * from ControlNode where AreaID in (" + areaIDs+ "))T left join ControlDevice on T.ID=ControlDevice.ControlNodeID order by T.ID ASC";
+            SsiotResult sResult2 = DbHelperSQL.getInstance().Query(cmd2);
+            if (null != sResult2 && null != sResult2.mRs){
+                ResultSet dt2 = sResult2.mRs;
+                try {
+                    YunNodeModel lastYunNode = null;
+                    while(dt2.next()){
+                        int ctrNodeNo = dt2.getInt("NodeNo");
+                        if (lastYunNode != null && ctrNodeNo == lastYunNode.mNodeNo){
+                        } else {
+                            String nodeString = dt2.getString("Installation");
+                            YunNodeModel m = new YunNodeModel(DeviceBean.TYPE_ACTUATOR, -1, "", -1, "", ctrNodeNo, nodeString + ctrNodeNo);
+                            m.mNodeUnique = dt2.getString("UniqueID");
+                            int index = models.size();
+                            for (int i = 0;i < models.size(); i ++){
+                                if (models.get(i).mNodeNo == ctrNodeNo){
+                                    index = i + 1;
+                                    break;
+                                }
+                            }
+                            models.add(index, m);//添加在采集节点的旁边
+                            lastYunNode = m;
+                        }
+//                        int deviceTypeNo = dt2.getInt("SensorID");
+                        int deviceTypeNo = -1;
+                        String name = dt2.getString("DeviceName");
+                        int deviceChannelNo = dt2.getInt("DeviceNo");//把DeviceBNo保存在channel 里
+                        lastYunNode.addDeviceBean(new DeviceBean(DeviceBean.TYPE_ACTUATOR, deviceTypeNo, deviceChannelNo, name));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            if (null != sResult2){
+                sResult2.close();
+            }
+            
+            
+            List<VLCVideoInfoModel> videos =  new VLCVideoInfo().GetModelList(" AreaID in (" +areaIDs+")");
+            int cameraNode = -1;
+            for (VLCVideoInfoModel v : videos){
+                try {
+                    if (!TextUtils.isEmpty(v._remark)){
+                        cameraNode = Integer.parseInt(v._remark);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                YunNodeModel m = new YunNodeModel(DeviceBean.TYPE_CAMERA, -1, "", -1, "", cameraNode, v._address + v._remark);
+                int deviceTypeNo = v._tcpport > 0 ? 2 : 1;
+                DeviceBean dBean = new DeviceBean(DeviceBean.TYPE_CAMERA, deviceTypeNo, v._type);//枪机 球机   海康 大华
+                dBean.vlcModel = v;
+                m.addDeviceBean(dBean);
+                int index = models.size();
+                for (int i = 0;i < models.size(); i ++){
+                    if (models.get(i).mNodeNo == cameraNode && ((i == (models.size()-1)) || models.get(i + 1).mNodeNo != cameraNode)){
+                        index = i + 1;
+                        break;
+                    }
+                }
+                models.add(index, m);
+            }
+            
+            return models;
+        }
+        
+        return null;
+    }
+    
+    //3.0设备 第一个界面列表
+    public static List<YunNodeModel> getYun3NodeModels(int areaid){
+        List<YunNodeModel> yModels = new ArrayList<YunNodeModel>();
+//        String cmd = "select T.*,iot_AgricultureLand.Name from " +
+//                "(select SS.*,iot_AgricultureFacilities.FacilitiesName,iot_AgricultureFacilities.LandID from " +
+//                "(select * from s30_Host where AreaID="+areaid+")SS " +
+//                "inner join iot_AgricultureFacilities on SS.FacilitiesID=iot_AgricultureFacilities.FacilitiesID)T " +
+//                "left join iot_AgricultureLand on T.LandID=iot_AgricultureLand.LandID " +
+//                "order by iot_AgricultureLand.LandID desc,T.FacilitiesID desc";
+        try {
+            List<S30HostViewModel> s30Models = getDetailedOrderedS30Hosts(areaid);
+            
+            if (null != s30Models && s30Models.size() > 0){
+              //这些设备用到的所有sensor，一起查询出来，再本地处理，速度会快点
+                List<ProductSensorViewModel> allPSVMS = getUsedProductSensors(s30Models);
+                
+              //获取所有板子下的控制
+                String hostIDs = "";
+                for (S30HostViewModel s : s30Models){
+                    hostIDs += s._hostId + ",";
+                }
+                if (hostIDs.length() > 0 && hostIDs.endsWith(",")){
+                    hostIDs = hostIDs.substring(0, hostIDs.length()-1);
+                }
+//                    Log.v(tag, "-----------------start get ControlDeviceModel " + hostIDs);
+                List<ControlDeviceModel> ctlDevices = new ControlDevice().GetModelList(" ControlNodeID in ("+hostIDs+")");
+                
+                for (int i = 0; i < s30Models.size(); i ++){
+                    S30HostViewModel mod = s30Models.get(i);
+                    Log.v(tag, "~~~~~~~~~~~~~~~~~~~~" + mod._hostId + mod._hostName + " land:"+mod._landName + " faci:" + mod._facilitiesName);
+                    if (mod._productId > 0){//有直接的sensor集合
+                        YunNodeModel y = new YunNodeModel(DeviceBean.TYPE_SENSOR, mod._landId, mod._landName,
+                                mod._facilitesId, mod._facilitiesName, mod._hostId, mod._hostName);
+                        y.mNodeUnique = "" + mod._hostId;
+                        yModels.add(y);
+                        for (ProductSensorViewModel pS : allPSVMS){
+                            if (pS._sensorid == 1402){//电池电压
+                                continue;
+                            }
+                            if (pS._productid == mod._productId){
+                                y.addDeviceBean(new DeviceBean(DeviceBean.TYPE_SENSOR, pS._sensorid, pS._channel, pS._shortname));
+                            }
+                        }
+                    }
+                    if (haveCtrDevices(ctlDevices, mod._hostId)){
+                        for (ControlDeviceModel d : ctlDevices){//有直接连在下面的控制设备
+                            if (d._controlnodeid != mod._hostId){
+                                continue;//因为混在一起的所以要剔除
+                            }
+                            YunNodeModel y2 = getAlreadyHaveCtrYunNode(yModels, mod._hostId);
+                            if (null == y2){
+                                y2 = new YunNodeModel(DeviceBean.TYPE_ACTUATOR, mod._landId, mod._landName,
+                                        mod._facilitesId, mod._facilitiesName, mod._hostId, mod._hostName);
+                                y2.mNodeUnique = "" + mod._hostId;
+                                yModels.add(y2);
+                            }
+                            Log.v(tag, "----新建控制设备---" + mod._hostId + " deviceno:" + d._deviceno);
+                            y2.addDeviceBean(new DeviceBean(DeviceBean.TYPE_ACTUATOR, -1, d._deviceno, d._devicename));
+                        }
+                    }
+                    
+                }
+                
+                
+                
+                //TODO camera 
+//                    hostIDs
+                if (!TextUtils.isEmpty(hostIDs)) {
+                    List<VLCVideoInfoModel> list = new VLCVideoInfo()
+                            .GetModelList(" Remark in (" + hostIDs + ")");
+                    if (null != list){
+                        for (int i = 0; i < list.size(); i++) {
+                            VLCVideoInfoModel vlc = list.get(i);
+                            int hid = 0;
+                            try {
+                                hid = Integer.parseInt(vlc._remark);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                Log.e(tag, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!vlcvideoinfo remark error");
+                            }
+                            YunNodeModel m = existCameraNode(yModels, vlc._facilitiesid);
+                            if (null == m){
+                                YunNodeModel near = getNearCameraNode(yModels, vlc._facilitiesid);
+                                if (null != near){
+                                    m = new YunNodeModel(
+                                            DeviceBean.TYPE_CAMERA, near.mLandID, near.landStr,
+                                            near.mFacilityID, near.facilityStr, near.mNodeNo,
+                                            near.nodeStr + "下的监控");
+                                    yModels.add(m);
+                                } else {
+                                    Log.e(tag, "!!!!!!!!!!!no bind node found:" + hid);
+                                    String facilitycmd = "select af.FacilitiesName,af.LandID,al.Name from " +
+                                    		"(select * from  iot_AgricultureFacilities where FacilitiesID=8) as af " +
+                                    		"left join iot_AgricultureLand as al on al.LandID=af.LandID";
+                                    SsiotResult sR = DbHelperSQL.getInstance().Query(facilitycmd);
+                                    int landId = 0;
+                                    String landString = "";
+                                    String facilityStr = "";
+                                    if (null != sR && sR.mRs != null){
+                                        ResultSet rsfa = sR.mRs;
+                                        while(rsfa.next()){
+                                            landId = rsfa.getInt("LandID");
+                                            landString = rsfa.getString("Name");
+                                            facilityStr = rsfa.getString("FacilitiesName");
+                                            break;
+                                        }
+                                    }
+                                    if (null != sR){
+                                        sR.close();
+                                    }
+                                    m = new YunNodeModel(DeviceBean.TYPE_CAMERA, landId, landString, vlc._facilitiesid, facilityStr,
+                                            40000000 + vlc._facilitiesid, facilityStr + "下的监控");
+                                    yModels.add(m);
+                                }
+                                
+                            }
+                            m.addDeviceBean(new DeviceBean(DeviceBean.TYPE_CAMERA, vlc._tcpport > 0 ? 1 : 0, vlc._address));
+                        }
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Collections.sort(yModels, new YNodeComparator());
+        return yModels;
+    }
+    
+//    public static List<SensorModel> getUsedSensorModels(int areaid){
+//        List<SensorModel> list = new ArrayList<SensorModel>();
+//        List<S30HostViewModel> s30Models = getDetailedOrderedS30Hosts(areaid);
+//        if (null != s30Models && s30Models.size() > 0){
+//            List<ProductSensorViewModel> allPSVMS = getUsedProductSensors(s30Models);
+//            if (allPSVMS != null && allPSVMS.size() > 0){
+//                
+//            }
+//        }
+//        return null;
+//    }
+    
+    private static class YNodeComparator implements Comparator<YunNodeModel> {  
+        @Override  
+        public int compare(YunNodeModel obj1, YunNodeModel obj2) {
+            if (obj1.mFacilityID < obj2.mFacilityID){
+                return 1;
+            } else if (obj1.mFacilityID == obj2.mFacilityID){
+                if (obj1.nodeType < obj2.nodeType){
+                    return -1;
+                } else if(obj1.nodeType == obj2.nodeType){
+                    return 0;
+                } else if (obj1.nodeType > obj2.nodeType){
+                    return 1;
+                }
+            } else if (obj1.mFacilityID > obj2.mFacilityID){
+                return -1;
+            }
+            return 0;  
+        }  
+    }  
+    
+    private static YunNodeModel existCameraNode(List<YunNodeModel> ymods, int facilityid){
+        if (null != ymods){
+            for (YunNodeModel m : ymods){
+                if (m.nodeType == DeviceBean.TYPE_CAMERA && m.mFacilityID == facilityid){
+                    return m;
+                }
+            }
+        }
+        return null;
+    }
+    
+    private static YunNodeModel getNearCameraNode(List<YunNodeModel> ymods, int facilityid){//获取待添加camera节点的上一个节点信息
+        YunNodeModel mo = null;
+        if (null != ymods){
+            for (YunNodeModel m : ymods){
+                if (m.mFacilityID == facilityid){
+                    mo = m;//当前设施下的最后一个
+                }
+            }
+        }
+        return mo;
+    }
+    
+    private static boolean haveCtrDevices(List<ControlDeviceModel> dd, int hostid){
+        if (null != dd){
+            for (ControlDeviceModel d : dd){
+                if (d._controlnodeid == hostid){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    private static YunNodeModel getAlreadyHaveCtrYunNode(List<YunNodeModel> mm, int ctrhostID){
+        if (null != mm){
+//            String ccc = "";
+//            for (int k = 0;k < mm.size(); k ++){
+//                ccc += mm.get(k).mNodeNo + ",";
+//            }
+//            Log.v(tag, "----$$$$$$$$$$---" +  mm.size() +" "+ccc+" "+ ctrhostID);
+            
+            for (YunNodeModel m : mm){
+                if (m.nodeType == DeviceBean.TYPE_ACTUATOR && m.mNodeNo == ctrhostID){
+                    return m;
+                }
+            }
+        }
+        return null;
+    }
+    
+    private static S30HostViewModel findRootHost(List<S30HostViewModel> list, S30HostViewModel model){
+        S30HostViewModel root = model;
+        while(root._parentHostId > 0){
+            for (S30HostViewModel s : list){
+                if (model._parentHostId == s._hostId){
+                    root = s;
+                    break;
+                }
+            }
+        }
+        return root;
+    }
+    
+    private static List<S30HostViewModel> getDetailedOrderedS30Hosts(int areaid){
+        String cmd = " select SS.*,al.Name ,af.FacilitiesName,af.LandID from  " +
+                " (select * from s30_HostObject where AreaID=" +areaid+")  as SS " +
+                " inner join iot_AgricultureFacilities  as af on SS.FacilitiesID=af.FacilitiesID " +
+                " left join iot_AgricultureLand as al  on al.LandID=af.LandID " +
+                " order by al.LandID desc,af.FacilitiesID desc";
+        SsiotResult sResult = DbHelperSQL.getInstance().Query(cmd);
+        List<S30HostViewModel> s30Models = new ArrayList<S30HostViewModel>();
+        if (null != sResult && null != sResult.mRs){
+            ResultSet rs = sResult.mRs;
+            try {
+                while(rs.next()){
+                    S30HostViewModel m = new S30HostViewModel();
+                    m._hostId = rs.getInt("HostID");
+                    m._hostName = rs.getString("HostName");
+                    m._facilitesId = rs.getInt("FacilitiesID");
+                    m._facilitiesName = rs.getString("FacilitiesName");
+                    m._landId = rs.getInt("LandID");
+                    m._landName = rs.getString("Name");
+                    m._parentHostId = rs.getInt("ParentHostID");
+                    m._productId = rs.getInt("ProductID");
+                    s30Models.add(m);
+                }
+                
+                Collections.sort(s30Models, new Comparator<S30HostViewModel>() {//排序，把顶层主机放在前面
+                    @Override
+                    public int compare(S30HostViewModel lhs, S30HostViewModel rhs) {
+                        if (lhs._parentHostId < rhs._parentHostId){
+                            return -1;
+                        } else if (lhs._parentHostId > rhs._parentHostId){
+                            return 1;
+                        }
+                        return 0;
+                    }
+                });
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        if (null != sResult){
+            sResult.close();
+        }
+        return s30Models;
+    }
+    
+    private static List<ProductSensorViewModel> getUsedProductSensors(List<S30HostViewModel> s30s){
+        List<ProductSensorViewModel> list = new ArrayList<ProductSensorViewModel>();
+        if (null != s30s && s30s.size() > 0){
+            String productSensorids = "";
+            for (int i = 0; i < s30s.size(); i ++){
+                if (s30s.get(i)._productId > 0){
+                    productSensorids += s30s.get(i)._productId + ",";
+                }
+            }
+            if (productSensorids.length() > 0 && productSensorids.endsWith(",")){
+                productSensorids = productSensorids.substring(0, productSensorids.length()-1);
+            }
+            if (!TextUtils.isEmpty(productSensorids)){
+                String cmd = "select T.*,Sensor.* from " +
+                        "(select * from ProductSensor where ProductID in ("+ productSensorids +"))T " +
+                        "left join Sensor on T.SensorID= Sensor.SensorNo";
+                SsiotResult sr = DbHelperSQL.getInstance().Query(cmd);
+                if (null != sr && sr.mRs != null){
+                    ResultSet rSet = sr.mRs;
+                    try {
+                        while(rSet.next()){
+                            ProductSensorViewModel p = new ProductSensorViewModel();
+                            p._productsensorid = rSet.getInt("ProductSensorID");
+                            p._productid = rSet.getInt("ProductID");
+                            p._sensorid = rSet.getInt("SensorID");
+                            p._channel = rSet.getInt("Channel");
+                            p._shortname = rSet.getString("ShortName");
+                            list.add(p);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (null != sr){
+                    sr.close();
+                }
+            }
+        }
+        return list;
+    }
+    
+    public static List<XYStringHolder> getSingleSensorData(String tableName,String uniqueID,String type, String column){
+        List<XYStringHolder> xys = new ArrayList<XYStringHolder>();
+        if (!TextUtils.isEmpty(tableName) && !TextUtils.isEmpty(uniqueID) 
+                && !TextUtils.isEmpty(type) && !TextUtils.isEmpty(column)){
+            String cmd = "select top 30 更新时间,["+column+"]from "+tableName+
+                    " where [节点编号]='"+uniqueID+"' and TypeOfData='"+type+"' order by 更新时间 desc";
+            SsiotResult sResult = DbHelperSQL.getInstance().Query(cmd);
+            if (null != sResult && null != sResult.mRs){
+                ResultSet dt = sResult.mRs;
+                try {
+                    while(dt.next()){
+                        xys.add(new XYStringHolder(dt.getString("更新时间"), dt.getString(column)));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+            if (null != sResult){
+                sResult.close();
+            }
+        }
+        return xys;
+    }
+    
+    public static List<XYStringHolder> getSingleSensorDataByTime(String tableName,String uniqueID,String type, String column, 
+            Timestamp beginTime, Timestamp endTime){
+        List<XYStringHolder> xys = new ArrayList<XYStringHolder>();
+        if (!TextUtils.isEmpty(tableName) && !TextUtils.isEmpty(uniqueID) 
+                && !TextUtils.isEmpty(type) && !TextUtils.isEmpty(column)){
+            String cmd = "select top 30 [更新时间],["+column+"]from "+tableName+
+                    " where [节点编号]='"+uniqueID+"' and TypeOfData='"+type+"' and [更新时间] > ?  and [更新时间] < ? order by [更新时间] desc";
+            ArrayList<Object> params = new ArrayList<Object>();
+            params.add(beginTime);
+            params.add(endTime);
+            SsiotResult sResult = DbHelperSQL.getInstance().Query_object(cmd,params);
+            if (null != sResult && null != sResult.mRs){
+                ResultSet dt = sResult.mRs;
+                try {
+                    while(dt.next()){
+                        xys.add(new XYStringHolder(dt.getString("更新时间"), dt.getString(column)));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+            if (null != sResult){
+                sResult.close();
+            }
+        }
+        return xys;
     }
 }

@@ -4,6 +4,7 @@ package com.ssiot.remote;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.text.TextUtils;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.NotificationManager;
@@ -47,7 +48,7 @@ public class MainActivity extends ActionBarActivity implements FMainBtnClickList
     private final static String TAG_MONITOR = "tag_monitor";
     private final static String TAG_VIDEO = "tag_video";
     private final static String TAG_HISTORY = "tag_history";
-    private final static String TAG_HISTORY_DETAIL = "tag_history_detail";
+    public final static String TAG_HISTORY_DETAIL = "tag_history_detail";
     
     private final static String TAG_HEADER_TAB = "tag_header_tab";
     private final static String TAG_EXPERT = "tag_expert";
@@ -56,7 +57,6 @@ public class MainActivity extends ActionBarActivity implements FMainBtnClickList
     
     public static String mUniqueID = "";
     private UpdateManager mUpdaManager;
-    private Notification mNoti;
     private SharedPreferences mPref;
     
     public static int AreaID= -1;
@@ -95,6 +95,9 @@ public class MainActivity extends ActionBarActivity implements FMainBtnClickList
             mUniqueID = b.getString("userkey");
             Log.v(tag, "------------mUniqueID:" + mUniqueID);
         }
+        if (TextUtils.isEmpty(mUniqueID)){
+        	mUniqueID = Utils.getStrPref(Utils.PREF_USERKEY, this);
+        }
         if (savedInstanceState == null){
             Log.v(tag, "--------------------savedInstanceState == null");
         }
@@ -121,6 +124,10 @@ public class MainActivity extends ActionBarActivity implements FMainBtnClickList
     
     public MyCache getCaheManager(){
         return mCache;
+    }
+    
+    public String getUnique(){
+        return mUniqueID;
     }
     
     @Override
@@ -297,38 +304,6 @@ public class MainActivity extends ActionBarActivity implements FMainBtnClickList
         }
     }
     
-    private void showUpdateChoseDialog(HashMap<String, String> mVerMap){
-        final HashMap<String, String> tmpMap = mVerMap;
-        AlertDialog.Builder builder =new Builder(this);
-        builder.setTitle(R.string.soft_update_title);
-        builder.setMessage(R.string.soft_update_info);
-        builder.setPositiveButton(R.string.soft_update_updatebtn, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                mNoti = mUpdaManager.showNotification(MainActivity.this);
-//                        .setProgressBar(R.id.noti_progress, 100, 0, false);
-                mUpdaManager.startDownLoad(tmpMap);
-//                showDownloadDialog(tmpMap);
-                dialog.dismiss();
-                Editor e = mPref.edit();
-                e.putBoolean(Utils.PREF_AUTOUPDATE, true);
-                e.commit();
-                Toast.makeText(MainActivity.this, "转向后台下载，可在通知栏中查看进度。", Toast.LENGTH_SHORT).show();
-            }
-        });
-        builder.setNegativeButton(R.string.soft_update_later, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Editor e = mPref.edit();
-                e.putBoolean(Utils.PREF_AUTOUPDATE, false);
-                e.commit();
-                dialog.dismiss();
-            }
-        });
-        Dialog noticeDialog = builder.create();
-        noticeDialog.show();
-    }
-
     @Override
     public void onFSettingBtnClick() {
         if (mUpdaManager == null){

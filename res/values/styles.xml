@@ -127,6 +127,15 @@
 	    <item name="android:paddingBottom">12dp</item>
 	    <item name="android:clickable">true</item>
 	</style>
+	<style name="setItemToggleRowBg"><!-- 	add by jingbo -->
+	    <item name="android:gravity">center_vertical</item>
+	    <item name="android:paddingLeft">16dp</item>
+	    <item name="android:paddingTop">7dp</item>
+	    <item name="android:paddingRight">16dp</item>
+	    <item name="android:paddingBottom">7dp</item>
+	    <item name="android:clickable">true</item>
+	</style>
+	
 	
 	<style name="ItemTitleText" parent="@android:style/Widget.TextView">
         <item name="android:textSize">@dimen/itemTitle</item>
@@ -213,7 +222,7 @@
     
     <style name="setItemMidlleBg">
         <item name="android:gravity">center_vertical</item>
-        <item name="android:background">@drawable/bg_optionlist_mid_normal</item>
+        <item name="android:background">@drawable/bg_optionlist_middle_select</item>
         <item name="android:paddingLeft">@dimen/Margin</item>
         <item name="android:paddingTop">@dimen/Margin12</item>
         <item name="android:paddingRight">@dimen/Margin</item>
@@ -228,6 +237,13 @@
         <item name="android:paddingBottom">@dimen/Margin12</item>
         <item name="android:focusable">true</item>
         <item name="android:focusableInTouchMode">true</item>
+    </style>
+    <style name="setItemMiddleClickMenu">
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:background">@drawable/bg_optionlist_middle_select</item>
+        <item name="android:paddingLeft">@dimen/Margin</item>
+        <item name="android:paddingRight">@dimen/Margin</item>
+        <item name="android:clickable">true</item>
     </style>
     
     <style name="MsgTitleText1" parent="@android:style/Widget.TextView">
@@ -284,6 +300,123 @@
         <item name="android:paddingTop">@dimen/MarginMini</item>
         <item name="android:paddingRight">@dimen/Margin10</item>
         <item name="android:paddingBottom">@dimen/MarginMini</item>
+    </style>
+    
+    <style name="setItemMiniBg">
+        <item name="android:background">@drawable/bg_radius10</item>
+        <item name="android:paddingLeft">@dimen/Margin</item>
+        <item name="android:paddingTop">@dimen/MarginMini</item>
+        <item name="android:paddingRight">@dimen/Margin</item>
+        <item name="android:paddingBottom">@dimen/MarginMini</item>
+    </style>
+    
+    <style name="setDetailText" parent="@android:style/Widget.TextView">
+        <item name="android:textSize">@dimen/statistics_text_size</item>
+        <item name="android:textColor">@color/c333333</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:background">@drawable/bg_input_normal_2</item>
+        <item name="android:paddingLeft">@dimen/Margin12</item>
+        <item name="android:paddingRight">@dimen/Margin12</item>
+        <item name="android:minWidth">@dimen/setDetailMinWid</item>
+        <item name="android:numeric">integer</item>
+        <item name="android:drawableRight">@drawable/ic_spinner_arrow_select</item>
+    </style>
+    <style name="setDetailEditText" parent="@android:style/Widget.EditText">
+        <item name="android:textSize">@dimen/statistics_text_size</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:background">@drawable/my_set_edittext</item>
+        <item name="android:numeric">decimal|signed</item>
+    </style>
+    
+    <style name="my_edittext_style" parent="@android:style/Widget.EditText">
+        <item name="android:background">@drawable/my_edittext</item>
+        <item name="android:paddingLeft">@dimen/contentPadding</item>
+    </style>
+    <style name="listResNoAniStyle">
+        <item name="android:background">@color/transparent</item>
+        <item name="android:fadingEdge">none</item>
+        <item name="android:cacheColorHint">@color/transparent</item>
+        <item name="android:divider">@drawable/divide_ccc</item>
+        <item name="android:fadeEnabled">true</item>
+    </style>
+    <style name="tab77White14">
+        <item name="android:textSize">@dimen/itemContent</item>
+        <item name="android:textColor">@color/tab_77_white_seletor</item>
+    </style>
+    <style name="White16Text" parent="@android:style/Widget.TextView">
+        <item name="android:textSize">16.0sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:gravity">center</item>
+    </style>
+    <style name="MainItemText" parent="@android:style/Widget.TextView">
+        <item name="android:textSize">16.0sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_marginRight">@dimen/mainMargin</item>
+        <item name="android:layout_marginBottom">@dimen/mainMargin</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:layout_alignParentBottom">true</item>
+    </style>
+    <style name="Text7716" parent="@android:style/Widget.TextView">
+        <item name="android:textSize">16.0sp</item>
+        <item name="android:textColor">@color/otherSubTextColor</item>
+        <item name="android:gravity">center</item>
+    </style>
+    <style name="Text3314" parent="@android:style/Widget.TextView">
+        <item name="android:textSize">14.0sp</item>
+        <item name="android:textColor">@color/c333333</item>
+        <item name="android:gravity">center</item>
+    </style>
+    <style name="MarginLayout">
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingLeft">@dimen/Margin</item>
+        <item name="android:paddingRight">@dimen/Margin</item>
+    </style>
+    <style name="ItemContentText" parent="@android:style/Widget.TextView">
+        <item name="android:textSize">@dimen/itemContent</item>
+        <item name="android:textColor">@color/titleColor</item>
+    </style>
+    <style name="FilterSubText" parent="@android:style/Widget.TextView">
+        <item name="android:textSize">@dimen/msg_content</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">@drawable/green_btn_select</item>
+        <item name="android:paddingLeft">@dimen/msg_content</item>
+        <item name="android:paddingTop">5.0dip</item>
+        <item name="android:paddingRight">@dimen/msg_content</item>
+        <item name="android:paddingBottom">5.0dip</item>
+    </style>
+    <style name="ItemContentTextTitle" parent="@android:style/Widget.TextView">
+        <item name="android:textSize">@dimen/itemContent</item>
+        <item name="android:textColor">@color/otherSubTextColor</item>
+    </style>
+    <style name="Text7714" parent="@android:style/Widget.TextView">
+        <item name="android:textSize">@dimen/itemContent</item>
+        <item name="android:textColor">@color/txt_77_seletor</item>
+    </style>
+    <style name="contetntPadding">
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingLeft">@dimen/Margin12</item>
+        <item name="android:paddingRight">@dimen/Margin12</item>
+    </style>
+    <style name="StaValText" parent="@android:style/Widget.TextView">
+        <item name="android:textSize">@dimen/itemMiniContent</item>
+        <item name="android:textColor">@color/otherSubTextColor</item>
+    </style>
+    <style name="listStyle">
+        <item name="android:background">@drawable/bg_f0f0f0</item>
+        <item name="android:fadingEdge">none</item>
+        <item name="android:layoutAnimation">@anim/list_tab_left</item>
+        <item name="android:cacheColorHint">@color/transparent</item>
+        <item name="android:divider">@drawable/divide_ccc</item>
+        <item name="android:fastScrollEnabled">true</item>
+    </style>
+    <style name="LayoutPaddingMargin">
+        <item name="android:paddingLeft">@dimen/Margin10</item>
+        <item name="android:paddingTop">@dimen/Margin</item>
+        <item name="android:paddingRight">@dimen/Margin10</item>
+        <item name="android:paddingBottom">@dimen/Margin</item>
     </style>
     
     

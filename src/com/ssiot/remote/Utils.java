@@ -29,6 +29,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -55,9 +56,13 @@ public class Utils {
     public static final String PREF_PARENTID = "parentid";//ParentId
     public static final String PREF_GROUPID = "groupid";
     public static final String PREF_USERTYPE = "usertype";
+    public static final String PREF_USERDEVICETYPE = "userdevicetype";
+    public static final String PREF_MAIN_USERID = "mainuserid";
     
     public static final String PREF_AUTOUPDATE = "autoupdate";
     public static final String PREF_ALARM = "alarm";
+    public static final String PREF_OFFLINE_NOTICE = "offlinenotice";
+    public static final String PREF_LAST_OFFLINE = "lastofflinenodes";
     
     public static final String BUN_DEVICE_NAMES = "devicenames";
     public static final String BUN_DEVICE_NOS = "devicenos";
@@ -122,6 +127,20 @@ public class Utils {
         return (int) (dpValue * scale + 0.5f);  
     }
     
+    public static String getStringForVals(ArrayList<Integer> paramArrayList) {
+        String str = "";
+        Iterator iterator;
+        if (paramArrayList.size() > 0) {
+            iterator = paramArrayList.iterator();
+            while (iterator.hasNext()) {
+                int i = ((Integer) iterator.next()).intValue();
+                str = str + i + ",";
+            }
+            str = str.substring(0, -1 + str.length());
+        }
+        return str;
+    }
+    
     public static String buildTime(long seconds){//当前时间向前向后加减多少秒
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date d = new Date(System.currentTimeMillis() + seconds * 1000);
@@ -130,6 +149,9 @@ public class Utils {
     
     public static String formatTime(Timestamp ts){
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        if (null == ts){
+        	return "未知时间";
+        }
         Date d = new Date(ts.getTime());
         return formatter.format(d);
     }
@@ -260,10 +282,14 @@ public class Utils {
 //                grey = (int)((float) red * 0.3 + (float)green * 0.59 + (float)blue * 0.11);    
 //                grey = alpha | (grey << 16) | (grey << 8) | grey;  
 //                grey = alpha | (grey & 0x0000FF00);
-                int a = ((grey  & 0xff000000 ) >> 24);  
+//                int a = ((grey  & 0xff000000 ) >> 24);  
                 
-                grey = a | (150 << 16 )| (150 <<8) | 150;
-                grey = (a<<24) | 0xffffff;
+//                grey = a | (150 << 16 )| (150 <<8) | 150;
+//                grey = (a<<24) | 0xffffff;
+                int alp = ((grey  & 0xFF000000 ) >> 24);
+                if (alp != 0){
+                	grey = alp | 255 << 16 | 255 << 8 | 255;
+                }
                 pixels[width * i + j] = grey;
             }    
         }    

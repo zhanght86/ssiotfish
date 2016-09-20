@@ -10,6 +10,8 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.ImageView;
 
+import com.baidu.platform.comapi.map.v;
+import com.ssiot.remote.data.model.CameraFileModel;
 import com.ssiot.remote.monitor.MoniNodeListFrag;
 
 import java.io.File;
@@ -18,36 +20,56 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 public class GetImageThread extends Thread{
-    private static final String tag = "GetImageThread.java";
+    private static final String tag = "remote.GetImageThread";
     public static final int MSG_GETFTPIMG_END = MoniNodeListFrag.MSG_GET_ONEIMAGE_END;
     String url = "";
     ImageView imageView;
     Handler uiHandler;
+    private int maxwidth = 256;//不能是static的
     public GetImageThread(ImageView view, String urlString,Handler h){
         url = urlString;
         imageView = view;
         uiHandler = h;
     }
+    
+    public GetImageThread(ImageView view, String urlString,Handler h, int maxPixel){
+        url = urlString;
+        imageView = view;
+        uiHandler = h;
+        if (maxPixel > 0){
+        	maxwidth = maxPixel;
+        }
+    }
     @Override
     public void run() {
-        Bitmap bitmap = getHttpBitmap(url);
-        Message message = uiHandler.obtainMessage(MoniNodeListFrag.MSG_GET_ONEIMAGE_END);//MoniNodeListFrag 与ControlNodeListFrag 必须都是2
-        message.obj = new ThumnailHolder(imageView, bitmap);
-        uiHandler.sendMessage(message);
+        final Bitmap bitmap = getHttpBitmap(url);
+//        Message message = uiHandler.obtainMessage(MoniNodeListFrag.MSG_GET_ONEIMAGE_END);//MoniNodeListFrag 与ControlNodeListFrag 必须都是2
+//        message.obj = new ThumnailHolder(imageView, bitmap);
+//        uiHandler.sendMessage(message);
+        if (null != imageView.getTag() && imageView.getTag() instanceof CameraFileModel){
+        	((CameraFileModel) imageView.getTag()).bitmap = bitmap;
+        }
+        imageView.post(new Runnable() {//gejingbo 20160818
+			@Override
+			public void run() {
+				imageView.setImageBitmap(bitmap);
+			}
+		});
     }
     
-    public static Bitmap getHttpBitmap(String url){
+    public Bitmap getHttpBitmap(String url){
         URL myFileURL;
         Bitmap bitmap=null;
         try{
             Log.v(tag, "----start getftpbitmap---" + url);
-			//原先都是http://yun.ssiot.com/的 后来加入溯源 需要cloud了 20160107 http://yun.ssiot.com/
             myFileURL = new URL(url);
             //获得连接
             HttpURLConnection conn=(HttpURLConnection)myFileURL.openConnection();
+            test();
             //设置超时时间为6000毫秒，conn.setConnectionTiem(0);表示没有时间限制
             conn.setConnectTimeout(4000);
             //连接设置获得数据流
@@ -65,27 +87,45 @@ public class GetImageThread extends Thread{
             bitmap = BitmapFactory.decodeStream(is);
 //            bitmap = BitmapFactory.decodeStream(is, null, options);
             
-            bitmap = resizeBitmap(bitmap, 128, 128);
+            bitmap = resizeBitmap(bitmap, maxwidth, maxwidth);
             //关闭数据流
             is.close();
-            String fileUrl = "";
-            if (url.startsWith("http://yun.ssiot.com/")){
-                fileUrl = url.substring(url.length()-21, url.length());
-            } else if (url.startsWith("http://cloud.ssiot.com/")){
-                fileUrl = url.substring(url.length()-22, url.length());
+            String localFolder = "";
+            int index = url.indexOf("cloud.ssiot.com");
+            if (index >= 0){//本公司图片进行缓存
+            	localFolder = url.substring(index + 15, url.length());
+            	Log.v(tag, "----- save to localsdcard:" + url);
+            	saveBitmap(bitmap, Environment.getExternalStorageDirectory() + "/"+SsiotConfig.CACHE_DIR +"/" + localFolder);
             } else {
-                Log.e(tag, "-----unkonw ftp img file url:" + url);
-                return bitmap;
+            	Log.e(tag, "-----not save to localsdcard:" + url);
+            	return bitmap;
             }
-            Log.v(tag, "----- ftp img file url:" + url);
-            saveBitmap(bitmap, Environment.getExternalStorageDirectory() + "/"+SsiotConfig.CACHE_DIR +"/" + url);
         }catch(Exception e){
             e.printStackTrace();
         }
         return bitmap;
     }
     
-    public static void saveBitmap(Bitmap bm, String path) {
+    private static void test(){//测试获取FTP目录下的文件列表，不可行！
+    	Log.v(tag, "===========");
+    	Log.v(tag, "===========");
+//    	URL url;
+//		try {
+//			url = new URL("http://yushu.ssiot.com/YS1/");
+//			
+//			Log.v(tag, "===========" + url.getAuthority() + url.getFile() +" path:"+ url.getPath() + url.getRef());
+//			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+//			Log.v(tag, "===========inputstream:" + conn.getInputStream());
+//			Log.v(tag, "===========filenamemap" + conn.getFileNameMap().);
+//			conn.disconnect();
+//		} catch (MalformedURLException e) {
+//			e.printStackTrace();
+//		}catch (IOException e) {
+//			e.printStackTrace();
+//		}
+    }
+    
+    public void saveBitmap(Bitmap bm, String path) {
         path = path.replace("http://", "");
         File f = new File(path);
         f.getParentFile().mkdirs();
@@ -108,7 +148,7 @@ public class GetImageThread extends Thread{
 
     }
     
-    public static Bitmap resizeBitmap(Bitmap drawable, int desireWidth,
+    public Bitmap resizeBitmap(Bitmap drawable, int desireWidth,
             int desireHeight) {
         int width = drawable.getWidth();
         int height = drawable.getHeight();
