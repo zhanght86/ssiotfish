@@ -31,10 +31,10 @@
         android:singleLine="true"
         android:textColor="@color/c333333"
         android:textSize="@dimen/itemTitle"
-        android:paddingLeft="10dp"
+        android:paddingLeft="15dp"
         android:paddingTop="2dp"
         android:paddingBottom="2dp"
-        android:background="#ff8fc31f"/>
+        android:background="#20b2dd"/>
     
     <LinearLayout 
         android:layout_width="match_parent"

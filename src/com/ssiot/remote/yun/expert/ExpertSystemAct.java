@@ -5,7 +5,7 @@ import android.os.Bundle;
 import com.ssiot.remote.ExpertFragment;
 import com.ssiot.remote.ExpertFragment.FExpertBtnClickListener;
 import com.ssiot.remote.expert.DiagnoseFishSelectActivity;
-import com.ssiot.remote.HeadActivity;
+import com.ssiot.fish.HeadActivity;
 import com.ssiot.remote.MainActivity;
 import com.ssiot.fish.R;
 

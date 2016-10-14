@@ -30,6 +30,7 @@ import com.ssiot.remote.yun.monitor.DeviceBean;
 import com.ssiot.remote.yun.monitor.YunNodeModel;
 import com.ssiot.remote.yun.webapi.WS_WaterQuality;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -194,8 +195,12 @@ public class SensorsFragment extends DevicesFragment{
             } else {
                 paramView.setVisibility(View.VISIBLE);
                 localViewHolder.icon.setImageResource(localDevice.getIconRes());
-                localViewHolder.name.setText(localDevice.mName + (localDevice.mChannel > 0 ? localDevice.mChannel : ""));
-                localViewHolder.value.setText("" + localDevice.value + localDevice.getUnit());
+                String offLineStr = "";
+                if (!isTimeOnline(localDevice.mTime)){
+                	offLineStr = "(离线)";
+                }
+                localViewHolder.name.setText(localDevice.mName + (localDevice.mChannel > 0 ? localDevice.mChannel : "") + offLineStr);
+                localViewHolder.value.setText("" + localDevice.valueStr + localDevice.getUnit());//改成了valueStr
                 
                 localViewHolder.chartView.setData(localDevice.thresholdModel, localDevice.value);//TODO 最大值 最小值 警戒值
                 String valueMeansStr = "安全";
@@ -268,6 +273,13 @@ public class SensorsFragment extends DevicesFragment{
                 v.setTag(this);
             }
         }
+    }
+    
+    private boolean isTimeOnline(Timestamp ts){
+    	if (null != ts && System.currentTimeMillis() -ts.getTime() < (long) 3600 * 1000){
+    		return true;
+    	}
+    	return false;
     }
 
   //一行的adapter

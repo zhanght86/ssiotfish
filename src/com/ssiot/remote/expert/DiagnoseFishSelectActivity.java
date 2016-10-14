@@ -11,7 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.ssiot.remote.BrowserActivity;
-import com.ssiot.remote.HeadActivity;
+import com.ssiot.fish.HeadActivity;
 import com.ssiot.remote.Utils;
 import com.ssiot.remote.data.model.FishTypeModel;
 import com.ssiot.remote.yun.webapi.WS_Fish;

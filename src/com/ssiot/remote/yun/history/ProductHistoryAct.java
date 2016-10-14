@@ -3,7 +3,7 @@ package com.ssiot.remote.yun.history;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 
-import com.ssiot.remote.HeadActivity;
+import com.ssiot.fish.HeadActivity;
 import com.ssiot.remote.MainActivity;
 import com.ssiot.fish.R;
 import com.ssiot.remote.Utils;

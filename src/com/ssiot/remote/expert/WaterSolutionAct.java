@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -17,12 +18,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.ssiot.fish.HeadActivity;
 import com.ssiot.fish.R;
+import com.ssiot.remote.BrowserActivity;
 import com.ssiot.remote.GetImageThread;
+import com.ssiot.remote.Utils;
 import com.ssiot.remote.data.model.GoodsModel;
 import com.ssiot.remote.data.model.WaterDetailModel;
 import com.ssiot.remote.yun.monitor.DeviceBean;
@@ -102,6 +106,16 @@ public class WaterSolutionAct extends HeadActivity{
 	    mGoodsView = (ListView) findViewById(R.id.goods_list);
 		mGoodsAdapter = new GoodsAdapter(this,mGoodsModels,mHandler);
 		mGoodsView.setAdapter(mGoodsAdapter);
+		mGoodsView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				int userid = Utils.getIntPref(Utils.PREF_USERID, WaterSolutionAct.this);
+				Intent intent = new Intent(WaterSolutionAct.this, BrowserActivity.class);
+				intent.putExtra("url", "http://wapcart.fisher88.com/product.aspx?id=" + mGoodsModels.get(position)._id + "&userid=" + userid);
+				startActivity(intent);
+			}
+		});
 		
 		if (abnormalDevices.size() > 0){//初始化时手动获取一下
 			selectedPostion = 0;

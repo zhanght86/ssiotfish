@@ -65,7 +65,7 @@ public class VideoListAdapter extends BaseAdapter{
             holder = (ViewHolder) convertView.getTag();
         }
         final VLCVideoInfoModel vModel = mDataList.get(position);
-        holder.imageView.setImageResource(vModel._devicetype == 0 ? R.drawable.video_rtsp_6 : R.drawable.video_dahua_6);
+        holder.imageView.setImageResource(vModel._devicetype == 0 ? R.drawable.ic_section_surveillance : R.drawable.ic_section_surveillance_ball);
         holder.textView.setText(vModel._address.trim());
         holder.video_type.setText("设备类型：" +vModel._type);
         holder.typeText.setText(vModel._type);
@@ -77,6 +77,9 @@ public class VideoListAdapter extends BaseAdapter{
             holder.status.setImageResource(R.drawable.connect_fail_2);
         } else {
             holder.status.setVisibility(View.INVISIBLE);
+        }
+        if (vModel._ssiotezviz){
+        	holder.status.setVisibility(View.GONE);
         }
         holder.ysYun.setOnClickListener(null);
         if (vModel._ssiotezviz){

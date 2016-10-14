@@ -2,7 +2,7 @@ package com.ssiot.remote.yun.manage.task;
 
 import android.graphics.Bitmap;
 
-import com.ssiot.remote.HeadActivity;
+import com.ssiot.fish.HeadActivity;
 
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;

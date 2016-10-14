@@ -13,7 +13,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.ssiot.remote.HeadActivity;
+import com.ssiot.fish.HeadActivity;
 import com.ssiot.fish.R;
 
 import java.util.ArrayList;

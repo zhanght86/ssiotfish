@@ -63,7 +63,7 @@ public class MyNumberPicker extends NumberPicker {
         if (view instanceof TextView) {
             Log.e(tag, "----updateView-mTxtColorRes = "+mTxtColorRes);//非常奇怪了，颜色怎么改动都是0？
             //这里修改字体的属性
-            ((TextView) view).setTextColor(getResources().getColor(R.color.ssiotgreen));
+            ((TextView) view).setTextColor(getResources().getColor(R.color.white));
             ((TextView) view).setTextSize(35);
         }
     }

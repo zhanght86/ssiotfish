@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
 
-import com.ssiot.remote.HeadActivity;
+import com.ssiot.fish.HeadActivity;
 import com.ssiot.fish.R;
 import com.ssiot.remote.yun.monitor.MonitorAct;
 import com.ssiot.remote.yun.sta.StatisticsAct;

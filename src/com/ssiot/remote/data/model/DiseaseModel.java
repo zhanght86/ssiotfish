@@ -12,4 +12,5 @@ public class DiseaseModel implements Serializable{
 	public String _medicineIds;
 	
 	public int _probability;//概率
+	public String _fishname;
 }

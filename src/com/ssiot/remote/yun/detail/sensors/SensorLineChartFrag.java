@@ -200,7 +200,7 @@ public class SensorLineChartFrag extends Fragment {//原来的chart应该可以�
         // set some renderer properties
         renderer.setPointStyle(PointStyle.CIRCLE);///折线点的样式
 //        renderer.setPointStrokeWidth(30f);//折线点的大小 ???错
-        renderer.setColor(getResources().getColor(R.color.sta_line));
+        renderer.setColor(getResources().getColor(R.color.blue_2));//R.color.sta_line
         renderer.setFillPoints(true);
         renderer.setLineWidth(3.0f);//折线宽度
         renderer.setDisplayChartValues(true);//设置显示折线的点对应的值

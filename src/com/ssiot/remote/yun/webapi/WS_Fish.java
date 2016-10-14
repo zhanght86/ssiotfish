@@ -219,6 +219,7 @@ public class WS_Fish extends WebBaseFish{
 				JSONObject jo = ja.optJSONObject(i);
 				GoodsModel g = new GoodsModel();
 				g._id = jo.getInt("ID");
+				g._code = jo.getString("Code");
 				g._name = jo.getString("Title");
 				g._detail = jo.getString("ContentText");
 				g._price = (float)jo.getDouble("Price");
@@ -538,6 +539,7 @@ public class WS_Fish extends WebBaseFish{
 				DiseaseModel m = new DiseaseModel();
 				m._id = jo.getInt("id");
 				m._name = jo.getString("name");
+				m._fishname = jo.getString("fishtype");
 //				m._probability = jo.getInt("pro");//概率
 				m._causereason = jo.getString("cause");
 				m._resulttext = jo.getString("result");

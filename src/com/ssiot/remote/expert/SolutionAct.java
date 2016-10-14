@@ -5,12 +5,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Browser;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -18,7 +21,9 @@ import android.widget.TextView;
 
 import com.ssiot.fish.HeadActivity;
 import com.ssiot.fish.R;
+import com.ssiot.remote.BrowserActivity;
 import com.ssiot.remote.GetImageThread;
+import com.ssiot.remote.Utils;
 import com.ssiot.remote.data.model.DiseaseModel;
 import com.ssiot.remote.data.model.GoodsModel;
 import com.ssiot.remote.yun.webapi.WS_Fish;
@@ -93,7 +98,7 @@ public class SolutionAct extends HeadActivity{
 		String timeTxt = formatter2.format(new Date());
 		timeView.setText(timeTxt);
 		diseaseView.setText(mDiseaseModel._name);
-		fishtypeView.setText("typeid:"+mDiseaseModel._fishtypeid);//TODO 获取种类
+		fishtypeView.setText(mDiseaseModel._fishname);//TODO 获取种类
 		
 		TextView reasonView = (TextView) findViewById(R.id.txt_reason);
 		TextView resultView = (TextView) findViewById(R.id.txt_result);
@@ -106,6 +111,16 @@ public class SolutionAct extends HeadActivity{
 		setGoodsListHeight(mGoodsView);
 		mGoodsAdapter = new GoodsAdapter(this,mGoodsModels,mHandler);
 		mGoodsView.setAdapter(mGoodsAdapter);
+		mGoodsView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				int userid = Utils.getIntPref(Utils.PREF_USERID, SolutionAct.this);
+				Intent intent = new Intent(SolutionAct.this, BrowserActivity.class);
+				intent.putExtra("url", "http://wapcart.fisher88.com/product.aspx?id=" + mGoodsModels.get(position)._id + "&userid=" + userid);
+				startActivity(intent);
+			}
+		});
 		new GetGoodsThread().start();
 	}
 	

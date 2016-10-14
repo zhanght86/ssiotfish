@@ -12,7 +12,7 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.ssiot.fish.R;
-import com.ssiot.remote.HeadActivity;
+import com.ssiot.fish.HeadActivity;
 
 public class TxtAct extends HeadActivity{
 	private static final String tag = "TxtAct";

@@ -22,11 +22,10 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.ssiot.remote.dahuavideo.DahuaLiveActivity;
-import com.ssiot.remote.data.DataAPI;
-import com.ssiot.remote.data.DbHelperSQL;
 import com.ssiot.remote.data.model.VLCVideoInfoModel;
 import com.ssiot.remote.hikvision.RTSPVideo;
 import com.ssiot.remote.hikvision.VideoActivity;
+import com.ssiot.remote.yun.webapi.WS_API;
 
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -43,7 +42,7 @@ public class VideoFragment extends Fragment{
     VideoView mVideoView;
     ListView mListView;
     private VideoListAdapter mAdapter;
-    private List<VLCVideoInfoModel> mVideoModels;
+    private List<VLCVideoInfoModel> mVideoModels = new ArrayList<VLCVideoInfoModel>();
     
     private boolean cancelStatus = false;
     
@@ -102,15 +101,20 @@ public class VideoFragment extends Fragment{
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    String areaIds = DataAPI.GetAreaIDsByUserKey(uniqueIdString);//多个 例如13，29
-                    if (!TextUtils.isEmpty(areaIds)){
-                        mVideoModels = DataAPI.GetVLCVideoMapInfoByAreaIds(areaIds);
+//                    String areaIds = DataAPI.GetAreaIDsByUserKey(uniqueIdString);//多个 例如13，29
+//                    if (!TextUtils.isEmpty(areaIds)){
+//                        mVideoModels = DataAPI.GetVLCVideoMapInfoByAreaIds(areaIds);
+//                    }
+                    int userid = Utils.getIntPref(Utils.PREF_USERID, getActivity());
+                    List<VLCVideoInfoModel> list = new WS_API().GetAllIPC(userid);
+                    mVideoModels.clear();
+                    if (null != list && list.size() > 0){
+                    	mVideoModels.addAll(list);
                     }
-                    if (null == mVideoModels){
-                        Log.e(tag, "-----get video ==null, uniqueIdString:" +uniqueIdString +" areaIds:"+areaIds);
-                        mVideoModels = new ArrayList<VLCVideoInfoModel>();
-                    }
-                    DbHelperSQL.getInstance().outSideClose();
+//                    if (null == mVideoModels){
+//                        Log.e(tag, "-----get video ==null, uniqueIdString:" +uniqueIdString +" areaIds:"+areaIds);
+//                        mVideoModels = new ArrayList<VLCVideoInfoModel>();
+//                    }
                     mHandler.sendEmptyMessage(MSG_QUERY_OK);
                     if(null != d && d.isShowing()){
                         d.dismiss();
@@ -156,6 +160,10 @@ public class VideoFragment extends Fragment{
                 if (null != mVideoModels.get(position)){
                     Log.v(tag, "----------onclick------type:"+ mVideoModels.get(position)._type);
                     VLCVideoInfoModel vModel = mVideoModels.get(position);
+                    if (vModel._ssiotezviz){
+                    	Toast.makeText(getActivity(), "请使用萤石云播放", Toast.LENGTH_SHORT).show();
+                    	return;
+                    }
                     if (!Utils.isNetworkConnected(getActivity())){
                         Toast.makeText(getActivity(), R.string.please_check_net, Toast.LENGTH_SHORT).show();
                         return;

@@ -13,7 +13,7 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.ssiot.fish.R;
-import com.ssiot.remote.HeadActivity;
+import com.ssiot.fish.HeadActivity;
 import com.ssiot.remote.yun.webapi.WS_Other;
 
 public class NewsAct extends HeadActivity{

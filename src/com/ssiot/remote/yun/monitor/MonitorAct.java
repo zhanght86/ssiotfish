@@ -11,7 +11,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
-import com.ssiot.remote.HeadActivity;
+import com.ssiot.fish.HeadActivity;
 import com.ssiot.fish.R;
 import com.ssiot.remote.Utils;
 import com.ssiot.remote.yun.MQTT;
@@ -33,6 +33,7 @@ public class MonitorAct extends HeadActivity{
     List<YunNodeModel> mDatas = new ArrayList<YunNodeModel>();
     int deviceversion = 2;
     GetIPCStatusThread mIpcStatusThread;
+    View mapBtn;
     
     private static final int MSG_GET_END = 1;
     private static final int MSG_MQTT_GET = MQTT.MSG_MQTT_GET;
@@ -108,6 +109,15 @@ public class MonitorAct extends HeadActivity{
 //                home();
             }
         });
+        mapBtn = (ImageView) findViewById(R.id.btn_map);
+        mapBtn.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent i = new Intent(MonitorAct.this, BaiduMapAct.class);
+//				i.putExtra("latlngarray", value);
+				startActivity(i);
+			}
+		});
         
         initList();
     }

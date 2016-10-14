@@ -47,6 +47,15 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal" />
         </HorizontalScrollView>
+        
+        <ImageView
+            android:id="@+id/btn_map"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_task_location"
+            android:layout_gravity="right"
+            android:paddingRight="10dp"
+            android:gravity="center_vertical" />
     </LinearLayout>
 
     <ImageView

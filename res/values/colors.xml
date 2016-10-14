@@ -60,7 +60,9 @@
 	<color name="titleColor">#ff333333</color>
 	<color name="errorColor">#fff08080</color>
 	<color name="otherSubTextColor">#ff777777</color>
-	<color name="DarkGreen">#ff2d8931</color>
+<!-- 	<color name="DarkGreen">#ff2d8931</color> -->
+	<color name="DarkGreen">#ff2796de</color>
+	<color name="blue_2">#ff2296ee</color>
 	<color name="aa">#ffaaaaaa</color>
 	<color name="c999999">#ff999999</color>
 	<color name="c777777">#ff777777</color>

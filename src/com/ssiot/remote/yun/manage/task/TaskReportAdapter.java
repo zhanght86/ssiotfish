@@ -73,7 +73,7 @@ public class TaskReportAdapter extends BaseAdapter{
             for (int i = 0; i < paths.length; i ++){
                 imgPaths.add(paths[i]);
             }
-            PicAdapter adapter = new PicAdapter(mContext, imgPaths, mHandler,TaskReportNewAct.FTP_TASK_PATH);
+            PicAdapter adapter = new PicAdapter(mContext, imgPaths, mHandler,TaskReportNewAct.FTP_CLOUD);
             holder.mPicGridView.setAdapter(adapter);
         }
         

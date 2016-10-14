@@ -123,6 +123,10 @@ public class LoginActivity extends HeadActivity {
 //        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 //                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_login);
+        View loginHolder = findViewById(R.id.login_content);
+        Animation anim = AnimationUtils.loadAnimation(this,
+                R.anim.translate_up);
+        loginHolder.startAnimation(anim);//上滑动画
         /*
          * LayoutInflater layout=this.getLayoutInflater(); View
          * view=layout.inflate(R.layout.activity_main,null);

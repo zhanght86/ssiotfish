@@ -1,7 +1,11 @@
 package com.ssiot.remote;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -24,6 +28,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.HashMap;
+
+import com.ssiot.fish.FishMainActivity;
 import com.ssiot.fish.R;
 
 public class SettingFrag extends Fragment{
@@ -68,35 +74,13 @@ public class SettingFrag extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // TODO Auto-generated method stub
-        View v = inflater.inflate(R.layout.fragment_setting, container, false);
-        TextView mVersionTextView = (TextView) v.findViewById(R.id.app_version);
-        mVerStatusView = (TextView) v.findViewById(R.id.app_version_status);
-        String text = getActivity().getResources().getString(R.string.app_name) + getCurVersionName(getActivity());
-        mVersionTextView.setText(text);
-        View b = (View) v.findViewById(R.id.checkupdate);
-        b.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!Utils.isNetworkConnected(getActivity())){
-                    Toast.makeText(getActivity(), R.string.please_check_net, Toast.LENGTH_SHORT).show();
-                }
-                mVerStatusView.setText("");
-                if (UpdateManager.updating){
-                    Toast.makeText(getActivity(), "更新正在运行,请等待。", Toast.LENGTH_SHORT).show();
-                } else {
-//                    if (null != mFSettingBtnClickListener){
-//                        mFSettingBtnClickListener.onFSettingBtnClick();
-//                    }
-                    UpdateManager mUpdaManager = new UpdateManager(getActivity());
-                    if (mPref.getBoolean(Utils.PREF_AUTOUPDATE, true) == false){
-                        Editor editor = mPref.edit();
-                        editor.putBoolean(Utils.PREF_AUTOUPDATE, true);
-                        editor.commit();
-                    }
-                    mUpdaManager.startGetRemoteVer();
-                }
-            }
-        });
+        View v = inflater.inflate(R.layout.fragment_setting_2, container, false);//20161014改动了UI
+        
+        TextView userNameView = (TextView) v.findViewById(R.id.setting_username);
+        userNameView.setText(Utils.getStrPref(Utils.PREF_USERNAMETEXT, getActivity()));
+        
+        initAppInfo(v);
+        
         CheckBox cb = (CheckBox) v.findViewById(R.id.alarm_switch);
         cb.setChecked(mPref.getBoolean(Utils.PREF_ALARM, true));
         cb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -137,7 +121,66 @@ public class SettingFrag extends Fragment{
 				startActivity(intent);
 			}
 		});
+        
+        initLogOutBtn(v);
+        
         return v;
+    }
+    
+    private void initAppInfo(View rootView){
+    	TextView mVersionTextView = (TextView) rootView.findViewById(R.id.app_version);
+        mVerStatusView = (TextView) rootView.findViewById(R.id.app_version_status);
+        String text = getActivity().getResources().getString(R.string.app_name) + getCurVersionName(getActivity());
+        mVersionTextView.setText(text);
+        View b = (View) rootView.findViewById(R.id.checkupdate);
+        b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!Utils.isNetworkConnected(getActivity())){
+                    Toast.makeText(getActivity(), R.string.please_check_net, Toast.LENGTH_SHORT).show();
+                }
+                mVerStatusView.setText("");
+                if (UpdateManager.updating){
+                    Toast.makeText(getActivity(), "更新正在运行,请等待。", Toast.LENGTH_SHORT).show();
+                } else {
+//                    if (null != mFSettingBtnClickListener){
+//                        mFSettingBtnClickListener.onFSettingBtnClick();
+//                    }
+                    UpdateManager mUpdaManager = new UpdateManager(getActivity());
+                    if (mPref.getBoolean(Utils.PREF_AUTOUPDATE, true) == false){
+                        Editor editor = mPref.edit();
+                        editor.putBoolean(Utils.PREF_AUTOUPDATE, true);
+                        editor.commit();
+                    }
+                    mUpdaManager.startGetRemoteVer();
+                }
+            }
+        });
+    }
+    
+    private void initLogOutBtn(View rootView){
+    	View v = rootView.findViewById(R.id.logout);
+    	v.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Context context = getActivity();
+				AlertDialog.Builder builder = new Builder(context);
+				builder.setTitle("确认退出？").setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						getActivity().setResult(Activity.RESULT_OK);
+						getActivity().finish();
+					}
+				}).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// TODO Auto-generated method stub
+						
+					}
+				});
+				builder.create().show();
+			}
+		});
     }
     
     private void startBackService(){

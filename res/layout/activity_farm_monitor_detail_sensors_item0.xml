@@ -9,7 +9,7 @@
     <RelativeLayout 
         android:layout_width="match_parent"
         android:layout_height="28dp"
-        android:background="@drawable/ssiot_green"
+        android:background="@color/DarkGreen"
         android:layout_margin="2px">
         <TextView 
             android:id="@+id/single_node_title"

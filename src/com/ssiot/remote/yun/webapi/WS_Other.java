@@ -36,7 +36,7 @@ import com.ssiot.remote.yun.monitor.YunNodeModel;
 public class WS_Other extends WebBasedb2{
 	private static final String tag = "WS_Other";
 	
-	private String MethodFile = "SensorProject.asmx";
+	private String MethodFile = "Article.asmx";//"SensorProject.asmx";
 	
 	public List<FishTypeModel> GetAllFishTypes(String account){
 		HashMap<String, String> params = new HashMap<String, String>();
@@ -46,68 +46,83 @@ public class WS_Other extends WebBasedb2{
 	}
 	
 	public List<ArticleTypeModel> GetAllFishArticleTypes (){
-		String cmd = "select * from iot2014.dbo.biz_ArticleType where UserId=226";
-		SsiotResult sr = DbHelperSQL.getInstance().Query(cmd);
-		List<ArticleTypeModel> list = new ArrayList<ArticleTypeModel>();
-		if (null != sr && sr.mRs != null){
-			ResultSet rs = sr.mRs;
-			try {
-				while(rs.next()){
-					ArticleTypeModel m = new ArticleTypeModel();
-					m._id = rs.getInt("ID");
-					m._parentcode = rs.getString("ParentCode");
-					m._code = rs.getString("Code");
-					m._name = rs.getString("Name");
-					list.add(m);
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
+		HashMap<String, String> params = new HashMap<String, String>();
+        String txt = exeRetString(MethodFile, "GetAllFishArticleTypes", params);
+        List<ArticleTypeModel> list = new ArrayList<ArticleTypeModel>();
+        try {
+			JSONArray ja = new JSONArray(txt);
+			for (int i = 0; i < ja.length(); i ++){
+				JSONObject jo = ja.optJSONObject(i);
+				ArticleTypeModel atM = new ArticleTypeModel();
+				atM._id = jo.getInt("ID");
+				atM._name = jo.getString("Name");
+				atM._code = jo.getString("Code");
+				atM._parentcode = jo.getString("ParentCode");
+				list.add(atM);
 			}
+		} catch (JSONException e) {
+			e.printStackTrace();
 		}
-		if (null != sr){
-			sr.close();
-		}
-		return list;
+        return list;
+		
+		
+//		String cmd = "select * from iot2014.dbo.biz_ArticleType where UserId=226";
+//		SsiotResult sr = DbHelperSQL.getInstance().Query(cmd);
+//		List<ArticleTypeModel> list = new ArrayList<ArticleTypeModel>();
+//		if (null != sr && sr.mRs != null){
+//			ResultSet rs = sr.mRs;
+//			try {
+//				while(rs.next()){
+//					ArticleTypeModel m = new ArticleTypeModel();
+//					m._id = rs.getInt("ID");
+//					m._parentcode = rs.getString("ParentCode");
+//					m._code = rs.getString("Code");
+//					m._name = rs.getString("Name");
+//					list.add(m);
+//				}
+//			} catch (SQLException e) {
+//				e.printStackTrace();
+//			}
+//		}
+//		if (null != sr){
+//			sr.close();
+//		}
 	}
 	
 	public List<ArticleModel> GetArticles(int pageindex, int pagesize, String where){
-		String cmd = "select * from iot2014.dbo.biz_Article where UserId=226 and " + where;
-		SsiotResult sr = DbHelperSQL.getInstance().Query(cmd);
-		List<ArticleModel> list = new ArrayList<ArticleModel>();
-		if (null != sr && sr.mRs != null){
-			ResultSet rs = sr.mRs;
-			try {
-				while(rs.next()){
-					ArticleModel m = new ArticleModel();
-					m._id = rs.getInt("ID");
-					m._type = rs.getString("ArticleTypeCode");
-					m._title = rs.getString("Title");
-					m._description = rs.getString("Description");
-					m._image = rs.getString("Image");
-					m._createtime = rs.getTimestamp("CreateTime");
-					m._author = rs.getString("Author");
-					list.add(m);
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
+		HashMap<String, String> params = new HashMap<String, String>();
+		params.put("pageindex", "" + pageindex);
+		params.put("pagesize", "" + pagesize);
+		params.put("where", "" + where);
+        String txt = exeRetString(MethodFile, "GetArticles", params);
+        List<ArticleModel> list = new ArrayList<ArticleModel>();
+        try {
+			JSONArray ja = new JSONArray(txt);
+			for (int i = 0; i < ja.length(); i ++){
+				JSONObject jo = ja.optJSONObject(i);
+				ArticleModel a = new ArticleModel();
+				a._id = jo.getInt("ID");
+				a._type = jo.getString("ArticleTypeCode");
+				a._title = jo.getString("Title");
+				a._description = jo.getString("Description");
+				a._createtime = new Timestamp((long) jo.getInt("CreateTime") * 1000);
+				a._image = jo.getString("Image");
+//				a._contenttext//这个在另外一张表
+				list.add(a);
 			}
+		} catch (JSONException e) {
+			e.printStackTrace();
 		}
-		if (null != sr){
-			sr.close();
-		}
-		return list;
-	}
-	
-	public String GetArticleContent(int articleid){
-		String cmd = "select * from iot2014.dbo.biz_ArticleContent where ArticleId=" + articleid;
-		SsiotResult sr = DbHelperSQL.getInstance().Query(cmd);
+        return list;
+		
+		
+//		String cmd = "select * from iot2014.dbo.biz_Article where UserId=226 and " + where;
+//		SsiotResult sr = DbHelperSQL.getInstance().Query(cmd);
 //		List<ArticleModel> list = new ArrayList<ArticleModel>();
-		String contentStr = "";
-		if (null != sr && sr.mRs != null){
-			ResultSet rs = sr.mRs;
-			try {
-				if(rs.next()){
-					contentStr = rs.getString("ContentText");
+//		if (null != sr && sr.mRs != null){
+//			ResultSet rs = sr.mRs;
+//			try {
+//				while(rs.next()){
 //					ArticleModel m = new ArticleModel();
 //					m._id = rs.getInt("ID");
 //					m._type = rs.getString("ArticleTypeCode");
@@ -117,15 +132,31 @@ public class WS_Other extends WebBasedb2{
 //					m._createtime = rs.getTimestamp("CreateTime");
 //					m._author = rs.getString("Author");
 //					list.add(m);
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-		if (null != sr){
-			sr.close();
-		}
-		return contentStr;
+//				}
+//			} catch (SQLException e) {
+//				e.printStackTrace();
+//			}
+//		}
+//		if (null != sr){
+//			sr.close();
+//		}
+//		return list;
+	}
+	
+	public String GetArticleContent(int articleid){
+		HashMap<String, String> params = new HashMap<String, String>();
+		params.put("articleid", "" + articleid);
+        String txt = exeRetString(MethodFile, "GetArticleContent", params);
+        return txt;
+//        try {
+//        	txt = txt.replace("\t", "#########");
+//        	JSONArray ja = new JSONArray(txt);//TODO 王生辉
+//			JSONObject jo = ja.optJSONObject(0);
+//			return jo.getString("ContentText");
+//		} catch (JSONException e) {
+//			e.printStackTrace();
+//		}
+//        return "";
 	}
 	
 }

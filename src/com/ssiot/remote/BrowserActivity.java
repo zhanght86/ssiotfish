@@ -24,9 +24,10 @@ import com.ssiot.remote.Utils;
 
 public class BrowserActivity extends HeadActivity{
     private static final String tag  = "BrowserActivity";
-    private static String urlString = "http://www.ssiot.com";
+    private static String urlString = "";//http://www.ssiot.com
     WebView webView;
     MenuItem refreshItem;
+//    String data;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +35,7 @@ public class BrowserActivity extends HeadActivity{
         Intent intent = getIntent();
         if (null != intent){
             urlString = intent.getStringExtra("url");
+//            data = intent.getStringExtra("data");
         }
         setContentView(R.layout.activity_web_browser);
         
@@ -58,7 +60,13 @@ public class BrowserActivity extends HeadActivity{
         if (!Utils.isNetworkConnected(this)){
             Toast.makeText(this, R.string.please_check_net, Toast.LENGTH_SHORT).show();
         }
-        webView.loadUrl(urlString);
+//        if (!TextUtils.isEmpty(urlString)){
+        	webView.loadUrl(urlString);
+//        } else {
+//        	webView.loadData(data, "text/html", "UTF-8");
+//        }
+        
+        
         
         webView.setWebViewClient(new WebViewClient() {
             public boolean shouldOverrideUrlLoading(WebView view, String url) {

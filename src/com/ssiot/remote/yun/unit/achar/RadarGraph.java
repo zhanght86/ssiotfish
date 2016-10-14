@@ -76,7 +76,7 @@ public class RadarGraph extends View {
     count = titles.length;
     angle = (360 / count);
     int[] colors = new int[3];
-    colors[0] = resources.getColor(R.color.sta_line);
+    colors[0] = resources.getColor(R.color.blue_2);//R.color.sta_line
     colors[1] = resources.getColor(R.color.sta_high);
     colors[2] = resources.getColor(R.color.sta_low);
     colorsSel = colors;

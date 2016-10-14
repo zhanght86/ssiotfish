@@ -5,12 +5,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -18,7 +20,9 @@ import android.widget.TextView;
 
 import com.ssiot.fish.HeadActivity;
 import com.ssiot.fish.R;
+import com.ssiot.remote.BrowserActivity;
 import com.ssiot.remote.GetImageThread;
+import com.ssiot.remote.Utils;
 import com.ssiot.remote.data.model.GoodsModel;
 import com.ssiot.remote.data.model.WaterColorDiagnoseModel;
 import com.ssiot.remote.yun.webapi.WS_Fish;
@@ -93,6 +97,16 @@ public class WaterColorSolutionAct extends HeadActivity{
 		setGoodsListHeight(mGoodsView);
 		mGoodsAdapter = new GoodsAdapter(this,mGoodsModels,mHandler);
 		mGoodsView.setAdapter(mGoodsAdapter);
+		mGoodsView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				int userid = Utils.getIntPref(Utils.PREF_USERID, WaterColorSolutionAct.this);
+				Intent intent = new Intent(WaterColorSolutionAct.this, BrowserActivity.class);
+				intent.putExtra("url", "http://wapcart.fisher88.com/product.aspx?id=" + mGoodsModels.get(position)._id + "&userid=" + userid);
+				startActivity(intent);
+			}
+		});
 		new GetGoodsThread().start();
 	}
 	

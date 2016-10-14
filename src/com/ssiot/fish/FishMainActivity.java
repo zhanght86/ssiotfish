@@ -44,6 +44,9 @@ import com.ssiot.remote.expert.WaterColorDiagnoseAct;
 import com.ssiot.remote.yun.monitor.MonitorAct;
 import com.ssiot.remote.yun.sta.StatisticsAct;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -77,8 +80,8 @@ public class FishMainActivity extends HeadActivity{
         cells = new ArrayList<CellModel>();
         cells.add(new CellModel(R.drawable.cell_cekong,"监测预警", "map_zhengwu"));//测控中心
 //        cells.add(new CellModel(R.drawable.cell_data,"控制中心", "map_qiye"));//统计报表
-//        cells.add(new CellModel(R.drawable.cell_video,"视频监控", "map_jstg"));//
         cells.add(new CellModel(R.drawable.cell_data,"数据中心", "xxxxx"));
+        cells.add(new CellModel(R.drawable.cell_video,"视频监控", "map_jstg"));//
 //        cells.add(new CellModel(R.drawable.cell_renwuzhongxin,"任务中心", "map_zhuisu"));//
         cells.add(new CellModel(R.drawable.cell_yubingzhengduan,"鱼病诊断", "map_xinxi"));//
         cells.add(new CellModel(R.drawable.cell_yubingzhengduan,"水色诊断", "map_shuise"));
@@ -93,6 +96,7 @@ public class FishMainActivity extends HeadActivity{
         cells.add(new CellModel(R.drawable.cell_shichangdongtai,"水质分析", "map_shuizhifenxi"));//
         cells.add(new CellModel(R.drawable.cell_shichangdongtai,"气象信息", "map_shuizhifenxi"));//
         cells.add(new CellModel(R.drawable.cell_shichangdongtai,"技术资讯", "map_shuizhifenxi"));
+        cells.add(new CellModel(R.drawable.cell_shichangdongtai,"使用帮助", "map_shuizhifenxi"));
 //        cells.add(new CellModel(R.drawable.cell_zhengwuguanli,"更新", "map_findupdate"));
         ImageAdapter adapter = new ImageAdapter(this, cells);
         gridView1.setAdapter(adapter);
@@ -155,7 +159,9 @@ public class FishMainActivity extends HeadActivity{
                     startActivity(intent);
                 } else if ("物资交易".equals(model.itemText)){
                     Intent intent = new Intent(FishMainActivity.this, BrowserActivity.class);
-                    intent.putExtra("url", "http://gn.ssiot.com/mobile2/index.html");
+                    int userid = Utils.getIntPref(Utils.PREF_USERID, FishMainActivity.this);
+					intent.putExtra("url", "http://wapcart.fisher88.com/?userid=" + userid);
+                    //intent.putExtra("url", "http://gn.ssiot.com/mobile2/index.html");
                     startActivity(intent);
                 } else if ("企业汇总".equals(model.itemText)){
                     Intent intent = new Intent(FishMainActivity.this, CompanyListActivity.class);
@@ -175,14 +181,37 @@ public class FishMainActivity extends HeadActivity{
                 } else if ("技术资讯".equals(model.itemText)){
                     Intent intent = new Intent(FishMainActivity.this, ArticleListAct.class);
                     startActivity(intent);
+                } else if ("使用帮助".equals(model.itemText)){
+                    Intent intent = new Intent(FishMainActivity.this, BrowserActivity.class);
+                    InputStream is =getResources().openRawResource(R.raw.app_help);
+                    String url = "file:///android_asset/app_help.html";//文件的内容必须要是UTF-8的
+                    try {
+						String str = inputStream2String(is);//中文乱码？？
+//						intent.putExtra("msg", str);
+//						startActivity(intent);
+						intent.putExtra("url", url);
+//						intent.putExtra("data", str);
+						startActivity(intent);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
                 }
             }
         }
     };
+    
+	public String inputStream2String(InputStream in) throws IOException {
+		StringBuffer out = new StringBuffer();
+		byte[] b = new byte[4096];
+		for (int n; (n = in.read(b)) != -1;) {
+			out.append(new String(b, 0, n));
+		}
+		return out.toString();
+	}
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
+//        getMenuInflater().inflate(R.menu.main, menu);
         getMenuInflater().inflate(R.menu.menu_f_main, menu);
         return true;
     }
@@ -202,12 +231,34 @@ public class FishMainActivity extends HeadActivity{
                 return true;
             case R.id.action_frag_main_setting:
                 Intent intent = new Intent(FishMainActivity.this, SettingActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, REQUEST_SETTING_OUT);
                 break;
             default:
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+    
+    private static final int REQUEST_SETTING_OUT = 1;
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    	switch (requestCode) {
+		case REQUEST_SETTING_OUT:
+			if (resultCode == RESULT_OK){//用onActivityResult 目地是同时销毁两个activity
+				Intent loginIntent = new Intent(FishMainActivity.this, LoginActivity.class);
+	            startActivity(loginIntent);
+	            SsiotService.cancel = true;
+	            stopService(new Intent(this, SsiotService.class));
+	            finish();
+	            Editor e = mPref.edit();
+	            e.putString(Utils.PREF_PWD, "");
+	            e.commit();
+			}
+			break;
+
+		default:
+			break;
+		}
     }
     
     private void showUpdateChoseDialog(HashMap<String, String> mVerMap){

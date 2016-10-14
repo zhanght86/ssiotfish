@@ -16,6 +16,8 @@ public class YunNodeModel implements Serializable{
     public boolean facilityVis = true;
     public String mNodeUnique;
     public Timestamp mLastTime;
+    public double latitude;
+    public double longitude;
     
     public String nodeStr = "";
     public List<DeviceBean> list = new ArrayList<DeviceBean>();//传感器列表 or 执行器列表 or 监控列表

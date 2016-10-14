@@ -27,10 +27,12 @@ import android.R.integer;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.baidu.platform.comapi.map.y;
 import com.ssiot.remote.Utils;
 import com.ssiot.remote.data.DbHelperSQL;
 import com.ssiot.remote.data.SsiotResult;
 import com.ssiot.remote.data.business.VLCVideoInfo;
+import com.ssiot.remote.data.model.AgricultureFacilityModel;
 import com.ssiot.remote.data.model.AlarmRuleModel;
 import com.ssiot.remote.data.model.CameraFileModel;
 import com.ssiot.remote.data.model.SettingModel;
@@ -55,7 +57,7 @@ public class WS_API extends WebBasedb2{
 		HashMap<String, String> params = new HashMap<String, String>();
         params.put("strAccount", "" + account);
         String txt = exeRetString(MethodFile, "GetFirstPageShort", params);
-        return parseFacilityNode(txt, deviceVersion);
+        return parseFacilityNode_short(txt, deviceVersion);
 	}
 	
 	public void GetSensorNodeDatas_v2(String nodeunique, List<YunNodeModel> ylist){
@@ -334,6 +336,38 @@ public class WS_API extends WebBasedb2{
         return list;
 	}
 	
+	public int Ctr_v2(String nodeunique, int deviceno, int ctrtype, int minutes){
+		HashMap<String, String> params = new HashMap<String, String>();
+        params.put("nodeunique", "" + nodeunique);
+        params.put("deviceno", "" + deviceno);
+        params.put("ctrtype", "" + ctrtype);
+        params.put("minutes", "" + minutes);
+        String txt = exeRetString(MethodFile, "Ctr_v2", params);
+        return parseSave(txt);
+	}
+	
+	public List<AgricultureFacilityModel> GetFacilitiesByUser(int userid){
+		HashMap<String, String> params = new HashMap<String, String>();
+        params.put("userid", "" + userid);
+        String txt = exeRetString(MethodFile, "GetFacilitiesByUser", params);
+        List<AgricultureFacilityModel> list = new ArrayList<AgricultureFacilityModel>();
+        try {
+			JSONArray ja = new JSONArray(txt);
+			for (int i = 0; i < ja.length(); i ++){
+				JSONObject jo = ja.optJSONObject(i);
+				AgricultureFacilityModel m = new AgricultureFacilityModel();
+				m._id = jo.getInt("FacilitiesID");
+				m._name = jo.getString("FacilitiesName");
+				m._areaid = jo.getInt("AreaID");
+				m._landid = jo.getInt("LandID");
+				list.add(m);
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+        return list;
+	}
+	
 	private List<YunNodeModel> parseYNode(String str, int deviceversion) {
         List<YunNodeModel> models = new ArrayList<YunNodeModel>();
         try {
@@ -415,7 +449,7 @@ public class WS_API extends WebBasedb2{
         return models;
     }
 	
-	private List<YunNodeModel> parseFacilityNode(String str, int deviceversion) {
+	private List<YunNodeModel> parseFacilityNode_short(String str, int deviceversion) {
         List<YunNodeModel> models = new ArrayList<YunNodeModel>();
         try {
 			JSONArray jarray = new JSONArray(str);
@@ -433,6 +467,14 @@ public class WS_API extends WebBasedb2{
 				String nodeunique = jsonYunNode.getString("uniqueid");
 				String timeStr = jsonYunNode.getString("lasttime");
 				YunNodeModel y = new YunNodeModel(nodetype, landId, landString, facilityId, facility, nodeNo, nodeString);
+				try {
+					if (!TextUtils.isEmpty(jsonYunNode.getString("latitude"))){
+						y.latitude = jsonYunNode.getDouble("latitude");
+						y.longitude = jsonYunNode.getDouble("longitude");
+					}
+				} catch (Exception e) {//需要单独catch
+					e.printStackTrace();
+				}
 				y.mNodeUnique = nodeunique;
 				if (!TextUtils.isEmpty(timeStr)){
 					int timeInt = parseIntAnyWay(timeStr);
@@ -452,7 +494,7 @@ public class WS_API extends WebBasedb2{
         		timeStr = Utils.formatTime(m.mLastTime);
         	}
         	
-            Log.v(tag, "------faciid:"+m.mFacilityID +" nodestr:" + m.nodeStr + " nodeno:" + m.mNodeNo + " time:" + timeStr);
+            Log.v(tag, "------faciid:"+m.mFacilityID +" nodestr:" + m.nodeStr + " nodeno:" + m.mNodeNo + " time:" + timeStr + " (x,y):" + m.latitude + m.longitude);
         }
         if (deviceversion == 3){
         	Collections.sort(models, new YNodeComparator());
@@ -476,13 +518,14 @@ public class WS_API extends WebBasedb2{
 			for (int i = 0; i < jArray.length(); i ++){
 				JSONObject jo = jArray.optJSONObject(i);
 				if (null != yModel){
-					int sen = jo.getInt("sendtype");
+					int sen = jo.getInt("sendtype");//笔误
 					int channel = jo.getInt("chan");
 					for (int k = 0; k < yModel.list.size(); k ++){
 						if (yModel.list.get(k).mDeviceTypeNo == sen && yModel.list.get(k).mChannel == channel){
 							double v = jo.getDouble("v");
 							int time = jo.getInt("t");
 							yModel.list.get(k).value = (float) v;
+							yModel.list.get(k).valueStr = jo.getString("v");//值 的字符串
 							yModel.list.get(k).mTime = new Timestamp((long) time * 1000);
 							break;
 						}

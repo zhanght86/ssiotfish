@@ -113,7 +113,7 @@ public class FarmDetailCtrlerOperateFragment extends BaseFragment{
                             Toast.makeText(getActivity(), "请先设置时间", Toast.LENGTH_SHORT).show();
                         } else {
                         	if (deviceversion == 2){
-                        		startSetCtrOpen_v2(device.mChannel, minutes * 60);
+                        		startSetCtrOpen_v2(device.mChannel, minutes);
                         	} else {
                         		startSetCtrOpen(mHandler, device.mChannel, minutes * 60);
                         	}
@@ -154,7 +154,7 @@ public class FarmDetailCtrlerOperateFragment extends BaseFragment{
         }
     }
     
-    private void startSetCtrOpen_v2(final int dev, final int seconds){
+    private void startSetCtrOpen_v2(final int dev, final int minutes){
     	if (null != mYunNodeModel && mYunNodeModel.mNodeNo > 0){
     		new Thread(new Runnable() {
 				@Override
@@ -172,8 +172,9 @@ public class FarmDetailCtrlerOperateFragment extends BaseFragment{
 //			        }
 			        
 					String userkey = Utils.getStrPref(Utils.PREF_USERKEY, getActivity());
-					boolean ret = new AjaxGetNodesDataByUserkey().SaveControlAdd(userkey, ""+seconds/60, mYunNodeModel.mNodeUnique, 1, ""+dev, "");//TODO 接口
-					showToastMSG(ret ? "打开成功" : "打开失败");
+//					boolean ret = new AjaxGetNodesDataByUserkey().SaveControlAdd(userkey, ""+minutes, mYunNodeModel.mNodeUnique, 1, ""+dev, "");//TODO 接口
+					int ret = new WS_API().Ctr_v2(mYunNodeModel.mNodeUnique, dev, 1, minutes);
+					showToastMSG(ret > 0 ? "打开成功" : "打开失败");
 				}
 			}).start();
     	}
@@ -184,8 +185,10 @@ public class FarmDetailCtrlerOperateFragment extends BaseFragment{
     		new Thread(new Runnable() {
 				@Override
 				public void run() {
-					String data2 = new AjaxGetNodesDataByUserkey().ControlDevice(mYunNodeModel.mNodeUnique, ""+dev, "无", "close");
-		    		showToastMSG("true".equalsIgnoreCase(data2) ? "关闭成功" : "关闭失败");
+//					String data2 = new AjaxGetNodesDataByUserkey().ControlDevice(mYunNodeModel.mNodeUnique, ""+dev, "无", "close");
+//		    		showToastMSG("true".equalsIgnoreCase(data2) ? "关闭成功" : "关闭失败");
+					int ret = new WS_API().Ctr_v2(mYunNodeModel.mNodeUnique, dev, 2, 0);
+					showToastMSG(ret > 0 ? "关闭成功" : "关闭失败");
 				}
 			}).start();
     	}

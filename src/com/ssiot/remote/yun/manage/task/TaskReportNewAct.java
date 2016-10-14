@@ -25,7 +25,7 @@ import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
 import com.baidu.mapapi.SDKInitializer;
-import com.ssiot.remote.HeadActivity;
+import com.ssiot.fish.HeadActivity;
 import com.ssiot.fish.R;
 import com.ssiot.remote.yun.manage.task.PicGridAdapter;
 import com.ssiot.remote.yun.webapi.TaskInstance;
@@ -57,7 +57,8 @@ public class TaskReportNewAct extends UploadFileBaseActivity{
     ERPTaskInstanceModel taskModel;
     private Dialog mDialog;
     public static final String FTP_TASK_FOLDER = "/Upload/TaskImg/";
-    public static final String FTP_TASK_PATH = "cloud.ssiot.com"+ FTP_TASK_FOLDER;
+    public static final String FTP_CLOUD = "cloud.ssiot.com/";
+    public static final String FTP_TASK_PATH = FTP_CLOUD + FTP_TASK_FOLDER;
     String picUrls = "";
     LocationClient mClient;//百度定位
     

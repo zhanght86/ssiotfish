@@ -3,9 +3,8 @@ package com.ssiot.remote;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ssiot.remote.data.DataAPI;
-import com.ssiot.remote.data.business.Node;
 import com.ssiot.remote.data.model.NodeModel;
+import com.ssiot.remote.yun.webapi.WS_TraceProject;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -23,6 +22,8 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.ssiot.fish.HeadActivity;
 import com.ssiot.fish.R;
 
 public class NodePickerAct extends HeadActivity{
@@ -157,15 +158,12 @@ public class NodePickerAct extends HeadActivity{
 		@Override
 		public void run() {
 			String account = Utils.getStrPref(Utils.PREF_USERNAME, NodePickerAct.this);
-			String areaids = DataAPI.GetAllAreaIDsByAccount(account);
-			if (!TextUtils.isEmpty(areaids)){
-				List<NodeModel> nl = new Node().GetModelList("AreaID in ("+areaids+")");
-				String offlinepref = Utils.getStrPref(account + Utils.PREF_OFFLINE_NOTICE, NodePickerAct.this);
-				String[] nodenos = offlinepref.split(",");
-				mStatusList.clear();
-				for (int i = 0; i < nl.size(); i ++){
-					mStatusList.add(new NodeBean(nl.get(i), containInPref(nodenos, nl.get(i)._nodeno)));
-				}
+			List<NodeModel> nl = new WS_TraceProject().GetAllNodes(account);
+			String offlinepref = Utils.getStrPref(account + Utils.PREF_OFFLINE_NOTICE, NodePickerAct.this);
+			String[] nodenos = offlinepref.split(",");
+			mStatusList.clear();
+			for (int i = 0; i < nl.size(); i ++){
+				mStatusList.add(new NodeBean(nl.get(i), containInPref(nodenos, nl.get(i)._nodeno)));
 			}
 			mHandler.sendEmptyMessage(MSG_GET_END);
 		}

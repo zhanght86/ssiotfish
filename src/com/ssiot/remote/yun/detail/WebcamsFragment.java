@@ -108,6 +108,10 @@ public class WebcamsFragment extends DevicesFragment{
                     Toast.makeText(getActivity(), R.string.please_check_net, Toast.LENGTH_SHORT).show();
                     return;
                 }
+                if (vModel._ssiotezviz){
+                	Toast.makeText(getActivity(), "请使用萤石云播放", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 if ("大华".equals(vModel._type) && vModel._tcpport != 0){
                     Intent intent = new Intent(getActivity(), DahuaLiveActivity.class);
                     intent.putExtra("videoip", vModel._ip);

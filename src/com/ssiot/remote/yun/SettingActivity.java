@@ -4,7 +4,7 @@ import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.ssiot.remote.HeadActivity;
+import com.ssiot.fish.HeadActivity;
 import com.ssiot.fish.R;
 import com.ssiot.remote.SettingFrag;
 import com.ssiot.remote.SettingFrag.FSettingBtnClickListener;

@@ -23,6 +23,7 @@ public class DeviceBean implements Serializable{
     public int mChannel = 0;
     public String mName;
     public float value;
+    public String valueStr;//由于float位数不精确，
     public Timestamp mTime;
     public int status = -1;// -1=离线，0在线关闭,  1 在线且打开。 在线是绿色。运行中是蓝色，离线是红色
     public VLCVideoInfoModel vlcModel;//只有TYPE_CAMERA时有用

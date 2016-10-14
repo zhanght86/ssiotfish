@@ -13,10 +13,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
-import com.ssiot.remote.HeadActivity;
+import com.ssiot.fish.HeadActivity;
 import com.ssiot.fish.R;
 import com.ssiot.remote.Utils;
-import com.ssiot.remote.data.business.FisheriesFacility;
 import com.ssiot.remote.data.model.AgricultureFacilityModel;
 import com.ssiot.remote.data.model.ERPProductTypeModel;
 import com.ssiot.remote.data.model.ERPProductBatchModel;
@@ -24,6 +23,7 @@ import com.ssiot.remote.data.model.ERPProductPlanModel;
 import com.ssiot.remote.yun.webapi.ERPProductType;
 import com.ssiot.remote.yun.webapi.ProductBatch;
 import com.ssiot.remote.yun.webapi.ProductPlan;
+import com.ssiot.remote.yun.webapi.WS_API;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -330,7 +330,8 @@ public class BatchEditAct extends HeadActivity{
         @Override
         public void run() {
         	int areaid = Utils.getIntPref(Utils.PREF_AREAID, BatchEditAct.this);
-            List<AgricultureFacilityModel> list = new FisheriesFacility().GetModelList(" AreaID in (" +areaid +")");//TODO 渔业  webapi
+//            List<AgricultureFacilityModel> list = new FisheriesFacility().GetModelList(" AreaID in (" +areaid +")");//TODO 渔业  webapi
+            List<AgricultureFacilityModel> list = new WS_API().GetFacilitiesByUser(userId);
             if (null != list && list.size() > 0){
                 mAllFacilitiesModel.clear();
                 mAllFacilitiesModel.addAll(list);

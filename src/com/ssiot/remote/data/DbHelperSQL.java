@@ -349,10 +349,7 @@ public class DbHelperSQL{
         
         public boolean Open(){
             String JDriver = "net.sourceforge.jtds.jdbc.Driver";
-            String connectDB = "jdbc:jtds:sqlserver://ssiot2014.sqlserver.rds.aliyuncs.com:3433/iot2014;loginTimeout=9;socketTimeout=25";
-//            String connectDB = "jdbc:jtds:sqlserver://114.55.145.45:1433/fisher;loginTimeout=9;socketTimeout=25";
-//            String JDriver = "com.microsoft.sqlserver.jdbc.SQLServerDriver";//驱动程序无法通过使用安全套接字层(SSL)加密与 SQL Server 建立安全连接。错误:“Socket closed” ??jre jdk??
-//            String connectDB = "jdbc:sqlserver://ssiot2014.sqlserver.rds.aliyuncs.com:3433;DatabaseName=iot2014;loginTimeout=9;socketTimeout=25";
+            String connectDB = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
             long timebegingopen = SystemClock.uptimeMillis();
             try {
                 Class.forName(JDriver);// 加载数据库引擎，返回给定字符串名的类
@@ -368,8 +365,8 @@ public class DbHelperSQL{
             }
             
             try {
-                String user = "angeliot";
-                String password = "1qaz_PL";
+                String user = "xxxxxxxxxxxxxxxxxxxxxxxxxx";
+                String password = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 //                String user = "fisher";
 //                String password = "324#$th6s";
                 con = DriverManager.getConnection(connectDB, user, password);// 连接数据库对象
