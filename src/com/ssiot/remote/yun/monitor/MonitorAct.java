@@ -14,10 +14,11 @@ import android.widget.ImageView;
 import com.ssiot.fish.HeadActivity;
 import com.ssiot.fish.R;
 import com.ssiot.remote.Utils;
-import com.ssiot.remote.yun.MQTT;
 import com.ssiot.remote.yun.detail.FarmDetailPagerActivity;
 import com.ssiot.remote.yun.monitor.MoniNodeAdapter.MyItemClickListener;
 import com.ssiot.remote.yun.webapi.WS_API;
+import com.ssiot.remote.yun.webapi.WS_MQTT;
+
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
@@ -36,7 +37,7 @@ public class MonitorAct extends HeadActivity{
     View mapBtn;
     
     private static final int MSG_GET_END = 1;
-    private static final int MSG_MQTT_GET = MQTT.MSG_MQTT_GET;
+    private static final int MSG_MQTT_GET = WS_MQTT.MSG_MQTT_GET;
     private static final int MSG_IPC_STATUS_GET = 2;
     private Handler mHandler = new Handler(){
         public void handleMessage(android.os.Message msg) {
@@ -49,8 +50,8 @@ public class MonitorAct extends HeadActivity{
                     }
                     break;
                 case MSG_MQTT_GET:
-                    String str = (String) msg.obj;
-                    parseJSON(str, mDatas);
+//                    String str = (String) msg.obj;
+//                    parseJSON(str, mDatas);
                     mAdapter.notifyDataSetChanged();
                     break;
                 case MSG_IPC_STATUS_GET:

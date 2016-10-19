@@ -28,10 +28,10 @@ import com.ssiot.remote.BaseFragment;
 import com.ssiot.fish.R;
 import com.ssiot.remote.data.AjaxCalibration;
 import com.ssiot.remote.data.model.SettingModel;
-import com.ssiot.remote.yun.MQTT;
 import com.ssiot.remote.yun.monitor.DeviceBean;
 import com.ssiot.remote.yun.monitor.YunNodeModel;
 import com.ssiot.remote.yun.webapi.WS_API;
+import com.ssiot.remote.yun.webapi.WS_MQTT;
 
 //校准frag 三代产品
 public class SensorCalibrationFrag_v3 extends BaseFragment{
@@ -50,7 +50,7 @@ public class SensorCalibrationFrag_v3 extends BaseFragment{
     
     private static final int MSG_GET_END = 1;
     private static final int MSG_SEND_END = 2;
-    private static final int MSG_MQTT_GET = MQTT.MSG_MQTT_GET;
+    private static final int MSG_MQTT_GET = WS_MQTT.MSG_MQTT_GET;
     private Handler mHandler = new Handler(){
         public void handleMessage(Message msg) {
             switch (msg.what) {
@@ -68,28 +68,29 @@ public class SensorCalibrationFrag_v3 extends BaseFragment{
                     break;
                 case MSG_MQTT_GET:
                 	String str = (String) msg.obj;
-					try {
-						String topic = str.substring(0,str.indexOf("###"));
-						String mqttmsg = str.substring(str.indexOf("###") + 3, str.length());
-						JSONObject jo = new JSONObject(mqttmsg);
-						if (jo.getInt("status") == 0){
-//							showToastMSG("校准保存成功");
-							new Thread(new Runnable() {
-								@Override
-								public void run() {
-									boolean b = new WS_API().SetCali_v3(mYunNodeModel.mNodeNo, mDeviceBean.mDeviceTypeNo, mDeviceBean.mChannel, address, caliTxt) > 0;
-						            Message m = mHandler.obtainMessage(MSG_SEND_END);
-						            m.obj = b;
-						            mHandler.sendMessage(m);
-								}
-							}).start();
-						} else {
-							showToastMSG("校准保存至设备失败");
-						}
-					} catch (JSONException e) {
-						e.printStackTrace();
-						showToastMSG("校准保存返回值" + str);
-					}
+//					try {
+//						String topic = str.substring(0,str.indexOf("###"));
+//						String mqttmsg = str.substring(str.indexOf("###") + 3, str.length());
+//						JSONObject jo = new JSONObject(mqttmsg);
+//						if (jo.getInt("status") == 0){
+////							showToastMSG("校准保存成功");
+//							new Thread(new Runnable() {
+//								@Override
+//								public void run() {
+//									boolean b = new WS_API().SetCali_v3(mYunNodeModel.mNodeNo, mDeviceBean.mDeviceTypeNo, mDeviceBean.mChannel, address, caliTxt) > 0;
+//						            Message m = mHandler.obtainMessage(MSG_SEND_END);
+//						            m.obj = b;
+//						            mHandler.sendMessage(m);
+//								}
+//							}).start();
+//						} else {
+//							showToastMSG("校准保存至设备失败");
+//						}
+//					} catch (JSONException e) {
+//						e.printStackTrace();
+//						showToastMSG("校准保存返回值" + str);
+//					}
+                	showToastMSG(str);
                 	break;
 
                 default:
@@ -178,8 +179,8 @@ public class SensorCalibrationFrag_v3 extends BaseFragment{
         	}
             address = new WS_API().getSensorAddress(mYunNodeModel.mNodeNo, mDeviceBean.mDeviceTypeNo, mDeviceBean.mChannel);
             JSONObject caliJSON = new JSONObject();
+            JSONArray pointArray = new JSONArray();
             try {
-            	JSONArray pointArray = new JSONArray();
 	            for (int i = 0; i < mPoints.size(); i ++){
 	            	MyPoint p = mPoints.get(i);
 	            	JSONObject jo = new JSONObject();
@@ -192,10 +193,16 @@ public class SensorCalibrationFrag_v3 extends BaseFragment{
             } catch (JSONException e) {
 				e.printStackTrace();
 			}
-            caliTxt = caliJSON.toString();
-            new MQTT().subMsg("v1/n/" + mYunNodeModel.mNodeUnique + "/cali/ack", mHandler);
-            new MQTT().pubMsg("v1/n/" + mYunNodeModel.mNodeUnique + "/cali", caliTxt);
-            //通过hander接受到之后再保存到数据库
+//            caliTxt = caliJSON.toString();
+            caliTxt = pointArray.toString();
+            
+            int ret =new WS_MQTT().SetNodeCalibration(mYunNodeModel.mNodeUnique, mDeviceBean.mDeviceTypeNo, mDeviceBean.mChannel, caliTxt);
+            Message m = mHandler.obtainMessage(MSG_MQTT_GET);
+        	m.obj = (ret >= 0 ? "操作成功" : "操作失败");
+        	mHandler.sendMessage(m);
+//            new MQTT().subMsg("v1/n/" + mYunNodeModel.mNodeUnique + "/cali/ack", mHandler);
+//            new MQTT().pubMsg("v1/n/" + mYunNodeModel.mNodeUnique + "/cali", caliTxt);
+            //通过hander接受到之后再保存到数据库 mqtt中间件做好了
             
         }
     }

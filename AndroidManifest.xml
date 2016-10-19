@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ssiot.fish"
-    android:versionCode="9"
-    android:versionName="1.8" >
+    android:versionCode="10"
+    android:versionName="1.9" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -95,7 +95,7 @@
         </service>
         
 <activity
-            android:name=".FishMainActivity"
+            android:name="com.ssiot.fish.FishMainActivity"
             android:label="@string/app_name" >
 <!--             <intent-filter> -->
 <!--                 <action android:name="android.intent.action.MAIN" /> -->
@@ -204,110 +204,110 @@
         
         
         <activity
-            android:name=".question.QuestionListActivity"
+            android:name="com.ssiot.fish.question.QuestionListActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait" />
         
         <activity
-            android:name=".question.QuestionDetailListActivity"
+            android:name="com.ssiot.fish.question.QuestionDetailListActivity"
             android:label="@string/app_name"
             android:configChanges="orientation|keyboardHidden"
             android:windowSoftInputMode="adjustPan"
             android:screenOrientation="portrait" />
         
         <activity
-            android:name=".question.QuestionNewActivity"
+            android:name="com.ssiot.fish.question.QuestionNewActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+        
+<!--         <activity -->
+<!--             android:name=".facility.FishpondMainActivity" -->
+<!--             android:label="@string/app_name" -->
+<!--             android:screenOrientation="portrait" /> -->
+        
+<!--         <activity -->
+<!--             android:name=".facility.FishpondListActivity" -->
+<!--             android:label="@string/app_name" -->
+<!--             android:screenOrientation="portrait" /> -->
+        
+<!--         <activity -->
+<!--             android:name=".facility.FishpondNewActivity" -->
+<!--             android:label="@string/app_name" -->
+<!--             android:screenOrientation="portrait" /> -->
+        
+<!--         <activity -->
+<!--             android:name=".facility.MapActivity" -->
+<!--             android:label="@string/app_name" -->
+<!--             android:screenOrientation="portrait" /> -->
+        
+<!--         <activity -->
+<!--             android:name=".facility.GetLocationActivity" -->
+<!--             android:label="@string/app_name" -->
+<!--             android:screenOrientation="portrait" /> -->
+        
+        <activity
+            android:name="com.ssiot.fish.CompanyListActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.ssiot.fish.CompanyDetailActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait" />
         
         <activity
-            android:name=".facility.FishpondMainActivity"
+            android:name="com.ssiot.fish.MarketNewsActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait" />
         
-        <activity
-            android:name=".facility.FishpondListActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait" />
+<!--         <activity -->
+<!--             android:name=".ProductManageActivity" -->
+<!--             android:label="@string/app_name" -->
+<!--             android:screenOrientation="portrait" /> -->
         
-        <activity
-            android:name=".facility.FishpondNewActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait" />
+<!--         <activity -->
+<!--             android:name=".product.ProductEditActivity" -->
+<!--             android:label="@string/app_name" -->
+<!--             android:screenOrientation="portrait" /> -->
+<!--         <activity -->
+<!--             android:name=".product.ProductListActivity" -->
+<!--             android:label="@string/app_name" -->
+<!--             android:screenOrientation="portrait" /> -->
         
-        <activity
-            android:name=".facility.MapActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait" />
+<!--         <activity -->
+<!--             android:name=".product.FishEditActivity" -->
+<!--             android:label="@string/app_name" -->
+<!--             android:screenOrientation="portrait" /> -->
         
+<!--         <activity -->
+<!--             android:name=".task.TaskActivity" -->
+<!--             android:label="@string/app_name" -->
+<!--             android:screenOrientation="portrait" /> -->
+<!--         <activity -->
+<!--             android:name=".task.TaskNewActivity" -->
+<!--             android:label="@string/app_name" -->
+<!--             android:screenOrientation="portrait" /> -->
+<!--         <activity -->
+<!--             android:name=".task.TaskReceiverAct" -->
+<!--             android:label="@string/app_name" -->
+<!--             android:screenOrientation="portrait" /> -->
+<!--         <activity -->
+<!--             android:name=".task.TaskGetDetailAct" -->
+<!--             android:label="@string/app_name" -->
+<!--             android:screenOrientation="portrait" /> -->
+<!--         <activity -->
+<!--             android:name=".task.TaskReportNewAct" -->
+<!--             android:label="@string/app_name" -->
+<!--             android:screenOrientation="portrait" /> -->
         <activity
-            android:name=".facility.GetLocationActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait" />
-        
-        <activity
-            android:name=".CompanyListActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".CompanyDetailActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait" />
-        
-        <activity
-            android:name=".MarketNewsActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait" />
-        
-        <activity
-            android:name=".ProductManageActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait" />
-        
-        <activity
-            android:name=".product.ProductEditActivity"
+            android:name="com.ssiot.fish.MoniAndCtrlActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".product.ProductListActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait" />
-        
-        <activity
-            android:name=".product.FishEditActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait" />
-        
-        <activity
-            android:name=".task.TaskActivity"
+            android:name="com.ssiot.fish.VideoListActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".task.TaskNewActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".task.TaskReceiverAct"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".task.TaskGetDetailAct"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".task.TaskReportNewAct"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".MoniAndCtrlActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".VideoListActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".SettingActivity"
+            android:name="com.ssiot.fish.SettingActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait" />
         
@@ -602,7 +602,7 @@
             android:label="@string/app_name"
             android:screenOrientation="portrait" />
          <activity
-            android:name=".ArticleListAct"
+            android:name="com.ssiot.fish.ArticleListAct"
             android:label="@string/app_name"
             android:screenOrientation="portrait" />
          <activity

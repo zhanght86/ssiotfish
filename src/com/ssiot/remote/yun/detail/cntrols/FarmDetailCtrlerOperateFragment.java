@@ -4,6 +4,7 @@ import java.util.List;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -20,11 +21,11 @@ import com.ssiot.remote.Utils;
 import com.ssiot.remote.data.AjaxGetControlActionInfo;
 import com.ssiot.remote.data.AjaxGetNodesDataByUserkey;
 import com.ssiot.remote.data.model.ControlActionInfoModel;
-import com.ssiot.remote.yun.MQTT;
 import com.ssiot.remote.yun.monitor.DeviceBean;
 import com.ssiot.remote.yun.monitor.YunNodeModel;
 import com.ssiot.remote.yun.unit.MyNumberPicker;
 import com.ssiot.remote.yun.webapi.WS_API;
+import com.ssiot.remote.yun.webapi.WS_MQTT;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -37,15 +38,15 @@ public class FarmDetailCtrlerOperateFragment extends BaseFragment{
     private int deviceversion = 2;
     private DeviceBean device;
     private YunNodeModel mYunNodeModel;
-    String address = "";
+//    String address = "";
     
-    private static final int MSG_MQTT_GET = MQTT.MSG_MQTT_GET;
+    private static final int MSG_MQTT_GET = WS_MQTT.MSG_MQTT_GET;
     private Handler mHandler = new Handler(){
         public void handleMessage(android.os.Message msg) {
             switch (msg.what) {
                 case MSG_MQTT_GET:
                     String str = (String) msg.obj;
-                    parseCtrRetJSON(str);//parseCtrRetJSON(str, mYunNodes);
+                    showToastMSG(str);//parseCtrRetJSON(str, mYunNodes); parseCtrRetJSON(str)
                     break;
 
                 default:
@@ -99,7 +100,7 @@ public class FarmDetailCtrlerOperateFragment extends BaseFragment{
         button1.setOnClickListener(listener);
         button2.setOnClickListener(listener);
         button3.setOnClickListener(listener);
-        new GetAddressThread().start();
+//        new GetAddressThread().start();
     }
     
     View.OnClickListener listener = new View.OnClickListener() {
@@ -115,7 +116,7 @@ public class FarmDetailCtrlerOperateFragment extends BaseFragment{
                         	if (deviceversion == 2){
                         		startSetCtrOpen_v2(device.mChannel, minutes);
                         	} else {
-                        		startSetCtrOpen(mHandler, device.mChannel, minutes * 60);
+                        		startSetCtrOpen_v3(mHandler, device.mChannel, minutes * 60);
                         	}
                         }
                     }
@@ -124,7 +125,7 @@ public class FarmDetailCtrlerOperateFragment extends BaseFragment{
                 	if (deviceversion == 2){
                 		startSetCtrClose_v2(device.mChannel);
                 	} else {
-                		startSetCtrClose(mHandler, device.mChannel);
+                		startSetCtrClose_v3(mHandler, device.mChannel);
                 	}
                     break;
                 case android.R.id.button3:
@@ -135,20 +136,45 @@ public class FarmDetailCtrlerOperateFragment extends BaseFragment{
         }
     };
     
-    private void startSetCtrOpen(Handler h,int dev, int seconds){
-        if (null != mYunNodeModel && mYunNodeModel.mNodeNo > 0 && !TextUtils.isEmpty(address)){
-            new MQTT().subMsg("v1/n/"+ mYunNodeModel.mNodeUnique +"/switch/w/ack", h, 0);
-            new MQTT().pubMsg("v1/n/"+ mYunNodeModel.mNodeUnique +"/switch/w", "{\"addr\":\"" + address +"\",\"value\":\"1\"}");
+    private void startSetCtrOpen_v3(final Handler h, final int dev, int seconds){
+        if (null != mYunNodeModel && mYunNodeModel.mNodeNo > 0){
+        	new Thread(new Runnable() {
+				@Override
+				public void run() {
+					int ret = new WS_MQTT().SetOneDeviceStateImmediately(mYunNodeModel.mNodeUnique, dev, 1);
+					if (ret >= 0){
+						device.status = 1;
+					}
+					Message m = h.obtainMessage(MSG_MQTT_GET);
+					m.obj = (ret >= 0 ? "操作成功" : "操作失败");
+					h.sendMessage(m);
+				}
+			}).start();
+        	
+//            new MQTT().subMsg("v1/n/"+ mYunNodeModel.mNodeUnique +"/switch/w/ack", h, 0);
+//            new MQTT().pubMsg("v1/n/"+ mYunNodeModel.mNodeUnique +"/switch/w", "{\"addr\":\"" + address +"\",\"value\":\"1\"}");
             //TODO 存controlLog? 
         } else {
         	showToastMSG("数据出现问题，请重试");
         }
     }
     
-    private void startSetCtrClose(Handler h, int dev){
-        if (null != mYunNodeModel && mYunNodeModel.mNodeNo > 0 && !TextUtils.isEmpty(address)){
-            new MQTT().subMsg("v1/n/"+ mYunNodeModel.mNodeUnique +"/switch/w/ack", h, 0);//TODO 是否需要持续监听状态
-            new MQTT().pubMsg("v1/n/"+ mYunNodeModel.mNodeUnique +"/switch/w", "{\"addr\":\"" + address +"\",\"value\":\"0\"}");
+    private void startSetCtrClose_v3(final Handler h, final int dev){
+        if (null != mYunNodeModel && mYunNodeModel.mNodeNo > 0){
+        	new Thread(new Runnable() {
+				@Override
+				public void run() {
+					int ret = new WS_MQTT().SetOneDeviceStateImmediately(mYunNodeModel.mNodeUnique, dev, 0);
+					if (ret >= 0){
+						device.status = 0;
+					}
+					Message m = h.obtainMessage(MSG_MQTT_GET);
+					m.obj = (ret >= 0 ? "关闭成功" : "关闭失败");
+					h.sendMessage(m);
+				}
+			}).start();
+//            new MQTT().subMsg("v1/n/"+ mYunNodeModel.mNodeUnique +"/switch/w/ack", h, 0);//TODO 是否需要持续监听状态
+//            new MQTT().pubMsg("v1/n/"+ mYunNodeModel.mNodeUnique +"/switch/w", "{\"addr\":\"" + address +"\",\"value\":\"0\"}");
         } else {
         	showToastMSG("数据出现问题，请重试");
         }
@@ -207,13 +233,13 @@ public class FarmDetailCtrlerOperateFragment extends BaseFragment{
         }
     }
     
-    private class GetAddressThread extends Thread{
-    	@Override
-    	public void run() {
-    		if (null == mYunNodeModel || null == device){
-    			Log.e(tag, "--------!!!!!!!!!! null");
-    		}
-    		address = new WS_API().getCtrAddress(mYunNodeModel.mNodeNo, device.mChannel);
-    	}
-    }
+//    private class GetAddressThread extends Thread{
+//    	@Override
+//    	public void run() {
+//    		if (null == mYunNodeModel || null == device){
+//    			Log.e(tag, "--------!!!!!!!!!! null");
+//    		}
+//    		address = new WS_API().getCtrAddress(mYunNodeModel.mNodeNo, device.mChannel);
+//    	}
+//    }
 }

@@ -22,7 +22,6 @@ import com.ssiot.fish.R;
 import com.ssiot.remote.Utils;
 import com.ssiot.remote.data.business.ControlActionInfo;
 import com.ssiot.remote.data.model.ControlActionInfoModel;
-import com.ssiot.remote.yun.MQTT;
 import com.ssiot.remote.yun.monitor.DeviceBean;
 import com.ssiot.remote.yun.monitor.YunNodeModel;
 
@@ -84,7 +83,7 @@ public class FarmDetailCtrlerSettingsListFragment extends Fragment{
         refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                new GetControlRuleThread().start();
+//                new GetControlRuleThread().start();//TODO 暂时没有规则控制
             }
         });
         mAdapter = new ImplementAdapter(mDataList);
@@ -93,7 +92,7 @@ public class FarmDetailCtrlerSettingsListFragment extends Fragment{
         mListView.setDividerHeight(8);
         
         initFloatActionMenu(view);
-        new GetControlRuleThread().start();
+//        new GetControlRuleThread().start();
     }
     
     // FloatingActionMenu 开源项目 圆形浮出菜单

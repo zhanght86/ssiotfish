@@ -25,9 +25,9 @@ import android.widget.Toast;
 
 import com.ssiot.remote.LoginActivity;
 import com.ssiot.remote.Utils;
-import com.ssiot.remote.yun.MQTT;
 import com.ssiot.remote.yun.monitor.DeviceBean;
 import com.ssiot.remote.yun.monitor.YunNodeModel;
+import com.ssiot.remote.yun.webapi.WS_MQTT;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -225,104 +225,130 @@ public class HeadActivity extends ActionBarActivity{
     
     //MQTT 通信-----------------------------------------------------------------------
     
-    public void startGetStatesContinously(List<YunNodeModel> datas,Handler handler){//订阅30秒，30秒后会重新刷新. TODO in better
-        if (null != datas){
-            for (int i = 0; i < datas.size(); i ++){//TODO 如何取消长时间订阅 ，页面不在时？
-                YunNodeModel y = datas.get(i);
-                if (y.nodeType == DeviceBean.TYPE_SENSOR){
-                    new MQTT().subMsg("v1/n/" + datas.get(i).mNodeUnique + "/sensors/r/ack", handler,30);
-                    new MQTT().pubMsg("v1/n/" + datas.get(i).mNodeUnique + "/sensors/r", "{}");//板子状态
-                } else if (y.nodeType == DeviceBean.TYPE_ACTUATOR){
-                    new MQTT().subMsg("v1/n/" + datas.get(i).mNodeUnique + "/switches/r/ack", handler, 30);//状态变了是否会改动
-                    new MQTT().pubMsg("v1/n/" + datas.get(i).mNodeUnique + "/switches/r", "{}");//控制设备状态
-                }
-            }
-        }
-    }
+//    public void startGetStatesContinously(List<YunNodeModel> datas,Handler handler){//订阅30秒，30秒后会重新刷新. TODO in better
+//        if (null != datas){
+//            for (int i = 0; i < datas.size(); i ++){//TODO 如何取消长时间订阅 ，页面不在时？
+//                YunNodeModel y = datas.get(i);
+//                if (y.nodeType == DeviceBean.TYPE_SENSOR){
+//                    new MQTT().subMsg("v1/n/" + datas.get(i).mNodeUnique + "/sensors/r/ack", handler,30);
+//                    new MQTT().pubMsg("v1/n/" + datas.get(i).mNodeUnique + "/sensors/r", "{}");//板子状态
+//                } else if (y.nodeType == DeviceBean.TYPE_ACTUATOR){
+//                    new MQTT().subMsg("v1/n/" + datas.get(i).mNodeUnique + "/switches/r/ack", handler, 30);//状态变了是否会改动
+//                    new MQTT().pubMsg("v1/n/" + datas.get(i).mNodeUnique + "/switches/r", "{}");//控制设备状态
+//                }
+//            }
+//        }
+//    }
     
-    public void startGetStates(List<YunNodeModel> datas,Handler handler){
+    public void startGetStates(final List<YunNodeModel> datas, final Handler handler){
         if (null != datas){
             for (int i = 0; i < datas.size(); i ++){
-                YunNodeModel y = datas.get(i);
+                final YunNodeModel y = datas.get(i);
                 if (y.nodeType == DeviceBean.TYPE_SENSOR){
-                	new MQTT().subMsg("v1/n/" + datas.get(i).mNodeUnique + "/sensors/r/ack", handler);
-                    new MQTT().pubMsg("v1/n/" + datas.get(i).mNodeUnique + "/sensors/r", "{}");
+                	new Thread(new Runnable() {
+						@Override
+						public void run() {
+							String jsonStr = new WS_MQTT().GetOneNodeData(y.mNodeUnique);
+							parseSensorStateJSON(y.mNodeUnique, jsonStr, datas);
+							Message m = handler.obtainMessage(WS_MQTT.MSG_MQTT_GET);
+	                        m.obj = jsonStr;//topic + "###" + mqttMessage.toString();//不需要在hander中了，handler只要更新ui就可以了//TODO
+	                        handler.sendMessage(m);
+						}
+					}).start();
                 } else if (y.nodeType == DeviceBean.TYPE_ACTUATOR){
-                	new MQTT().subMsg("v1/n/" + datas.get(i).mNodeUnique + "/switches/r/ack", handler);
-                    new MQTT().pubMsg("v1/n/" + datas.get(i).mNodeUnique + "/switches/r", "{}");//控制设备状态
+                	new Thread(new Runnable() {
+						@Override
+						public void run() {
+							String jsonStr = new WS_MQTT().GetOneNodeDevicesState(y.mNodeUnique);
+							parseCtrStateJSON(y.mNodeUnique, jsonStr, datas);
+							Message m = handler.obtainMessage(WS_MQTT.MSG_MQTT_GET);
+//	                        m.obj = jsonStr;//topic + "###" + mqttMessage.toString();//不需要在hander中了，handler只要更新ui就可以了//TODO
+	                        handler.sendMessage(m);
+						}
+					}).start();
+//                	new MQTT().subMsg("v1/n/" + datas.get(i).mNodeUnique + "/switches/r/ack", handler);
+//                    new MQTT().pubMsg("v1/n/" + datas.get(i).mNodeUnique + "/switches/r", "{}");//控制设备状态
                 }
             }
         }
     }
     
-    public void parseJSON(String str,List<YunNodeModel> datas){//找出一个节点数据进行处理
-        try {
-            String topic = str.substring(0,str.indexOf("###"));
-            String mqttmsg = str.substring(str.indexOf("###") + 3, str.length());
-            
-            JSONObject jo = new JSONObject(mqttmsg);
-            
-            YunNodeModel currentModel = null;
-            if (null != datas){//根据主题选出是哪个节点
-                for (int k = 0; k < datas.size(); k ++){
-                    YunNodeModel tmp = datas.get(k);
-                    String buildTopic = "v1/n/" + tmp.mNodeUnique + "/" + //有时有采集点和控制点hostid一样的情况
-                    		((tmp.nodeType == DeviceBean.TYPE_SENSOR) ? "sensors" : "switches") + "/r/ack";
-                    if (buildTopic.equals(topic)){
-                        currentModel = datas.get(k);
-                        break;
-                    }
-                }
-            }
-            if (null != currentModel){
-            	if (topic.contains("sensors")){//传感器的在线状态
-            		Iterator it = jo.keys();
-            		int rtc = jo.getInt("rtc");
-                	while(it.hasNext()){
-                		String key = (String) it.next();
-                        String v = jo.getString(key);
-                        int underlineIndex = key.indexOf("_");
-                        if (underlineIndex < 0){
-                        	if ("rtc".equals(key)){
-                        		currentModel.mLastTime = new Timestamp(rtc * 1000);
-                        	}
-                        	continue;
-                        }
-                        int sen = Integer.parseInt(key.substring(0, underlineIndex));
-                        int ch = Integer.parseInt(key.substring(underlineIndex + 1, key.length()));
-                        Log.v(tag, "---------sen:" + sen + " ch:" + ch);
-                        for (int z = 0; z < currentModel.list.size(); z ++){
-                        	DeviceBean d = currentModel.list.get(z);
-                        	if (d.mDeviceTypeNo == sen && d.mChannel == ch){
-                        		d.value = (float) Float.parseFloat(v);//此值对第一个界面没有用
-                        		d.mTime = new Timestamp(((long)rtc * 1000));//new Timestamp(System.currentTimeMillis());//TODO
-                        		d.status = 0;
-                        	}
-                        }
-                	}
-            	} else if (topic.contains("switches")){//控制器的在线状态
-            		String values = jo.getString("values");
-//            		int status = jo.getInt("status");
-            		JSONArray jarray = jo.getJSONArray("values");
-            		for (int y = 0; y < jarray.length(); y ++){
-            			int onoff = jarray.getInt(y);
-            			for (int z = 0; z < currentModel.list.size(); z ++){
-                			DeviceBean d = currentModel.list.get(z);
-                			if (d.mChannel == (y + 1)){
-                				d.status = onoff;
-                				Log.v(tag, "-----------ctrl  no:" + d.mChannel + " status:" + onoff);
-                				break;
-                			}
-                		}
+    public void parseSensorStateJSON(String nodeUnique, String str,List<YunNodeModel> datas){
+    	try {
+	    	JSONObject jo = new JSONObject(str);
+	    	YunNodeModel currentModel = null;
+	    	if (null != datas){
+	    		for (int k = 0; k < datas.size(); k ++){
+	                YunNodeModel tmp = datas.get(k);
+	                if (tmp.nodeType == DeviceBean.TYPE_SENSOR && tmp.mNodeUnique.equals(nodeUnique)){
+	                    currentModel = datas.get(k);
+	                    break;
+	                }
+	            }
+	    	}
+	    	if (null != currentModel){
+	    		Iterator it = jo.keys();
+	    		int rtc = jo.getInt("rtc");
+	        	while(it.hasNext()){
+	        		String key = (String) it.next();
+	                String v = jo.getString(key);
+	                int underlineIndex = key.indexOf("_");
+	                if (underlineIndex < 0){
+	                	if ("rtc".equals(key)){
+	                		currentModel.mLastTime = new Timestamp(rtc * 1000);
+	                	}
+	                	continue;
+	                }
+	                int sen = Integer.parseInt(key.substring(0, underlineIndex));
+	                int ch = Integer.parseInt(key.substring(underlineIndex + 1, key.length()));
+	                Log.v(tag, "---------sen:" + sen + " ch:" + ch);
+	                for (int z = 0; z < currentModel.list.size(); z ++){
+	                	DeviceBean d = currentModel.list.get(z);
+	                	if (d.mDeviceTypeNo == sen && d.mChannel == ch){
+	                		d.valueStr = v;//保存数值字符串
+	                		d.value = (float) Float.parseFloat(v);//此值对第一个界面没有用
+	                		d.mTime = new Timestamp(((long)rtc * 1000));//new Timestamp(System.currentTimeMillis());//TODO
+	                		d.status = 0;
+	                	}
+	                }
+	        	}
+	    	}
+    	} catch (Exception e) {
+			e.printStackTrace();
+		}
+    }
+    
+    public void parseCtrStateJSON(String nodeUnique, String str,List<YunNodeModel> datas){
+    	try {
+	    	JSONObject jo = new JSONObject(str);
+	    	YunNodeModel currentModel = null;
+	    	if (null != datas){
+	    		for (int k = 0; k < datas.size(); k ++){
+	                YunNodeModel tmp = datas.get(k);
+	                if (tmp.nodeType == DeviceBean.TYPE_ACTUATOR && tmp.mNodeUnique.equals(nodeUnique)){
+	                    currentModel = datas.get(k);
+	                    break;
+	                }
+	            }
+	    	}
+	    	if (null != currentModel){
+	    		String values = jo.getString("values");
+//        		int status = jo.getInt("status");
+        		JSONArray jarray = jo.getJSONArray("values");
+        		for (int y = 0; y < jarray.length(); y ++){
+        			int onoff = jarray.getInt(y);
+        			for (int z = 0; z < currentModel.list.size(); z ++){
+            			DeviceBean d = currentModel.list.get(z);
+            			if (d.mChannel == (y + 1)){
+            				d.status = onoff;
+            				Log.v(tag, "-----------ctrl  no:" + d.mChannel + " status:" + onoff);
+            				break;
+            			}
             		}
-            	}
-            	
-            	
-            } else {
-                Log.e(tag, "!!!!!!!!!!! not found " + topic + " " + mqttmsg);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        		}
+	    	}
+    	} catch (Exception e) {
+			e.printStackTrace();
+		}
     }
 }

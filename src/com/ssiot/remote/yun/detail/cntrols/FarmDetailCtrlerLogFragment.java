@@ -3,10 +3,8 @@ package com.ssiot.remote.yun.detail.cntrols;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +15,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ssiot.fish.R;
-import com.ssiot.remote.data.business.ControlLog;
 import com.ssiot.remote.data.model.ControlLogModel;
 import com.ssiot.remote.yun.monitor.DeviceBean;
 import com.ssiot.remote.yun.monitor.YunNodeModel;
@@ -87,8 +84,8 @@ public class FarmDetailCtrlerLogFragment extends Fragment{
     
     private class GetLogThread extends Thread{
         @Override
-        public void run() {//TODO pagelist一次显示10个
-            List<ControlLogModel> data = new ControlLog().GetModelPageList(" UniqueID='" + mYunNodeModel.mNodeUnique + "' and DeviceNo=" + device.mChannel);
+        public void run() {//TODO pagelist一次显示10个   改成接口 TODO
+            List<ControlLogModel> data = null;//new ControlLog().GetModelPageList(" UniqueID='" + mYunNodeModel.mNodeUnique + "' and DeviceNo=" + device.mChannel);
             mLogs.clear();
             if (null != data){
                 for (ControlLogModel m : data){

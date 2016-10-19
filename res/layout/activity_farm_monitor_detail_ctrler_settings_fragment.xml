@@ -28,6 +28,7 @@
         fab:fab_addButtonColorNormal="@color/yellow"
         fab:fab_addButtonColorPressed="@color/shnesYellow"
         fab:fab_colorDisabled="@color/cicleColor"
+        android:visibility="gone"
         fab:fab_labelsPosition="left" >
 
         <net.i2p.android.ext.floatingactionbutton.FloatingActionButton

@@ -26,7 +26,6 @@ import com.ssiot.remote.Utils;
 import com.ssiot.remote.data.DataAPI;
 import com.ssiot.remote.data.business.ControlActionInfo;
 import com.ssiot.remote.data.model.ControlActionInfoModel;
-import com.ssiot.remote.yun.MQTT;
 import com.ssiot.remote.yun.WheelValAct;
 import com.ssiot.remote.yun.monitor.DeviceBean;
 import com.ssiot.remote.yun.monitor.YunNodeModel;
@@ -114,12 +113,12 @@ public class ControlSetAct extends HeadActivity{
     private Handler mHandler = new Handler(){
         public void handleMessage(android.os.Message msg) {
             switch (msg.what) {
-                case MQTT.MSG_MQTT_PUB_END:
-                    saveControlActionInfo((String) msg.obj);//保存规则到数据库的线程
-                    break;
-                case MQTT.MSG_MQTT_PUB_FAIL:
-                    showToast("设置失败");
-                    break;
+//                case WS_MQTT.MSG_MQTT_PUB_END:
+//                    saveControlActionInfo((String) msg.obj);//保存规则到数据库的线程
+//                    break;
+//                case WS_MQTT.MSG_MQTT_PUB_FAIL:
+//                    showToast("设置失败");
+//                    break;
                 case MSG_SAVECONTROLACTIONINFO_OK:
                     finish();
                     break;
@@ -235,16 +234,16 @@ public class ControlSetAct extends HeadActivity{
     public void SubClick(View v){
         if (m_EndTime > (m_StartTime+1000)){
             String str = "";
-            if (ISLOOPMODE){
+            if (ISLOOPMODE){// 几种循环模式 TODO
                 if (!toggleButtonCircle.isChecked() && m_StartTime > System.currentTimeMillis()+1000){//定时某时某刻开始执行一段时间后关闭
                     int workingSeconds = (int) (m_EndTime - m_StartTime)/1000;
                     str = "{\"Cmd\":1,\"Type\":3,\"Data\":[{\"Dev\":"+device.mChannel+",\"st\":"+(int) (m_StartTime/1000)+",\"rt\":"+workingSeconds+"}]}";
-                    new MQTT().pubMsg("B/" + mYunNodeModel.mNodeNo, str, mHandler);
+//                    new MQTT().pubMsg("B/" + mYunNodeModel.mNodeNo, str, mHandler);
                 } else if ((m_CheckWeekVals == null || m_CheckWeekVals.size() == 0) && m_StartTime > System.currentTimeMillis()+1000){
                     if (m_SpandTime > m_WorkingTime && m_WorkingTime > 0){
                         str = "{\"Cmd\":1,\"Type\":4,\"Data\":[{\"Dev\":"+device.mChannel+",\"st\":"+(int) (m_StartTime/1000)+"," +
                                 "\"rt\":"+m_SpandTime+",\"stt\":"+m_WorkingTime+",\"ent\":"+(int) (m_EndTime/1000)+"}]}";
-                        new MQTT().pubMsg("B/" + mYunNodeModel.mNodeNo, str, mHandler);
+//                        new MQTT().pubMsg("B/" + mYunNodeModel.mNodeNo, str, mHandler);
                     } else {
                         showToast("持续-间隔时间设置错误");
                     }
@@ -259,7 +258,7 @@ public class ControlSetAct extends HeadActivity{
                     int endInt = end.getHours() * 3600 + end.getMinutes() * 60;//TODO 这个不是绝对时间
                     str = "{\"Cmd\":1,\"Type\":5,\"Data\":[{\"Dev\":"+device.mChannel+",\"st\":"+(int) startInt+"," +
                             "\"rt\":"+m_SpandTime+",\"stt\":"+m_WorkingTime+",\"ent\":"+(int) endInt+",\"wt\":"+weekFlag+"}]}";
-                    new MQTT().pubMsg("B/" + mYunNodeModel.mNodeNo, str, mHandler);
+//                    new MQTT().pubMsg("B/" + mYunNodeModel.mNodeNo, str, mHandler);
                 }
             }
         } else {

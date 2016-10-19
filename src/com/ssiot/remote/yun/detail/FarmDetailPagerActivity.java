@@ -18,11 +18,11 @@ import com.ssiot.fish.R;
 import com.ssiot.remote.Utils;
 import com.ssiot.remote.data.model.WaterDetailModel;
 import com.ssiot.remote.data.model.view.SensorThresholdModel;
-import com.ssiot.remote.yun.MQTT;
 import com.ssiot.remote.yun.monitor.DeviceBean;
 import com.ssiot.remote.yun.monitor.YunNodeModel;
 import com.ssiot.remote.yun.webapi.WS_API;
 import com.ssiot.remote.yun.webapi.WS_Fish;
+import com.ssiot.remote.yun.webapi.WS_MQTT;
 import com.ssiot.remote.yun.webapi.WS_WaterQuality;
 
 import org.json.JSONArray;
@@ -55,7 +55,7 @@ public class FarmDetailPagerActivity extends HeadActivity implements SwipeRefres
     int deviceversion = 2;
     
 //    private static final int MSG_GET_END = 1;
-    private static final int MSG_MQTT_GET = MQTT.MSG_MQTT_GET;
+    private static final int MSG_MQTT_GET = WS_MQTT.MSG_MQTT_GET;
     private Handler mHandler = new Handler(){
         public void handleMessage(android.os.Message msg) {
             switch (msg.what) {
@@ -65,8 +65,8 @@ public class FarmDetailPagerActivity extends HeadActivity implements SwipeRefres
 //                    startGetStates();
 //                    break;
                 case MSG_MQTT_GET:
-                    String str = (String) msg.obj;
-                    parseJSON(str, mYunNodes);
+//                    String str = (String) msg.obj;
+//                    parseJSON(str, mYunNodes);
                     sensorsFragment.updateUI();
                     cntrolsFragment.updateUI();
                     webcamsFragment.updateUI();
@@ -333,7 +333,8 @@ public class FarmDetailPagerActivity extends HeadActivity implements SwipeRefres
                 if (deviceversion != 3){
                 	new WS_API().GetSensorNodeDatas_v2(sensorNodeM.mNodeUnique, sensorNodes);//TODO 二代产品怎么界面更新
                 } else {
-                	startGetStatesContinously(mYunNodes,mHandler);
+//                	startGetStatesContinously(mYunNodes,mHandler);//20161017先改为不循环获取的
+                	startGetStates(mYunNodes,mHandler);
                 }
             }
             return null;
