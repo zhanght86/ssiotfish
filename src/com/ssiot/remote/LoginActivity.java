@@ -57,6 +57,7 @@ public class LoginActivity extends HeadActivity {
     private EditText pwdEditText;
     private CheckBox checkbox;
     private Button logButton;
+    private TextView registerBtn;
     private String account = "";
     private String password = "";
     private String uniqueID = "";
@@ -135,6 +136,14 @@ public class LoginActivity extends HeadActivity {
         pwdEditText = (EditText) findViewById(R.id.pwdEditText);
         checkbox = (CheckBox) findViewById(R.id.checkBox1);
         logButton = (Button) findViewById(R.id.logButton);
+        registerBtn = (TextView) findViewById(R.id.register_btn);
+        registerBtn.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(LoginActivity.this, RegisterAct.class);
+				startActivity(intent);
+			}
+		});
         mPref = PreferenceManager.getDefaultSharedPreferences(this);
         if (mPref != null) {
             String pro_username = mPref.getString(Utils.PREF_USERNAME, "");

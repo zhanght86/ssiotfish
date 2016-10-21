@@ -275,7 +275,8 @@ public class HeadActivity extends ActionBarActivity{
     
     public void parseSensorStateJSON(String nodeUnique, String str,List<YunNodeModel> datas){
     	try {
-	    	JSONObject jo = new JSONObject(str);
+    		JSONObject interfaceJson = new JSONObject(str);
+	    	JSONObject jo = new JSONObject(interfaceJson.getString("data"));
 	    	YunNodeModel currentModel = null;
 	    	if (null != datas){
 	    		for (int k = 0; k < datas.size(); k ++){
@@ -287,15 +288,20 @@ public class HeadActivity extends ActionBarActivity{
 	            }
 	    	}
 	    	if (null != currentModel){
-	    		Iterator it = jo.keys();
 	    		int rtc = jo.getInt("rtc");
+	    		int interfacertc = interfaceJson.getInt("time");
+	    		if (rtc <= 0){
+	    			rtc = interfacertc;
+	    		}
+//	    		currentModel.mLastTime = new Timestamp((long) interfacertc * 1000);//王规划的json在time
+	    		Iterator it = jo.keys();
 	        	while(it.hasNext()){
 	        		String key = (String) it.next();
 	                String v = jo.getString(key);
 	                int underlineIndex = key.indexOf("_");
 	                if (underlineIndex < 0){
-	                	if ("rtc".equals(key)){
-	                		currentModel.mLastTime = new Timestamp(rtc * 1000);
+	                	if ("rtc".equals(key) && rtc > 0){
+	                		currentModel.mLastTime = new Timestamp((long)rtc * 1000);
 	                	}
 	                	continue;
 	                }

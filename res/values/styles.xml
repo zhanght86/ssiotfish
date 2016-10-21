@@ -454,4 +454,24 @@
     <item name="android:windowEnterAnimation">@anim/fade_up</item>  
     <item name="android:windowExitAnimation">@anim/fade_down</item> 
   </style>
+  
+<!--   copy from 迅雷 -->
+  <style name="LoginRegisterEditText">
+        <item name="android:textSize">15.0sp</item>
+        <item name="android:textColor">#ff333333</item>
+        <item name="android:textColorHint">#ffc4c4c4</item>
+        <item name="android:gravity">bottom</item>
+<!--         <item name="android:background">@drawable/edittext_single_line_selector</item> -->
+        <item name="android:paddingBottom">10.0dip</item>
+        <item name="android:singleLine">true</item>
+<!--         <item name="android:textCursorDrawable">@drawable/login_register_input_cursor</item> -->
+    </style>
+    
+  <style name="common_blue_button">
+        <item name="android:textSize">16.0sp</item>
+        <item name="android:textColor">@color/common_text_selector</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">@drawable/common_blue_button_selector</item>
+        <item name="android:height">45.0dip</item>
+    </style>
 </resources>

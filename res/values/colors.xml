@@ -121,4 +121,11 @@
 	<color name="dark_bg_70p">#bb000000</color>
 	<color name="common_bg">#f0f0f3</color>
 	<color name="quality_focused_color">#448cf3</color>
+	
+<!-- 	copy迅雷 -->
+	<color name="half_white">#8fffffff</color>
+	<color name="common_blue">#ff1294f6</color>
+    <color name="common_blue_button_disable">#7f5092e3</color>
+    <color name="common_blue_button_hover">#ff0e86e1</color>
+    <color name="common_blue_button_normal">#ff1294f6</color>
 </resources>

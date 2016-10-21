@@ -18,7 +18,9 @@ import com.ssiot.fish.R;
 import com.ssiot.remote.data.model.ControlLogModel;
 import com.ssiot.remote.yun.monitor.DeviceBean;
 import com.ssiot.remote.yun.monitor.YunNodeModel;
+import com.ssiot.remote.yun.webapi.WS_API;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -85,11 +87,12 @@ public class FarmDetailCtrlerLogFragment extends Fragment{
     private class GetLogThread extends Thread{
         @Override
         public void run() {//TODO pagelist一次显示10个   改成接口 TODO
-            List<ControlLogModel> data = null;//new ControlLog().GetModelPageList(" UniqueID='" + mYunNodeModel.mNodeUnique + "' and DeviceNo=" + device.mChannel);
+//            List<ControlLogModel> data = null;//new ControlLog().GetModelPageList(" UniqueID='" + mYunNodeModel.mNodeUnique + "' and DeviceNo=" + device.mChannel);
+            List<ControlLogModel> data = new WS_API().GetControlLogs(mYunNodeModel.mNodeUnique, device.mChannel, 10, 1);
             mLogs.clear();
             if (null != data){
                 for (ControlLogModel m : data){
-                    if (m._starttype == 1 || m._starttype == 3 || m._starttype == 5 || m._starttype == 6){
+                    if (m._starttype == 1 || m._starttype == 2 || m._starttype == 3 || m._starttype == 5 || m._starttype == 6){
                         mLogs.add(m);
                     }
                 }
@@ -137,13 +140,24 @@ public class FarmDetailCtrlerLogFragment extends Fragment{
                 holder = (ViewHold) convertView.getTag();
             }
             ControlLogModel log = mData.get(position);
-            holder.time_HourMinute.setText(log._createtime.toString());
-            holder.time_YearMonthDay.setText(log._createtime.toString());
-            holder.Timing.setText(log._runtime + "秒");
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+            SimpleDateFormat sdf2 = new SimpleDateFormat("yy/MM/dd");
+            holder.time_HourMinute.setText(sdf.format(log._createtime));
+            holder.time_YearMonthDay.setText(sdf2.format(log._createtime));
+            if (log._runtime > 0){
+            	holder.Timing.setVisibility(View.VISIBLE);
+            	holder.Timing.setText(log._runtime + "秒");
+            } else {
+            	holder.Timing.setVisibility(View.GONE);
+            }
+            
             switch (log._starttype) {
                 case 1:
                     holder.CtrlerMode.setText("立即开启");
                     break;
+                case 2:
+                	holder.CtrlerMode.setText("立即关闭");
+                	break;
                 case 3:
                 case 5:
                     holder.CtrlerMode.setText("定时开启");

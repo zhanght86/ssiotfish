@@ -35,6 +35,7 @@ import com.ssiot.remote.data.business.VLCVideoInfo;
 import com.ssiot.remote.data.model.AgricultureFacilityModel;
 import com.ssiot.remote.data.model.AlarmRuleModel;
 import com.ssiot.remote.data.model.CameraFileModel;
+import com.ssiot.remote.data.model.ControlLogModel;
 import com.ssiot.remote.data.model.SettingModel;
 import com.ssiot.remote.data.model.VLCVideoInfoModel;
 import com.ssiot.remote.yun.monitor.DeviceBean;
@@ -360,6 +361,36 @@ public class WS_API extends WebBasedb2{
 				m._name = jo.getString("FacilitiesName");
 				m._areaid = jo.getInt("AreaID");
 				m._landid = jo.getInt("LandID");
+				list.add(m);
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+        return list;
+	}
+	
+	public List<ControlLogModel> GetControlLogs(String nodeunique,int deviceno, int pagesize, int pageindex){
+		HashMap<String, String> params = new HashMap<String, String>();
+        params.put("nodeunique", "" + nodeunique);
+        params.put("deviceno", "" + deviceno);
+        params.put("pagesize", "" + pagesize);
+        params.put("pageindex", "" + pageindex);
+        String txt = exeRetString(MethodFile, "GetControlLogs", params);
+        List<ControlLogModel> list = new ArrayList<ControlLogModel>();
+        try {
+			JSONArray ja = new JSONArray(txt);
+			for (int i = 0; i < ja.length(); i ++){
+				JSONObject jo = ja.optJSONObject(i);
+				ControlLogModel m = new ControlLogModel();
+				m._logtype = jo.getInt("LogType");
+				m._uniqueid = jo.getString("UniqueID");
+				m._deviceno = jo.getInt("DeviceNo");
+				m._starttype = jo.getInt("StartType");
+				m._startvalue = jo.getInt("StartValue");
+				m._runtime = jo.getInt("RunTime");
+				m._endtype = jo.getInt("EndType");
+				m._endvalue = jo.getInt("EndValue");
+				m._createtime = new Timestamp((long)jo.getInt("CreateTimeSpan") * 1000);
 				list.add(m);
 			}
 		} catch (JSONException e) {

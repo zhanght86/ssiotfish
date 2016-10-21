@@ -18,7 +18,8 @@ public class WS_MQTT extends WebBaseMQTT{
         String txt = exeRetString("GetNodeData.asmx", "GetOneNodeData", params);
         try {//类似{"uniqueid":"10000613","data":{"770_0":"0.000","769_0":"0.000","rtc":"0"},"time":"1476685641"}
 			JSONObject jo = new JSONObject(txt);
-			return jo.getString("data");
+//			return jo.getString("data");
+			return txt;
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -200,7 +201,11 @@ public class SensorsFragment extends DevicesFragment{
                 	offLineStr = "(离线)";
                 }
                 localViewHolder.name.setText(localDevice.mName + (localDevice.mChannel > 0 ? localDevice.mChannel : "") + offLineStr);
-                localViewHolder.value.setText("" + localDevice.valueStr + localDevice.getUnit());//改成了valueStr
+                String valueStr = localDevice.valueStr;
+                if (TextUtils.isEmpty(valueStr)){
+                	valueStr = "N/A";
+                }
+                localViewHolder.value.setText("" + valueStr + localDevice.getUnit());//改成了valueStr
                 
                 localViewHolder.chartView.setData(localDevice.thresholdModel, localDevice.value);//TODO 最大值 最小值 警戒值
                 String valueMeansStr = "安全";
