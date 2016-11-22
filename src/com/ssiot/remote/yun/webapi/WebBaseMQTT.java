@@ -10,9 +10,11 @@ import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
+import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.concurrent.TimeoutException;
 
 public class WebBaseMQTT{
     private static final String tag = "WebBaseMQTT";
@@ -34,15 +36,20 @@ public class WebBaseMQTT{
         envelope.bodyOut = soapObject;
         envelope.dotNet = true;
         envelope.setOutputSoapObject(soapObject);
-        HttpTransportSE httpTransportSE = new HttpTransportSE(URI_STATION + methodFile);
-        try {
-            // 实际调用webservice的操作
+        HttpTransportSE httpTransportSE = new HttpTransportSE(URI_STATION + methodFile, 5000);//超时时间必须大于王桂华接口的等待时间4s
+        try { // 实际调用webservice的操作
             httpTransportSE.call(NAMESPACE + method, envelope);
-            
         } catch (Exception e) {
-            showErrorToast(method);
+        	String str = "";
+        	if (null != params && params.size() != 0) {
+                for (String key : params.keySet()) {
+                	str += "--param key:" + key + " value:" + params.get(key);
+                }
+            }
+            showErrorToast(method + str);
             e.printStackTrace();
         }
+        
         // 获得调用的结果
         SoapObject object = (SoapObject) envelope.bodyIn;//错误时java.lang.ClassCastException: org.ksoap2.SoapFault cannot be cast to org.ksoap2.serialization.SoapObject
         String txt = null;

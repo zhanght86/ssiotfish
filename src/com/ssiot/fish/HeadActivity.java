@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.ActionBarActivity;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
@@ -35,6 +36,7 @@ import org.json.JSONObject;
 
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -46,6 +48,7 @@ public class HeadActivity extends ActionBarActivity{
     private boolean windowTranslucent = false;
     private boolean hasActionBar = true;
     private boolean viewIsSet = false;
+    List<ThreadHolder> threadPool = new ArrayList<ThreadHolder>();
     
     private static final int MSG_TOAST = 898989;
     private Handler mHandler = new Handler(){
@@ -240,23 +243,61 @@ public class HeadActivity extends ActionBarActivity{
 //        }
 //    }
     
+    private class ThreadHolder{
+    	private ThreadHolder(Thread t, int nType, String uniq){
+    		thread = t;
+    		nodeType = nType;
+    		unique = uniq;
+    	}
+    	Thread thread;
+    	int nodeType;
+    	String unique;
+    }
+    
+    private void deleteDeadThreads(){
+    	synchronized (threadPool) {//java.util.ConcurrentModificationException
+    		for (int i = 0; i < threadPool.size(); i ++){
+    			if (!threadPool.get(i).thread.isAlive()){
+        			threadPool.remove(threadPool.get(i));
+        			i --;
+        		}
+    		}
+		}
+    }
+    
+    private boolean nodeThreadExists(int nodeType, String unique){
+    	for (ThreadHolder t : threadPool){
+    		if (t.thread.isAlive() && nodeType == t.nodeType && t.unique == unique){
+    			Log.i(tag, "!!-----获取节点"+ unique + "状态的进程正在运行，不需要重复新建线程");
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+    
     public void startGetStates(final List<YunNodeModel> datas, final Handler handler){
         if (null != datas){
             for (int i = 0; i < datas.size(); i ++){
                 final YunNodeModel y = datas.get(i);
                 if (y.nodeType == DeviceBean.TYPE_SENSOR){
-                	new Thread(new Runnable() {
+                	Thread t = new Thread(new Runnable() {
 						@Override
 						public void run() {
 							String jsonStr = new WS_MQTT().GetOneNodeData(y.mNodeUnique);
 							parseSensorStateJSON(y.mNodeUnique, jsonStr, datas);
 							Message m = handler.obtainMessage(WS_MQTT.MSG_MQTT_GET);
-	                        m.obj = jsonStr;//topic + "###" + mqttMessage.toString();//不需要在hander中了，handler只要更新ui就可以了//TODO
-	                        handler.sendMessage(m);
+				            m.obj = jsonStr;//topic + "###" + mqttMessage.toString();//不需要在hander中了，handler只要更新ui就可以了//TODO
+				            handler.sendMessage(m);
 						}
-					}).start();
+					});
+                	deleteDeadThreads();//这个ThreadHolder设计出来是为了减少新建很多线程
+                	if (!nodeThreadExists(y.nodeType, y.mNodeUnique)){
+                		threadPool.add(new ThreadHolder(t, y.nodeType, y.mNodeUnique));
+                		t.start();
+                	}
+//                	t.start();
                 } else if (y.nodeType == DeviceBean.TYPE_ACTUATOR){
-                	new Thread(new Runnable() {
+                	Thread t = new Thread(new Runnable() {
 						@Override
 						public void run() {
 							String jsonStr = new WS_MQTT().GetOneNodeDevicesState(y.mNodeUnique);
@@ -265,16 +306,26 @@ public class HeadActivity extends ActionBarActivity{
 //	                        m.obj = jsonStr;//topic + "###" + mqttMessage.toString();//不需要在hander中了，handler只要更新ui就可以了//TODO
 	                        handler.sendMessage(m);
 						}
-					}).start();
+					});
+                	deleteDeadThreads();//这个ThreadHolder设计出来是为了减少新建很多线程
+                	if (!nodeThreadExists(y.nodeType, y.mNodeUnique)){
+                		threadPool.add(new ThreadHolder(t, y.nodeType, y.mNodeUnique));
+                		t.start();
+                	}
+//                	t.start();
+                	
 //                	new MQTT().subMsg("v1/n/" + datas.get(i).mNodeUnique + "/switches/r/ack", handler);
 //                    new MQTT().pubMsg("v1/n/" + datas.get(i).mNodeUnique + "/switches/r", "{}");//控制设备状态
                 }
             }
         }
     }
-    
+	
     public void parseSensorStateJSON(String nodeUnique, String str,List<YunNodeModel> datas){
     	try {
+    		if (TextUtils.isEmpty(str)){
+    			return;
+    		}
     		JSONObject interfaceJson = new JSONObject(str);
 	    	JSONObject jo = new JSONObject(interfaceJson.getString("data"));
 	    	YunNodeModel currentModel = null;
@@ -307,16 +358,25 @@ public class HeadActivity extends ActionBarActivity{
 	                }
 	                int sen = Integer.parseInt(key.substring(0, underlineIndex));
 	                int ch = Integer.parseInt(key.substring(underlineIndex + 1, key.length()));
-	                Log.v(tag, "---------sen:" + sen + " ch:" + ch);
+//	                Log.v(tag, "---------sen:" + sen + " ch:" + ch);
+	                boolean atLeastOneOnLine = false;//至少有一个在线，让虚拟传感器的在线状态跟随真传感器的在线状态20161104
 	                for (int z = 0; z < currentModel.list.size(); z ++){
 	                	DeviceBean d = currentModel.list.get(z);
 	                	if (d.mDeviceTypeNo == sen && d.mChannel == ch){
 	                		d.valueStr = v;//保存数值字符串
 	                		d.value = (float) Float.parseFloat(v);//此值对第一个界面没有用
-	                		d.mTime = new Timestamp(((long)rtc * 1000));//new Timestamp(System.currentTimeMillis());//TODO
+	                		d.mTime = new Timestamp(((long)rtc * 1000));
 	                		d.status = 0;
+	                		atLeastOneOnLine = true;
 	                	}
 	                }
+//	                for (int n = 0; n < currentModel.list.size(); n ++){//20161104虚拟传感器 有bug 都在线了！！TODO
+//	                	DeviceBean d = currentModel.list.get(n);
+//	                	if (atLeastOneOnLine && d.mTime == null){
+//	                		d.mTime = new Timestamp(((long)rtc * 1000));
+//	                		d.status = 0;
+//	                	}
+//	                }
 	        	}
 	    	}
     	} catch (Exception e) {
@@ -347,7 +407,7 @@ public class HeadActivity extends ActionBarActivity{
             			DeviceBean d = currentModel.list.get(z);
             			if (d.mChannel == (y + 1)){
             				d.status = onoff;
-            				Log.v(tag, "-----------ctrl  no:" + d.mChannel + " status:" + onoff);
+//            				Log.v(tag, "-----------ctrl  no:" + d.mChannel + " status:" + onoff);
             				break;
             			}
             		}

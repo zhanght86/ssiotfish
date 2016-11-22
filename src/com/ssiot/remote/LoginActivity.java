@@ -144,6 +144,17 @@ public class LoginActivity extends HeadActivity {
 				startActivity(intent);
 			}
 		});
+        registerBtn.setVisibility(View.GONE);
+        TextView visitorBtn = (TextView) findViewById(R.id.visitor_btn);
+        visitorBtn.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(LoginActivity.this, FishMainActivity.class);
+				startActivity(intent);
+				finish();
+			}
+		});
+        
         mPref = PreferenceManager.getDefaultSharedPreferences(this);
         if (mPref != null) {
             String pro_username = mPref.getString(Utils.PREF_USERNAME, "");
@@ -206,20 +217,6 @@ public class LoginActivity extends HeadActivity {
         public void run() {
             try {
                 if (Utils.isNetworkConnected(LoginActivity.this)){
-//                    List<UserModel> users =  new User().GetModelList(" Account='" + account + "'");
-//                    if (users != null && users.size() > 0){
-//                    	UserModel model = users.get(0);
-//                    	uniqueID = model._uniqueid;
-//                    	MainActivity.AreaID = model._areaid;
-//                    	int mainuserid = new WS_User().getMainUserId(model._userid);
-//                    	savePrefs(model, mainuserid);
-//                        mHandler.sendEmptyMessage(MSG_LOGIN_RETURN);
-//                    } else {
-//                    	sendToast("用户名或密码错误");
-//                    	return;
-//                    }
-                    
-                    
                     UserModel uModel = new WS_User().GetUserByPsw(account, password);
                     if (uModel != null){
                     	uModel._userpassword = password;

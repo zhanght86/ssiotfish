@@ -1,13 +1,7 @@
 
 package com.ssiot.remote;
 
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Properties;
-
 import com.ssiot.remote.data.model.UserModel;
-import com.ssiot.remote.yun.MainAct;
-import com.ssiot.remote.yun.MainMenuAct;
 import com.ssiot.remote.yun.webapi.WS_User;
 
 import android.app.Activity;
@@ -16,7 +10,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -46,18 +39,18 @@ public class FirstStartActivity extends Activity {
     protected void onResume() {
         if (mPref != null) {
         	checkPrefVersion();
-            username = mPref.getString(Utils.PREF_USERNAME, "");
-            password = mPref.getString(Utils.PREF_PWD, "");
+//            username = mPref.getString(Utils.PREF_USERNAME, "");
+//            password = mPref.getString(Utils.PREF_PWD, "");
 
-            Log.v(tag, "---------preference:"+username + password);
-            if (!TextUtils.isEmpty(username) && !TextUtils.isEmpty(password)) {
-                new Thread(new autoLogin()).start();// auto login
-            } else {
-                startLoginUI();
-            }
+//            Log.v(tag, "---------preference:"+username + password);
+//            if (!TextUtils.isEmpty(username) && !TextUtils.isEmpty(password)) {
+//                new Thread(new autoLogin()).start();// auto login
+//            } else {
+//                startLoginUI();
+//            }
+        	startMainUI();
         } else {
-            Log.e(tag, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            startLoginUI();
+            Log.e(tag, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!mPref = null");
         }
         super.onResume();
     }
@@ -69,13 +62,13 @@ public class FirstStartActivity extends Activity {
             	if (Utils.isNetworkConnected(FirstStartActivity.this)){
             		UserModel um = new WS_User().GetUserByPsw(username, password);
             		if (um != null){
-            			Intent intent = new Intent(FirstStartActivity.this, FishMainActivity.class);//MainActivity
-                        intent.putExtra("userkey", um._uniqueid);
+            			
                         try {
 							Thread.sleep(600);
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
+                        Intent intent = new Intent(FirstStartActivity.this, FishMainActivity.class);//MainActivity
                         startActivity(intent);
                         finish();
             			return;
@@ -118,7 +111,7 @@ public class FirstStartActivity extends Activity {
     
     }
 
-    public void startLoginUI() {
+    private void startLoginUI() {
     	new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -132,7 +125,22 @@ public class FirstStartActivity extends Activity {
 		        finish();
 			}
 		}).start();
-        
+    }
+    
+    private void startMainUI() {
+    	new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(600);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				Intent intent = new Intent(FirstStartActivity.this, FishMainActivity.class);
+		        startActivity(intent);
+		        finish();
+			}
+		}).start();
     }
 
 }

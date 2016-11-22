@@ -178,70 +178,70 @@ public class TriggerDiaFrag extends DialogFragment{
     }
     
     private void initFirstPage(View rootView){
-        mDeviceSpinner = (Spinner) rootView.findViewById(R.id.spinner_device);
-        ArrayAdapter<String> arr_adapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_item,deviceNames);
-        mDeviceSpinner.setAdapter(arr_adapter);
-        mDeviceSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                mSelectedDeviceNo = deviceNos.get(position);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-        mNodeListView = (ListView) rootView.findViewById(R.id.tri_node_list);
-        mNodeAdapter = new NodeListCheckAdapter(getActivity(), n2mList);
-        mNodeListView.setAdapter(mNodeAdapter);
-        mNextBtn = (Button) rootView.findViewById(R.id.tri_next);
-        final RelativeLayout part1 = (RelativeLayout) rootView.findViewById(R.id.part1);
-        final RelativeLayout part2 = (RelativeLayout) rootView.findViewById(R.id.part2);
-        
-        mNextBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                
-                String selectednodes = "";
-                ArrayList<NodeView2Model> checkedList = mNodeAdapter.getCheckedList();
-                if (null == checkedList || checkedList.size() <= 0){
-                    Toast.makeText(getActivity(), "未选择节点", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                for (int i = 0; i < checkedList.size(); i ++){
-                    selectednodes += checkedList.get(i)._uniqueid + ",";
-                }
-                selectednodesStr = selectednodes;
-                
-                if (null != mSensorDatas){
-                    mSensorDatas.clear();//每次都需要清除一下
-                    mSensorDatas = null;
-                }
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mSVModels = new AjaxGetNodesDataByUserkey().GetSensorInfo(selectednodesStr);
-                        if (mSensorDatas == null){//null 代表获取进程没结束
-                            mSensorDatas = new ArrayList<String>();
-                        }
-                        if (null != mSVModels){
-                            for (int i = 0; i < mSVModels.size(); i ++){
-                                mSensorDatas.add(mSVModels.get(i)._shortname + mSVModels.get(i)._channel);
-                            }
-                        }
-                        mHandler.sendEmptyMessage(MSG_GETCOMSENSORS_END);
-                    }
-                }).start();
-                part1.setVisibility(View.GONE);
-                part2.setVisibility(View.VISIBLE);
-            }
-        });
+//        mDeviceSpinner = (Spinner) rootView.findViewById(R.id.spinner_device);//有错删除了。本文件不可用
+//        ArrayAdapter<String> arr_adapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_item,deviceNames);
+//        mDeviceSpinner.setAdapter(arr_adapter);
+//        mDeviceSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                mSelectedDeviceNo = deviceNos.get(position);
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> parent) {
+//            }
+//        });
+//        mNodeListView = (ListView) rootView.findViewById(R.id.tri_node_list);
+//        mNodeAdapter = new NodeListCheckAdapter(getActivity(), n2mList);
+//        mNodeListView.setAdapter(mNodeAdapter);
+//        mNextBtn = (Button) rootView.findViewById(R.id.tri_next);
+//        final RelativeLayout part1 = (RelativeLayout) rootView.findViewById(R.id.part1);
+//        final RelativeLayout part2 = (RelativeLayout) rootView.findViewById(R.id.part2);
+//        
+//        mNextBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                
+//                String selectednodes = "";
+//                ArrayList<NodeView2Model> checkedList = mNodeAdapter.getCheckedList();
+//                if (null == checkedList || checkedList.size() <= 0){
+//                    Toast.makeText(getActivity(), "未选择节点", Toast.LENGTH_SHORT).show();
+//                    return;
+//                }
+//                for (int i = 0; i < checkedList.size(); i ++){
+//                    selectednodes += checkedList.get(i)._uniqueid + ",";
+//                }
+//                selectednodesStr = selectednodes;
+//                
+//                if (null != mSensorDatas){
+//                    mSensorDatas.clear();//每次都需要清除一下
+//                    mSensorDatas = null;
+//                }
+//                new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        mSVModels = new AjaxGetNodesDataByUserkey().GetSensorInfo(selectednodesStr);
+//                        if (mSensorDatas == null){//null 代表获取进程没结束
+//                            mSensorDatas = new ArrayList<String>();
+//                        }
+//                        if (null != mSVModels){
+//                            for (int i = 0; i < mSVModels.size(); i ++){
+//                                mSensorDatas.add(mSVModels.get(i)._shortname + mSVModels.get(i)._channel);
+//                            }
+//                        }
+//                        mHandler.sendEmptyMessage(MSG_GETCOMSENSORS_END);
+//                    }
+//                }).start();
+//                part1.setVisibility(View.GONE);
+//                part2.setVisibility(View.VISIBLE);
+//            }
+//        });
     }
     
     private void initSecondPage(View rootView){
-        mIntervalSpinner = (Spinner) rootView.findViewById(R.id.tri_interval_time);
-        mWorkTimeSpinner = (Spinner) rootView.findViewById(R.id.tri_working_time);
-        mRelationTypeSpinner = (Spinner) rootView.findViewById(R.id.tri_relation_type);
+//        mIntervalSpinner = (Spinner) rootView.findViewById(R.id.tri_interval_time);
+//        mWorkTimeSpinner = (Spinner) rootView.findViewById(R.id.tri_working_time);
+//        mRelationTypeSpinner = (Spinner) rootView.findViewById(R.id.tri_relation_type);
         mTriRuleTitle = (LinearLayout) rootView.findViewById(R.id.tri_rule_title);
         mElementList = (ListView) rootView.findViewById(R.id.tri_element_list);
         mFinishBtn = (Button) rootView.findViewById(R.id.tri_finish);

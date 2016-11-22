@@ -455,7 +455,7 @@
     <item name="android:windowExitAnimation">@anim/fade_down</item> 
   </style>
   
-<!--   copy from 迅雷 -->
+<!--   copy from 迅雷 for register UI-->
   <style name="LoginRegisterEditText">
         <item name="android:textSize">15.0sp</item>
         <item name="android:textColor">#ff333333</item>

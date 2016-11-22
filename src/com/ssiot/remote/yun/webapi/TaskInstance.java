@@ -49,7 +49,9 @@ public class TaskInstance extends WebBasedb2 {
     
     public List<ERPTaskInstanceModel> GetMyReceiveTaskInstances(int userid){
         HashMap<String, String> params = new HashMap<String, String>();
-        params.put("where", " WorkerIDs like '%:" + userid +"}%'");
+//        params.put("where", " WorkerIDs like '%:" + userid +"}%'");
+        String str = "'," + userid + ",'";
+        params.put("where", " charindex("+str+",','+WorkerIDs+',') > 0");
         String txt = exeRetString(MethodFile, "GetTaskInstance", params);
         return parse(txt);
     }
@@ -67,7 +69,9 @@ public class TaskInstance extends WebBasedb2 {
     public int Save(ERPTaskInstanceModel taskInstance) {
     	HashMap<String, String> params = new HashMap<String, String>();
         params.put("ID", "" + taskInstance._id);
+        params.put("TaskID", "" + taskInstance._taskmouldid);
         params.put("OwnerID", "" + taskInstance._ownerid);
+        params.put("BatchID", ""+taskInstance._batchid);
         params.put("CropTypeID", "" + taskInstance._croptypeid);
         params.put("StageType", "" + taskInstance._stagetype);
         params.put("TaskType", "" + taskInstance._tasktype);
@@ -107,8 +111,12 @@ public class TaskInstance extends WebBasedb2 {
                     String valueStr = property.getFirstChild().getNodeValue();
                     if (nodeName.equals("ID")) {
                         cType._id = Integer.parseInt(valueStr);
+                    } else if (nodeName.equals("TaskID")) {
+                        cType._taskmouldid = Integer.parseInt(valueStr);
                     } else if (nodeName.equals("OwenerID")) {
                         cType._ownerid = Integer.parseInt(valueStr);
+                    } else if (nodeName.equals("BatchID")) {
+                        cType._batchid = Integer.parseInt(valueStr);
                     } else if (nodeName.equals("CropTypeID")) {
                         cType._croptypeid = Integer.parseInt(valueStr);
                     } else if (nodeName.equals("StageType")){

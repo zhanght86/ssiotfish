@@ -230,7 +230,9 @@ public class SsiotService extends Service{
             Notification noti = builder.build();
             // noti.contentView = remoteView;
 //            noti.flags |= Notification.FLAG_ONGOING_EVENT;
-            noti.sound = Uri.parse("android.resource://" + getPackageName() + "/" +R.raw.beep); 
+            if (Utils.getBooleabPref(Utils.PREF_NOTI_SOUND, this)){
+            	noti.sound = Uri.parse("android.resource://" + getPackageName() + "/" +R.raw.beep); 
+            }
             NotificationManager mnotiManager = (NotificationManager) c
                     .getSystemService(Context.NOTIFICATION_SERVICE);
             if (!nearlyExists(unique, notiInfos)){

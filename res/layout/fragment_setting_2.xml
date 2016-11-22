@@ -133,6 +133,32 @@
             android:button="@drawable/check_circle_selector"
             android:checked="false" />
     </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/sound"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/alarm_relativelayout"
+        android:background="@color/white"
+        android:padding="10dp" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/setting_icon_message"
+            android:drawablePadding="5dp"
+            android:layout_centerVertical="true"
+            android:text="通知声音" />
+
+        <CheckBox
+            android:id="@+id/sound_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_margin="5dp"
+            android:button="@drawable/check_circle_selector"
+            android:checked="false" />
+    </RelativeLayout>
     
     <RelativeLayout
         android:id="@+id/logout"

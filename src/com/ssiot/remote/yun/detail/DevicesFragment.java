@@ -26,6 +26,7 @@ abstract class DevicesFragment extends BaseFragment {// TODO
     private static final String tag = "DevicesFragment";
     private SwipeRefreshLayout refresh;
     public List<YunNodeModel> mYunNodeModels = new ArrayList<YunNodeModel>();//TODO 按home后activity被销毁时怎么重建整个app
+    public ArrayList<YunNodeModel> mFacilityYNodes = new ArrayList<YunNodeModel>();
     
     @Override
     public void onActivityCreated(Bundle paramBundle) {
@@ -83,5 +84,9 @@ abstract class DevicesFragment extends BaseFragment {// TODO
     
     public void setData(List<YunNodeModel> list){
         mYunNodeModels = list;
+    }
+    
+    public void setFacilityNodes(ArrayList<YunNodeModel> list){
+    	mFacilityYNodes = list;
     }
 }

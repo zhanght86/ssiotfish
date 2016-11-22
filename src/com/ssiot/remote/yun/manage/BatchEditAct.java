@@ -180,7 +180,7 @@ public class BatchEditAct extends HeadActivity{
                 cropStr = mAllCropsModel.get(which)._name;
             }
         });
-        bui.setTitle("作物").setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+        bui.setTitle("请选择").setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 mCropTextView.setText(cropStr);

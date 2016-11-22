@@ -61,7 +61,7 @@ public class MQTTRecvMsg {
          * 其中ConsumerID在MQ控制台里申请
          * DeviceID由应用方设置，可能是设备编号等，需要唯一，否则服务端拒绝重复的ClientID连接
          */
-        final String clientId ="CID_fisher@@@" + Secure.getString(ContextUtilApp.getInstance().getContentResolver(),Secure.ANDROID_ID);;
+        final String clientId ="CID_fisher@@@" + Secure.getString(ContextUtilApp.getInstance().getContentResolver(),Secure.ANDROID_ID);
         String sign;
         MemoryPersistence persistence = new MemoryPersistence();
         try {

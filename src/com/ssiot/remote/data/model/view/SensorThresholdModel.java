@@ -56,11 +56,11 @@ public class SensorThresholdModel implements Serializable{
 			break;
 		case 1008://氨氮
 			min = 0;
-			max = 100;
+			max = 3;
 			break;
 		case 8008://水氨氮传感器
 			min = 0;
-			max = 100;
+			max = 6;
 			break;
 			
 		default:

@@ -14,12 +14,14 @@ import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,6 +37,7 @@ import com.ssiot.remote.yun.webapi.WS_MQTT;
 
 //校准frag 三代产品
 public class SensorCalibrationFrag_v3 extends BaseFragment{
+	private static final String tag = "SensorCalibrationFrag_v3";
     YunNodeModel mYunNodeModel;
     DeviceBean mDeviceBean;
     
@@ -101,23 +104,101 @@ public class SensorCalibrationFrag_v3 extends BaseFragment{
     
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        Bundle b = getArguments();
-        mYunNodeModel = (YunNodeModel) b.getSerializable("yunnodemodel");
-        mDeviceBean = (DeviceBean) b.getSerializable("devicebean");
-        if (null == mYunNodeModel || null == mDeviceBean){
-            Toast.makeText(getActivity(), "参数错误", Toast.LENGTH_SHORT).show();
-        }
+    	Log.v(tag, "----------onActivityCreated-------");
         super.onActivityCreated(savedInstanceState);
     };
     
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    	Bundle b = getArguments();
+        mYunNodeModel = (YunNodeModel) b.getSerializable("yunnodemodel");
+        mDeviceBean = (DeviceBean) b.getSerializable("devicebean");
+        if (null == mYunNodeModel || null == mDeviceBean){
+            Toast.makeText(getActivity(), "参数错误", Toast.LENGTH_SHORT).show();
+        }
+        
         View rootView = inflater.inflate(R.layout.activity_farm_monitor_detail_sensor_cali_fragment_v3, container, false);
         initViews(rootView);
         return rootView;
     }
     
     private void initViews(View rootView){
+    	Log.v(tag, "----------initViews-------" + (null != mDeviceBean));
+    	if (mDeviceBean.mDeviceTypeNo == 1002 || mDeviceBean.mDeviceTypeNo == 1001){//溶解氧1002 PH1001
+    		LinearLayout quickCali = (LinearLayout) rootView.findViewById(R.id.quick_cali_layout);
+        	LinearLayout normalCali = (LinearLayout) rootView.findViewById(R.id.normal_cali_layout);
+    		quickCali.setVisibility(View.VISIBLE);
+    		normalCali.setVisibility(View.GONE);
+    		Button oxgen = (Button) rootView.findViewById(R.id.oxgen_cali);
+    		View phCali = rootView.findViewById(R.id.ph_cali);
+    		if (mDeviceBean.mDeviceTypeNo == 1002){
+    			oxgen.setVisibility(View.VISIBLE);
+    			phCali.setVisibility(View.GONE);
+    			oxgen.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						new Thread(new Runnable() {
+							@Override
+							public void run() {
+								int ret = new WS_MQTT().SetNodeCalibration2(mYunNodeModel.mNodeUnique, 
+										mDeviceBean.mDeviceTypeNo, mDeviceBean.mChannel, "[\"100\"]");
+								showToastMSG(ret > 0 ? "快捷标定成功" : "快捷标定失败");
+							}
+						}).start();
+						
+					}
+				});
+    		} else if (mDeviceBean.mDeviceTypeNo == 1001){
+    			oxgen.setVisibility(View.GONE);
+    			phCali.setVisibility(View.VISIBLE);
+    			Button ph4 = (Button) rootView.findViewById(R.id.ph4_btn);
+    			Button ph7 = (Button) rootView.findViewById(R.id.ph7_btn);
+    			Button ph9 = (Button) rootView.findViewById(R.id.ph9_btn);
+    			ph4.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						new Thread(new Runnable() {
+							@Override
+							public void run() {
+								int ret = new WS_MQTT().SetNodeCalibration2(mYunNodeModel.mNodeUnique, 
+										mDeviceBean.mDeviceTypeNo, mDeviceBean.mChannel, "[\"4\",\"0\",\"0\"]");
+								showToastMSG(ret > 0 ? "快捷标定成功" : "快捷标定失败");
+							}
+						}).start();
+						
+					}
+				});
+    			ph7.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						new Thread(new Runnable() {
+							@Override
+							public void run() {
+								int ret = new WS_MQTT().SetNodeCalibration2(mYunNodeModel.mNodeUnique, 
+										mDeviceBean.mDeviceTypeNo, mDeviceBean.mChannel, "[\"0\",\"7\",\"0\"]");
+								showToastMSG(ret > 0 ? "快捷标定成功" : "快捷标定失败");
+							}
+						}).start();
+						
+					}
+				});
+    			ph9.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						new Thread(new Runnable() {
+							@Override
+							public void run() {
+								int ret = new WS_MQTT().SetNodeCalibration2(mYunNodeModel.mNodeUnique, 
+										mDeviceBean.mDeviceTypeNo, mDeviceBean.mChannel, "[\"0\",\"0\",\"9\"]");
+								showToastMSG(ret > 0 ? "快捷标定成功" : "快捷标定失败");
+							}
+						}).start();
+						
+					}
+				});
+    		}
+    		return;
+    	}
     	mListView = (ListView) rootView.findViewById(R.id.point_list);
     	mAdapter = new PointAdapter(mPoints);
     	mListView.setAdapter(mAdapter);
@@ -145,6 +226,7 @@ public class SensorCalibrationFrag_v3 extends BaseFragment{
         @Override
         public void run() {
             if (null == mYunNodeModel || null == mDeviceBean){
+            	Log.v(tag, "-----mDeviceBean 或mYunNodeModel 为null");
                 return;
             }
             String caliText = new WS_API().GetCali_v3(""+mYunNodeModel.mNodeNo, mDeviceBean.mDeviceTypeNo, mDeviceBean.mChannel);

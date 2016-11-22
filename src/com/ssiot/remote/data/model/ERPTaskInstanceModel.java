@@ -23,15 +23,25 @@ public class ERPTaskInstanceModel extends ERPTaskModel implements Serializable{
     public List<Integer> getReceiverUserIDsList(){
         List<Integer> userList = new ArrayList<Integer>();
         try {
-            JSONArray jaArray = new JSONArray(_workerids);
-            for (int i = 0; i < jaArray.length(); i ++){
-                JSONObject jo = jaArray.optJSONObject(i);
-                int userid = jo.getInt("to");
-                userList.add(userid);
-            }
-        } catch (JSONException e) {
+        	String[] str = _workerids.split(",");
+        	for (int i = 0; i < str.length; i ++){
+        		try {
+        			int num = Integer.parseInt(str[i]);
+            		userList.add(num);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+        	}
+//            JSONArray jaArray = new JSONArray(_workerids);
+//            for (int i = 0; i < jaArray.length(); i ++){
+//                JSONObject jo = jaArray.optJSONObject(i);
+//                int userid = jo.getInt("to");
+//                userList.add(userid);
+//            }
+        } catch (Exception e) {
             e.printStackTrace();
         }
+        
         return userList;
     }   
     

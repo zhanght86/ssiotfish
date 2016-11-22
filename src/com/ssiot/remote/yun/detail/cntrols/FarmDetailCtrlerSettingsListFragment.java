@@ -44,6 +44,7 @@ public class FarmDetailCtrlerSettingsListFragment extends Fragment{
     FloatingActionsMenu menuMultipleActions;
     private DeviceBean device;
     private YunNodeModel mYunNodeModel;
+    ArrayList<YunNodeModel> yModelsInFacility;
     
     private static final int MSG_CONTROLRULE_END = 1;
     private Handler mHandler = new Handler(){
@@ -63,8 +64,9 @@ public class FarmDetailCtrlerSettingsListFragment extends Fragment{
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        device = ((DeviceBean) getActivity().getIntent().getSerializableExtra("devicebean"));
+        device = ((DeviceBean) getActivity().getIntent().getSerializableExtra("devicebean"));//TODO 是否有值 ？？ TODO TODO TODO TODO
         mYunNodeModel = ((YunNodeModel) getActivity().getIntent().getSerializableExtra("yunnodemodel"));
+        yModelsInFacility = ((ArrayList<YunNodeModel>) getActivity().getIntent().getSerializableExtra("yunnodemodels"));
         if (TextUtils.isEmpty(mYunNodeModel.mNodeUnique)){
             Toast.makeText(getActivity(), "数据出现问题mNodeUnique = null", Toast.LENGTH_SHORT).show();
         }
@@ -98,13 +100,16 @@ public class FarmDetailCtrlerSettingsListFragment extends Fragment{
     // FloatingActionMenu 开源项目 圆形浮出菜单
     private void initFloatActionMenu(View root){
         menuMultipleActions = (FloatingActionsMenu) root.findViewById(android.R.id.button1);
-        if (Utils.getIntPref(Utils.PREF_USERDEVICETYPE, getActivity()) != 3){
-        	menuMultipleActions.setVisibility(View.GONE);//TODO 暂时的
-        }
+//        if (Utils.getIntPref(Utils.PREF_USERDEVICETYPE, getActivity()) != 3){
+//        	menuMultipleActions.setVisibility(View.GONE);//TODO 暂时的
+//        }
         View view1 = root.findViewById(android.R.id.button2);
         View view2 = root.findViewById(android.R.id.button3);
+        View view3 = root.findViewById(R.id.action4);
+        view2.setVisibility(View.GONE);//暂时把定时控制隐藏
         view1.setOnClickListener(floatActionListener);
         view2.setOnClickListener(floatActionListener);
+        view3.setOnClickListener(floatActionListener);
     }
     
     private View.OnClickListener floatActionListener = new View.OnClickListener() {
@@ -112,10 +117,20 @@ public class FarmDetailCtrlerSettingsListFragment extends Fragment{
         public void onClick(View v) {
             switch (v.getId()) {
                 case android.R.id.button2:
-                    Intent intent = new Intent(getActivity(), ControlSetAct.class);
-                    intent.putExtra("devicebeans", new ArrayList<DeviceBean>());//关联的传感器 TODO
-                    intent.putExtra("isloopmode", false);
-                    startActivity(intent);
+                	int deviceversion = Utils.getIntPref(Utils.PREF_USERDEVICETYPE, getActivity());
+                	if (deviceversion == 3){
+                		Intent intent = new Intent(getActivity(), ControlSetAct.class);
+                        intent.putExtra("devicebeans", new ArrayList<DeviceBean>());//关联的传感器 TODO
+                        intent.putExtra("isloopmode", false);
+                        startActivity(intent);
+                	} else {
+                		Intent intent = new Intent(getActivity(), IntelliSetAct_v2.class);//二代触发控制
+                        intent.putExtra("devicebean", device);
+                        intent.putExtra("yunnodemodel", mYunNodeModel);
+                        intent.putExtra("yunnodemodels", yModelsInFacility);//一个设施下所有的yunnode
+                        startActivity(intent);
+                	}
+                    
                     menuMultipleActions.collapse();//收起FloatingActionsMenu
                     break;
                 case android.R.id.button3:
@@ -126,6 +141,12 @@ public class FarmDetailCtrlerSettingsListFragment extends Fragment{
                     startActivity(intent2);
                     menuMultipleActions.collapse();
                     break;
+                case R.id.action4:
+                	Intent intent = new Intent(getActivity(), EditCtrRuleBase_v3.class);
+                	intent.putExtra("yunnodemodel", mYunNodeModel);
+                	startActivity(intent);
+                	menuMultipleActions.collapse();
+                	break;
                 default:
                     break;
             }

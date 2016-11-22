@@ -116,6 +116,7 @@ public class FarmDetailPagerActivity extends HeadActivity implements SwipeRefres
         findViews();
         sensorsFragment.setData(sensorNodes);
         cntrolsFragment.setData(cnNodes);
+        cntrolsFragment.setFacilityNodes(mYunNodes);
         webcamsFragment.setData(cameraNodes);
     }
     
@@ -331,9 +332,11 @@ public class FarmDetailPagerActivity extends HeadActivity implements SwipeRefres
             for (int j = 0; j < sensorNodes.size(); j ++){
                 YunNodeModel sensorNodeM = sensorNodes.get(j);
                 if (deviceversion != 3){
-                	new WS_API().GetSensorNodeDatas_v2(sensorNodeM.mNodeUnique, sensorNodes);//TODO 二代产品怎么界面更新
+                	new WS_API().GetSensorNodeDatas_v2(sensorNodeM.mNodeUnique, sensorNodes);//二代产品界面更新onPostExecute
                 } else {
 //                	startGetStatesContinously(mYunNodes,mHandler);//20161017先改为不循环获取的
+                	//20161104虚拟传感器的实时数据 先按二代的方法获取LatestData
+                	new WS_API().GetSensorNodeDatas_v2(sensorNodeM.mNodeUnique, sensorNodes);//20161104虚拟传感器的实时数据？
                 	startGetStates(mYunNodes,mHandler);
                 }
             }

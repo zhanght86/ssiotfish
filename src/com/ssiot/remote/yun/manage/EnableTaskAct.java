@@ -70,7 +70,7 @@ public class EnableTaskAct extends HeadActivity{
             	new Thread(new Runnable() {
 					@Override
 					public void run() {
-						String workerids = buildToUsersJSON();
+						String workerids = buildToUsersStr();
 						if (TextUtils.isEmpty(workerids)){
 							sendToast("请选择任务接受者");
 							return;
@@ -96,19 +96,20 @@ public class EnableTaskAct extends HeadActivity{
         });
     }
 	
-	private String buildToUsersJSON(){
+	private String buildToUsersStr(){//不是用json格式了
+		String str = "";
         try {
-            JSONArray jaArray = new JSONArray();
             for (int i =0; i < toUserIDs.size(); i ++){
-                JSONObject jo = new JSONObject();
-                jo.put("to", toUserIDs.get(i));
-                jaArray.put(jo);
+            	str += ""+toUserIDs.get(i) + ",";
             }
-            return jaArray.toString();
+            if (!TextUtils.isEmpty(str)){
+            	str = str.substring(0, str.length() - 1);
+            }
+            return str;
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return "";
+        return str;
     }
 	
 	private final  int REQUEST_USERS = 1;

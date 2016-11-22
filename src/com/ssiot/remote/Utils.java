@@ -62,6 +62,7 @@ public class Utils {
     public static final String PREF_AUTOUPDATE = "autoupdate";
     public static final String PREF_ALARM = "alarm";
     public static final String PREF_OFFLINE_NOTICE = "offlinenotice";
+    public static final String PREF_NOTI_SOUND = "notisound";
     public static final String PREF_LAST_OFFLINE = "lastofflinenodes";
     
     public static final String BUN_DEVICE_NAMES = "devicenames";

@@ -15,6 +15,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,6 +29,7 @@ import com.ssiot.fish.facility.FishpondMainActivity;
 import com.ssiot.fish.question.QuestionListActivity;
 import com.ssiot.fish.task.TaskActivity;
 import com.ssiot.remote.BrowserActivity;
+import com.ssiot.remote.FirstStartActivity;
 import com.ssiot.remote.LoginActivity;
 import com.ssiot.remote.MainActivity;
 import com.ssiot.remote.SettingFrag;
@@ -41,6 +43,7 @@ import com.ssiot.remote.expert.DiagnoseFishSelectActivity;
 import com.ssiot.remote.expert.FacilityNodeListAct;
 import com.ssiot.remote.expert.WaterAnalysisLauncherAct;
 import com.ssiot.remote.expert.WaterColorDiagnoseAct;
+import com.ssiot.remote.yun.monitor.DeviceBean;
 import com.ssiot.remote.yun.monitor.MonitorAct;
 import com.ssiot.remote.yun.sta.StatisticsAct;
 
@@ -56,7 +59,7 @@ public class FishMainActivity extends HeadActivity{
     ArrayList<CellModel> cells;
     private SharedPreferences mPref;
     
-    private UpdateManager mUpdaManager;
+    private UpdateManager mUpdateManager;
     private Notification mNoti;
     private Context mContext;
     
@@ -71,9 +74,22 @@ public class FishMainActivity extends HeadActivity{
         initGridView();
         
         if (mPref.getBoolean(Utils.PREF_AUTOUPDATE, true) == true){
-            mUpdaManager = new UpdateManager(this);
-            mUpdaManager.startGetRemoteVer();
+            mUpdateManager = new UpdateManager(this);
+            mUpdateManager.startGetRemoteVer();
         }
+        DeviceBean.updateunit();
+//        testandan(0.018 * 1000, 7.956, 16.829);
+//        testandan(0.017 * 1000, 7.952, 16.85);
+//        
+//        testandan(0.018 * 1000, 7.963, 16.786);
+//        testandan(0.017 * 1000, 7.958, 16.829);
+//        testandan(0.040* 1000, 8.477, 19.276);//2.608
+    }
+    
+    private void testandan(double alz, double ph, double t){
+    	double a =  Math.pow(10,  (alz-15.2)/52.1);
+    	double b = Math.pow(10,   0.115-ph+(2730/(273.15+t)));
+    	Log.v(tag, "---alz:"+alz+"ph:"+ph + "temp:"+t+"----------氨氮：" + (0.778*a + 0.882*a/b));
     }
     
     private void initGridView(){
@@ -84,19 +100,19 @@ public class FishMainActivity extends HeadActivity{
         cells.add(new CellModel(R.drawable.cell_video,"视频监控", "map_jstg"));//
 //        cells.add(new CellModel(R.drawable.cell_renwuzhongxin,"任务中心", "map_zhuisu"));//
         cells.add(new CellModel(R.drawable.cell_yubingzhengduan,"鱼病诊断", "map_xinxi"));//
-        cells.add(new CellModel(R.drawable.cell_yubingzhengduan,"水色诊断", "map_shuise"));
+        cells.add(new CellModel(R.drawable.cell_shuise,"水色诊断", "map_shuise"));
         cells.add(new CellModel(R.drawable.cell_zhuanjiazaixian,"专家在线", "map_jinrong",CellModel.MODE_URL).setUrl("http://www.zhdcoop.com/"));
         cells.add(new CellModel(R.drawable.cell_shenchanguanli,"生产管理", "map_webbrow"));//
 //        cells.add(new CellModel(R.drawable.cell_yuchangguanli,"渔场管理", "map_qiyezaixian"));//
         cells.add(new CellModel(R.drawable.cell_wuzijiaoyi,"物资交易", "map_yztb"));//
         cells.add(new CellModel(R.drawable.cell_hudongjiaoliu,"互动交流", "map_hudong"));
-        cells.add(new CellModel(R.drawable.cell_qiyehuizong,"企业汇总", "bdsj"));//
-        cells.add(new CellModel(R.drawable.cell_shichangdongtai,"市场动态", "map_yonghuzhinan"));//
+        cells.add(new CellModel(R.drawable.cell_qiye,"企业汇总", "bdsj"));//
+        cells.add(new CellModel(R.drawable.cell_market,"市场动态", "map_yonghuzhinan"));//
         cells.add(new CellModel(R.drawable.cell_shichangdongtai,"消息记录", "map_xiaoxi"));//
-        cells.add(new CellModel(R.drawable.cell_shichangdongtai,"水质分析", "map_shuizhifenxi"));//
-        cells.add(new CellModel(R.drawable.cell_shichangdongtai,"气象信息", "map_shuizhifenxi"));//
-        cells.add(new CellModel(R.drawable.cell_shichangdongtai,"技术资讯", "map_shuizhifenxi"));
-        cells.add(new CellModel(R.drawable.cell_shichangdongtai,"使用帮助", "map_shuizhifenxi"));
+        cells.add(new CellModel(R.drawable.cell_shuizhifenxi,"水质分析", "map_shuizhifenxi"));//
+        cells.add(new CellModel(R.drawable.cell_weather,"气象信息", "map_shuizhifenxi"));//
+        cells.add(new CellModel(R.drawable.cell_news,"技术资讯", "map_shuizhifenxi"));
+        cells.add(new CellModel(R.drawable.cell_help,"使用帮助", "map_shuizhifenxi"));
 //        cells.add(new CellModel(R.drawable.cell_zhengwuguanli,"更新", "map_findupdate"));
         ImageAdapter adapter = new ImageAdapter(this, cells);
         gridView1.setAdapter(adapter);
@@ -109,16 +125,11 @@ public class FishMainActivity extends HeadActivity{
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             if (null != cells){
                 CellModel model = cells.get(position);
-//                switch (model.openType) {
-//                    case CellModel.MODE_URL:
-//                        Intent intent1 = new Intent(FishMainActivity.this, BrowserActivity.class);
-//                        intent1.putExtra("url", model.urlString);
-//                        startActivity(intent1);
-//                        break;
-//
-//                    default:
-//                        break;
-//                }
+                if (isVisitorMode()){
+            		showToast("请登录");
+            		startLoginUI();
+            		return;
+            	}
                 if ("监测预警".equals(model.itemText)){
 //                    Intent intent = new Intent(FishMainActivity.this, MoniAndCtrlActivity.class);
 //                    intent.putExtra("defaulttab", 1);
@@ -200,6 +211,17 @@ public class FishMainActivity extends HeadActivity{
         }
     };
     
+    private void startLoginUI() {
+    	new Thread(new Runnable() {
+			@Override
+			public void run() {
+				Intent intent = new Intent(FishMainActivity.this, LoginActivity.class);
+		        startActivity(intent);
+		        finish();
+			}
+		}).start();
+    }
+    
 	public String inputStream2String(InputStream in) throws IOException {
 		StringBuffer out = new StringBuffer();
 		byte[] b = new byte[4096];
@@ -207,6 +229,15 @@ public class FishMainActivity extends HeadActivity{
 			out.append(new String(b, 0, n));
 		}
 		return out.toString();
+	}
+	
+	private boolean isVisitorMode(){//游客登录有很多限制
+		String pwd = Utils.getStrPref(Utils.PREF_PWD, this);
+		if (TextUtils.isEmpty(pwd)){
+			return true;
+		}else {
+			return false;
+		}
 	}
 
     @Override
@@ -219,17 +250,22 @@ public class FishMainActivity extends HeadActivity{
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_logout:
-                Intent loginIntent = new Intent(FishMainActivity.this, LoginActivity.class);
-                startActivity(loginIntent);
-                SsiotService.cancel = true;
-                stopService(new Intent(this, SsiotService.class));
-                finish();
-                Editor e = mPref.edit();
-                e.putString(Utils.PREF_PWD, "");
-                e.commit();
-                return true;
+//            case R.id.action_logout:
+//                Intent loginIntent = new Intent(FishMainActivity.this, LoginActivity.class);
+//                startActivity(loginIntent);
+//                SsiotService.cancel = true;
+//                stopService(new Intent(this, SsiotService.class));
+//                finish();
+//                Editor e = mPref.edit();
+//                e.putString(Utils.PREF_PWD, "");
+//                e.commit();
+//                return true;
             case R.id.action_frag_main_setting:
+            	if (isVisitorMode()){
+            		showToast("游客无权限查看此模块，请登录");
+            		startLoginUI();
+            		return super.onOptionsItemSelected(item);
+            	}
                 Intent intent = new Intent(FishMainActivity.this, SettingActivity.class);
                 startActivityForResult(intent, REQUEST_SETTING_OUT);
                 break;
@@ -269,9 +305,9 @@ public class FishMainActivity extends HeadActivity{
         builder.setPositiveButton(R.string.soft_update_updatebtn, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                mNoti = mUpdaManager.showNotification(FishMainActivity.this);
+                mNoti = mUpdateManager.showNotification(FishMainActivity.this);
 //                        .setProgressBar(R.id.noti_progress, 100, 0, false);
-                mUpdaManager.startDownLoad(tmpMap);
+                mUpdateManager.startDownLoad(tmpMap);
 //                showDownloadDialog(tmpMap);
                 dialog.dismiss();
                 Editor e = mPref.edit();
@@ -295,14 +331,14 @@ public class FishMainActivity extends HeadActivity{
     
 //    @Override
 //    public void onFSettingBtnClick() {
-//        if (mUpdaManager == null){
-//            mUpdaManager = new UpdateManager(FishMainActivity.this, mHandler);
+//        if (mUpdateManager == null){
+//            mUpdateManager = new UpdateManager(FishMainActivity.this, mHandler);
 //        }
 //        if (mPref.getBoolean(Utils.PREF_AUTOUPDATE, true) == false){
 //            Editor editor = mPref.edit();
 //            editor.putBoolean(Utils.PREF_AUTOUPDATE, true);
 //            editor.commit();
 //        }
-//        mUpdaManager.startGetRemoteVer();
+//        mUpdateManager.startGetRemoteVer();
 //    }
 }

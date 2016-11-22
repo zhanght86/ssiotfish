@@ -122,6 +122,19 @@ public class SettingFrag extends Fragment{
 			}
 		});
         
+        CheckBox cbSound = (CheckBox) v.findViewById(R.id.sound_switch);
+        cbSound.setChecked(mPref.getBoolean(Utils.PREF_NOTI_SOUND, false));
+        cbSound.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (null != mPref){
+                    Editor e = mPref.edit();
+                    e.putBoolean(Utils.PREF_NOTI_SOUND, isChecked);
+                    e.commit();
+                }
+            }
+        });
+        
         initLogOutBtn(v);
         
         return v;

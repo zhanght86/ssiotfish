@@ -77,7 +77,7 @@
                 style="@style/tcagri_farm_detail_tab_style"
                 android:layout_width="0.0dip"
                 android:layout_height="fill_parent"
-                android:text="数据修正" />
+                android:text="数据校准" />
         </RadioGroup>
 
         <View

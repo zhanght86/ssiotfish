@@ -34,8 +34,8 @@ public class WaterAnalysisLauncherAct extends HeadActivity{
     
     private void initGridView(){
         cells = new ArrayList<CellModel>();
-        cells.add(new CellModel(R.drawable.cell_shichangdongtai,"人工录入", "map_zhengwu"));
-        cells.add(new CellModel(R.drawable.cell_shichangdongtai,"分析结果", "map_zhengwu"));
+        cells.add(new CellModel(R.drawable.cell_shuizhifenxi,"人工录入", "map_zhengwu"));
+        cells.add(new CellModel(R.drawable.cell_shuizhifenxi,"分析结果", "map_zhengwu"));
         ImageAdapter adapter = new ImageAdapter(this, cells);
         gridView1.setAdapter(adapter);
         gridView1.setSelector(new ColorDrawable(0));

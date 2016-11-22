@@ -35,8 +35,8 @@ public class WeatherLaunchAct extends HeadActivity{
     
     private void initGridView(){
         cells = new ArrayList<CellModel>();
-        cells.add(new CellModel(R.drawable.cell_shichangdongtai,"综述录入", "map_zhengwu"));
-        cells.add(new CellModel(R.drawable.cell_shichangdongtai,"气象查看", "map_zhengwu"));
+        cells.add(new CellModel(R.drawable.cell_qixiangluru,"综述录入", "map_zhengwu"));
+        cells.add(new CellModel(R.drawable.cell_qixiangchakan,"气象查看", "map_zhengwu"));
         ImageAdapter adapter = new ImageAdapter(this, cells);
         gridView1.setAdapter(adapter);
         gridView1.setSelector(new ColorDrawable(0));

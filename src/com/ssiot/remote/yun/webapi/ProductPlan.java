@@ -24,7 +24,7 @@ public class ProductPlan extends WebBasedb2 {
 
     public List<ERPProductPlanModel> GetProductPlan(int userid) {
         HashMap<String, String> params = new HashMap<String, String>();
-        params.put("where", "OwnerID=0 or OwnerID=" + userid);
+        params.put("where", "OwnerID=0 or OwnerID=226 or OwnerID=" + userid);
         String txt = exeRetString(MethodFile, "GetProductPlan", params);// TODO xml工具
         return parse(txt);
     }

@@ -170,7 +170,7 @@ public class SsiotReceiver extends BroadcastReceiver{
     }
     
     public void installApk(Context context) {
-        File apkfile = new File(UpdateManager.getSavePath(), "ssiotfishery.apk");
+        File apkfile = new File(UpdateManager.getSavePath(), UpdateManager.LOCAL_APK);
         if (!apkfile.exists()) {
             Toast.makeText(context, "未找到文件" + apkfile.getPath(), Toast.LENGTH_SHORT).show();
             return;

@@ -54,8 +54,8 @@ public class ControlSetAct extends HeadActivity{
     int senStopDeviceId;
     
     ViewGroup setGroup;
-    RadioButton intelliButton;
-    RadioButton timeButton;
+    RadioButton intelliRadio;
+    RadioButton timeRadio;
     
     View intelliView;
     TextView deviceStartTitleTextView;
@@ -150,18 +150,28 @@ public class ControlSetAct extends HeadActivity{
         LinearLayout localLinearLayout = (LinearLayout)findViewById(R.id.linearLayoutSet);
         if (ISLOOPMODE){
             localLinearLayout.addView(timeView);
-            intelliButton.setVisibility(View.GONE);
+            intelliRadio.setVisibility(View.GONE);
         } else {
             localLinearLayout.addView(intelliView);
-            timeButton.setVisibility(View.GONE);
+            timeRadio.setVisibility(View.GONE);
         }
     }
     
     private void initAllView(){
         setGroup = (RadioGroup) findViewById(R.id.RadioGroupSet);
-        intelliButton = (RadioButton) findViewById(R.id.RadioButtonInt);
-        timeButton = (RadioButton) findViewById(R.id.RadioButtonTime);
-        intelliView = mInflater.inflate(R.layout.intelligent_set, null);
+        intelliRadio = (RadioButton) findViewById(R.id.RadioButtonInt);
+        timeRadio = (RadioButton) findViewById(R.id.RadioButtonTime);
+        
+        initIntelliView();
+        
+        initTimeView();
+        
+        //--------------------------
+        deviceShowOp(tmpDevices);
+    }
+    
+    private void initIntelliView(){//触发
+    	intelliView = mInflater.inflate(R.layout.intelligent_set, null);
         deviceStartTitleTextView = ((TextView) intelliView.findViewById(R.id.TextViewDeviceStartTitle));//开始条件textview
         deviceEndTitleTextView = ((TextView) intelliView.findViewById(R.id.TextViewDeviceEndTitle));
         startButton = ((ToggleButton) intelliView.findViewById(R.id.toggleButtonSetIni));
@@ -189,12 +199,6 @@ public class ControlSetAct extends HeadActivity{
         compTextView = ((TextView) intelliView.findViewById(R.id.textViewIntComp));
         spandRow = ((TableRow) intelliView.findViewById(R.id.TableRowSpandIni));
         timeRow = ((TableRow) intelliView.findViewById(R.id.TableRowTimeIni));
-        
-        
-        initTimeView();
-        
-        //--------------------------
-        deviceShowOp(tmpDevices);
     }
     
     private void initTimeView(){//循环

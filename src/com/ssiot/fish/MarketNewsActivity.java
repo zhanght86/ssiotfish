@@ -31,8 +31,8 @@ public class MarketNewsActivity extends HeadActivity{
     
     private void initGridView(){
         cells = new ArrayList<CellModel>();
-        cells.add(new CellModel(R.drawable.cell_shichangdongtai,"水产交易", "map_shuichanjiaoyi"));
-        cells.add(new CellModel(R.drawable.cell_shichangdongtai,"水产商务", "map_shuichanshangwu"));
+        cells.add(new CellModel(R.drawable.cell_shuichanjiaoyi,"水产交易", "map_shuichanjiaoyi"));
+        cells.add(new CellModel(R.drawable.cell_shuichanshangwu,"水产商务", "map_shuichanshangwu"));
         ImageAdapter adapter = new ImageAdapter(this, cells);
         gridView1.setAdapter(adapter);
         gridView1.setSelector(new ColorDrawable(0));

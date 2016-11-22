@@ -36,6 +36,7 @@ import com.ssiot.remote.data.model.AgricultureFacilityModel;
 import com.ssiot.remote.data.model.AlarmRuleModel;
 import com.ssiot.remote.data.model.CameraFileModel;
 import com.ssiot.remote.data.model.ControlLogModel;
+import com.ssiot.remote.data.model.SensorModel;
 import com.ssiot.remote.data.model.SettingModel;
 import com.ssiot.remote.data.model.VLCVideoInfoModel;
 import com.ssiot.remote.yun.monitor.DeviceBean;
@@ -90,6 +91,25 @@ public class WS_API extends WebBasedb2{
         params.put("channel", "" + channel);
         String txt = exeRetString(MethodFile, "GetSensorHisData_His", params);
         return parseHisData(txt);
+	}
+	
+	public List<SensorModel> GetAllSensors(){//目地是获取所有传感器的单位unit
+		HashMap<String, String> params = new HashMap<String, String>();
+        String txt = exeRetString(MethodFile, "GetAllSensors", params);
+        List<SensorModel> list = new ArrayList<SensorModel>();
+        try {
+			JSONArray ja = new JSONArray(txt);
+			for (int i = 0; i < ja.length(); i ++){
+				SensorModel s = new SensorModel();
+				JSONObject jo = ja.optJSONObject(i);
+				s._sensorno = jo.getInt("sensorno");
+				s._unit = jo.getString("unit");
+				list.add(s);
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+        return list;
 	}
 	
 	public AlarmRuleModel GetAlarmRules_v2(String nodeUnique){
@@ -185,6 +205,7 @@ public class WS_API extends WebBasedb2{
 	}
 	
 	public int SetCali_v3(int nodeno, int deviceno, int channel, String address, String calibrationText){
+		Log.e(tag, "--------弃用的api------需要使用ws_mqtt");
 		HashMap<String, String> params = new HashMap<String, String>();
         params.put("nodeno", "" + nodeno);
         params.put("deviceno", "" + deviceno);
@@ -347,6 +368,17 @@ public class WS_API extends WebBasedb2{
         return parseSave(txt);
 	}
 	
+	public int CtrRule_v2(String nodeunique,int deviceno,int ctrtype,String collectuniqueids,String condition){
+		HashMap<String, String> params = new HashMap<String, String>();
+        params.put("nodeunique", "" + nodeunique);
+        params.put("deviceno", "" + deviceno);
+        params.put("ctrtype", "" + ctrtype);
+        params.put("collectuniqueids", "" + collectuniqueids);
+        params.put("condition", "" + condition);
+        String txt = exeRetString(MethodFile, "CtrRule_v2", params);
+        return parseSave(txt);
+	}
+	
 	public List<AgricultureFacilityModel> GetFacilitiesByUser(int userid){
 		HashMap<String, String> params = new HashMap<String, String>();
         params.put("userid", "" + userid);
@@ -473,6 +505,7 @@ public class WS_API extends WebBasedb2{
         }
         if (deviceversion == 3){
         	Collections.sort(models, new YNodeComparator());
+        	Collections.sort(models, new YNodeComparatorStep2());
         } else {
 //        	mysortv2(models);YNodeComparatorV2
         	Collections.sort(models, new YNodeComparatorV2(models));
@@ -615,6 +648,29 @@ public class WS_API extends WebBasedb2{
             return 0;  
         }  
     }
+	//3代产品 第二次进行sort  之前已经按设施排序了
+	private static class YNodeComparatorStep2 implements Comparator<YunNodeModel> {
+        @Override  
+        public int compare(YunNodeModel obj1, YunNodeModel obj2) {
+            if (obj1.mNodeNo < obj2.mNodeNo){
+                return -1;
+            } else if (obj1.mNodeNo == obj2.mNodeNo){
+//                if (obj1.nodeType < obj2.nodeType){
+//                    return -1;
+//                } else if(obj1.nodeType == obj2.nodeType){
+//                    return 0;
+//                } else if (obj1.nodeType > obj2.nodeType){
+//                    return 1;
+//                }
+            	return 0;
+            } else if (obj1.mNodeNo > obj2.mNodeNo){
+                return 1;
+            }
+            return 0;  
+        }  
+    }
+	
+	
 	
 	private static Timestamp getBindSensorNodeTime(YunNodeModel m, List<YunNodeModel> list){
 		if (m.nodeType == DeviceBean.TYPE_SENSOR){

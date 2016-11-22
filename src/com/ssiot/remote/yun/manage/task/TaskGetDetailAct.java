@@ -202,7 +202,7 @@ public class TaskGetDetailAct extends HeadActivity {
     
     private boolean isReceiver(){
         int myuserid = Utils.getIntPref(Utils.PREF_USERID, this);
-        return taskModel._workerids.contains(":"+myuserid + "}");
+        return (","+taskModel._workerids + ",").contains(","+myuserid + ",");
     }
     
     private static final int REQUEST_NEW_REPORT = 1;

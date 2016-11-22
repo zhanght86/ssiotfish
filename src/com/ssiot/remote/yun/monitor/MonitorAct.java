@@ -3,6 +3,7 @@ package com.ssiot.remote.yun.monitor;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -30,6 +31,7 @@ public class MonitorAct extends HeadActivity{
     ImageView homeView;
     SwipeRefreshLayout swipeRefreshLayout;
     RecyclerView mRecyclerView;
+    private boolean mIsRefreshing;
     RecyclerView.Adapter mAdapter;
     List<YunNodeModel> mDatas = new ArrayList<YunNodeModel>();
     int deviceversion = 2;
@@ -39,12 +41,15 @@ public class MonitorAct extends HeadActivity{
     private static final int MSG_GET_END = 1;
     private static final int MSG_MQTT_GET = WS_MQTT.MSG_MQTT_GET;
     private static final int MSG_IPC_STATUS_GET = 2;
+    private static final int MSG_NOTIFY = 3;
     private Handler mHandler = new Handler(){
         public void handleMessage(android.os.Message msg) {
             switch (msg.what) {
                 case MSG_GET_END:
                     mAdapter.notifyDataSetChanged();
                     swipeRefreshLayout.setRefreshing(false);
+                    mIsRefreshing = false;
+//                    Log.v(tag, "~~~~~~~~~~~ refresh one step end~~");
                     if (null != mDatas && mDatas.size() > 0 && deviceversion == 3){
                         startGetStates(mDatas, mHandler);
                     }
@@ -52,9 +57,15 @@ public class MonitorAct extends HeadActivity{
                 case MSG_MQTT_GET:
 //                    String str = (String) msg.obj;
 //                    parseJSON(str, mDatas);
-                    mAdapter.notifyDataSetChanged();
-                    break;
+                	
+//                    mAdapter.notifyDataSetChanged();
+//                    break;
                 case MSG_IPC_STATUS_GET:
+                	removeMessages(MSG_MQTT_GET);//可能很多次触发刷新导致anr
+                	removeMessages(MSG_IPC_STATUS_GET);//可能很多次触发刷新导致anr
+                	mAdapter.notifyDataSetChanged();
+                	break;
+                case MSG_NOTIFY:
                 	mAdapter.notifyDataSetChanged();
                 	break;
 
@@ -138,20 +149,46 @@ public class MonitorAct extends HeadActivity{
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+            	mIsRefreshing = true;//没用啊
+//            	mRecyclerView.dispatchTouchEvent(
+//            			MotionEvent.obtain(SystemClock.uptimeMillis(), 
+//            					SystemClock.uptimeMillis(), MotionEvent.ACTION_CANCEL, 0, 0, 0));//没用啊
+//            	mRecyclerView.stopScroll();
+//            	Log.v(tag, "~~~~~~~~~~~start refresh all");
+//            	mRecyclerView.setOnTouchListener(null);//没用
                 new GetYunFarmThread().start();
             }
         });
+        swipeRefreshLayout.setOnTouchListener(new View.OnTouchListener() {
+			
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				if (mIsRefreshing) {
+                    return true;
+                } else {
+                    return false;
+                }
+			}
+		});
         mRecyclerView.setOnTouchListener(// http://www.tuicool.com/articles/IvQvyaN 有时滑动崩溃BUG
             new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
-//                    if (mIsRefreshing) {//TODO TODO TODO 
-//                        return true;
-//                    } else {
+//                	Log.v(tag, "~~~~~~~~~~~onTouch~~~~~~isrefreshingL:"+mIsRefreshing + "~~~"+ event.getAction());
+                    if (mIsRefreshing) {//RecyclerView BUG http://www.bubuko.com/infodetail-1452093.html
+                        return true;
+                    } else {
                         return false;
-//                    }
+                    }
                 }
             });
+        mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+        	@Override
+        	public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+        		Log.v(tag, "------onscroll----");
+        		super.onScrolled(recyclerView, dx, dy);
+        	}
+		});
         mAdapter = new MoniNodeAdapter(this,mDatas, listen);
         mRecyclerView.setAdapter(mAdapter);
         
@@ -184,7 +221,8 @@ public class MonitorAct extends HeadActivity{
     private class GetYunFarmThread extends Thread{
         @Override
         public void run() {
-            mDatas.clear();
+//            mDatas.clear();
+//            mHandler.sendEmptyMessage(MSG_NOTIFY);
             int areaid = Utils.getIntPref(Utils.PREF_AREAID, MonitorAct.this);
             String account = Utils.getStrPref(Utils.PREF_USERNAME, MonitorAct.this);
             List<YunNodeModel> list;
@@ -195,11 +233,13 @@ public class MonitorAct extends HeadActivity{
 //            }
             list = new WS_API().GetFirstPage(account,deviceversion);
             if (null != list){
+            	mDatas.clear();//clear和add放在一起才避免了IndexOutOfBoundsException问题
                 mDatas.addAll(list);
             }
             mHandler.sendEmptyMessage(MSG_GET_END);
             if (null != mIpcStatusThread){
             	mIpcStatusThread.cancle();
+            	mIpcStatusThread = null;
             }
             mIpcStatusThread = new GetIPCStatusThread();
             mIpcStatusThread.start();

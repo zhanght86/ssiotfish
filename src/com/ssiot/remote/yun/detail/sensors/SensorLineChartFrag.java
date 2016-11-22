@@ -57,7 +57,7 @@ public class SensorLineChartFrag extends Fragment {//原来的chart应该可以�
     public static final String TABLEMONTH = "data_DataByMonth";
     public static final String TABLEYEAR = "data_DataByYear";
     public static final String[] tableList = {TABLETEN, TABLEHOUR, TABLEDAY, TABLEMONTH, TABLEYEAR};
-    private String tableName = TABLEDAY;
+    private String tableName = TABLEHOUR;
     
     private static final int MSG_GET_END = 1;
     private Handler mHandler = new Handler(){
@@ -105,8 +105,8 @@ public class SensorLineChartFrag extends Fragment {//原来的chart应该可以�
             String column = mDeviceBean.mName;// + (mDeviceBean.mChannel == 0 ? "" : mDeviceBean.mChannel);//TODO
 //            List<XYStringHolder> list = DataAPI.getSingleSensorData(tableName, mYunModel.mNodeUnique, "Avg", column);
             int endTime = (int) (System.currentTimeMillis()/1000);
-            int startTime = endTime - 30 * 24 * 3600;//databyday 的30条记录
-            List<XYStringHolder> list = new WS_API().GetSensorHisData(mYunModel.mNodeUnique, startTime, endTime, 3, mDeviceBean.mDeviceTypeNo, mDeviceBean.mChannel);
+            int startTime = endTime - 30 * 3600;//databyday 的30条记录
+            List<XYStringHolder> list = new WS_API().GetSensorHisData(mYunModel.mNodeUnique, startTime, endTime, 2, mDeviceBean.mDeviceTypeNo, mDeviceBean.mChannel);
             if (null != list){
                 mDatas.clear();
                 mDatas.addAll(list);
@@ -167,7 +167,7 @@ public class SensorLineChartFrag extends Fragment {//原来的chart应该可以�
         mMulRenderer.setApplyBackgroundColor(true);// 设置是否显示背景颜色 
         mMulRenderer.setBackgroundColor(Color.TRANSPARENT);// 设置背景颜色  
         mMulRenderer.setMarginsColor(Color.TRANSPARENT);//设置周边背景色
-        mMulRenderer.setAxisTitleTextSize(16);//Axis代表轴
+        mMulRenderer.setAxisTitleTextSize(15);//Axis代表轴
         mMulRenderer.setChartTitleTextSize(0);//设置图表标题字体大小,可以设置0是把标题隐藏掉
         mMulRenderer.setLabelsTextSize(textSize);//15
         mMulRenderer.setLegendTextSize(textSize);
@@ -189,6 +189,7 @@ public class SensorLineChartFrag extends Fragment {//原来的chart应该可以�
         mMulRenderer.setAxisTitleTextSize(textSize);
         mMulRenderer.setPanEnabled(true, false);//设置是否允许拖动
         mMulRenderer.setPointSize(400.0f);
+        mMulRenderer.setFitLegend(true);//整合适的位置
 //        mMulRenderer.setXLabelsAngle(-60f);//设置x轴显示的倾斜度
         
         XYSeries series = new XYSeries("类似于sheet1");//创建具体的数据层 
@@ -241,7 +242,7 @@ public class SensorLineChartFrag extends Fragment {//原来的chart应该可以�
             mMulRenderer.setYAxisMax(max + (max - min)/10);
             mMulRenderer.setYAxisMin(min - (max-min)/20);
             mMulRenderer.setXAxisMin(0);
-            mMulRenderer.setXAxisMax(10);
+            mMulRenderer.setXAxisMax(7);
             mChartView.repaint();
         }
     }
@@ -299,7 +300,7 @@ public class SensorLineChartFrag extends Fragment {//原来的chart应该可以�
         if (tableName.equals(TABLETEN)){
             return ""+t.getHours() + ":" +t.getMinutes();
         } else if (tableName.equals(TABLEHOUR)){
-            return ""+t.getHours() + "时";
+            return t.getDate() + "日"+t.getHours() + "时";
         } else if (tableName.equals(TABLEDAY)){
             return ""+t.getDate() +"日";
         } else if (tableName.equals(TABLEMONTH)){

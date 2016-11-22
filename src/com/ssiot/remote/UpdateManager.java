@@ -33,6 +33,7 @@ public class UpdateManager{
     public static final int NOTIFICATION_FLAG = 1; 
     private Context mContext;
     public static boolean updating = false;
+    public static final String LOCAL_APK = "ssiotfishery.apk";
     
     public UpdateManager(Context context){
         mContext = context;
@@ -133,7 +134,7 @@ public class UpdateManager{
                     if (!file.exists()) {
                         file.mkdir();
                     }
-                    File apkFile = new File(mSavePath, mHashMap.get("name"));
+                    File apkFile = new File(mSavePath, LOCAL_APK);
                     FileOutputStream fos = new FileOutputStream(apkFile);
                     int count = 0;
                     int progress = 0;

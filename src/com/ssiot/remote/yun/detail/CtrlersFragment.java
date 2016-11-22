@@ -194,6 +194,7 @@ public class CtrlersFragment extends DevicesFragment{
                     Intent intent = new Intent(getActivity(), FarmDetailCtrlerPagerActivity.class);
                     intent.putExtra("devicebean", device);
                     intent.putExtra("yunnodemodel", nodeModel);
+                    intent.putExtra("yunnodemodels", mFacilityYNodes);
                     startActivity(intent);
                 }
             });

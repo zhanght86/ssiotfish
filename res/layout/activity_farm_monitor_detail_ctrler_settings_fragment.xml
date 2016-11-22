@@ -28,7 +28,6 @@
         fab:fab_addButtonColorNormal="@color/yellow"
         fab:fab_addButtonColorPressed="@color/shnesYellow"
         fab:fab_colorDisabled="@color/cicleColor"
-        android:visibility="gone"
         fab:fab_labelsPosition="left" >
 
         <net.i2p.android.ext.floatingactionbutton.FloatingActionButton
@@ -52,6 +51,16 @@
             fab:fab_icon="@drawable/ic_contorl_timing_on"
             fab:fab_size="mini"
             fab:fab_title="新增定时控制" />
+        <net.i2p.android.ext.floatingactionbutton.FloatingActionButton
+            android:id="@+id/action4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_colorDisabled="@color/cicleColor"
+            fab:fab_colorNormal="@color/white"
+            fab:fab_colorPressed="@color/cicleColor"
+            fab:fab_icon="@drawable/ic_contorl_timing_on"
+            fab:fab_size="mini"
+            fab:fab_title="v3立即连续开关" />
     </net.i2p.android.ext.floatingactionbutton.FloatingActionsMenu>
 
 </FrameLayout>
